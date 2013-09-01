@@ -1,0 +1,287 @@
+   1              	# 1 "../startup_ARMCM3.S"
+   1              	/**************************************************************************//**
+   1              	...
+   0              	
+   0              	
+   2              	 * @file     startup_ARMCM3.s
+   3              	 * @brief    CMSIS Core Device Startup File for
+   4              	 *           ARMCM3 Device Series
+   5              	 * @version  V1.07
+   6              	 * @date     30. January 2012
+   7              	 *
+   8              	 * @note     Version CodeSourcery Sourcery G++ Lite (with CS3)
+   9              	 * Copyright (C) 2012 ARM Limited. All rights reserved.
+  10              	 *
+  11              	 * @par
+  12              	 * ARM Limited (ARM) is supplying this software for use with Cortex-M 
+  13              	 * processor based microcontrollers.  This file can be freely distributed 
+  14              	 * within development tools that are supporting such ARM based processors. 
+  15              	 *
+  16              	 * @par
+  17              	 * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+  18              	 * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+  19              	 * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+  20              	 * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
+  21              	 * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+  22              	 *
+  23              	 ******************************************************************************/
+  24              	/*
+  25              	//-------- <<< Use Configuration Wizard in Context Menu >>> ------------------
+  26              	*/
+  27              	
+  28              	
+  29              	/*
+  30              	// <h> Stack Configuration
+  31              	//   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
+  32              	// </h>
+  33              	*/
+  34              	
+  35              	    .equ    Stack_Size, 0x00000400
+  36              	    .section ".stack", "w"
+  37              	    .align  3
+  38              	    .globl  __cs3_stack_mem
+  39              	    .globl  __cs3_stack_size
+  40              	__cs3_stack_mem:
+  41              	    .if     Stack_Size
+  42 0000 00000000 	    .space  Stack_Size
+  42      00000000 
+  42      00000000 
+  42      00000000 
+  42      00000000 
+  43              	    .endif
+  45              	    .set    __cs3_stack_size, . - __cs3_stack_mem
+  46              	
+  47              	
+  48              	/*
+  49              	// <h> Heap Configuration
+  50              	//   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+  51              	// </h>
+  52              	*/
+  53              	
+  54              	    .equ    Heap_Size,  0x00000C00
+  55              	    
+  56              	    .section ".heap", "w"
+  57              	    .align  3
+  58              	    .globl  __cs3_heap_start
+  59              	    .globl  __cs3_heap_end
+  60              	__cs3_heap_start:
+  61              	    .if     Heap_Size
+  62 0000 00000000 	    .space  Heap_Size
+  62      00000000 
+  62      00000000 
+  62      00000000 
+  62      00000000 
+  63              	    .endif
+  64              	__cs3_heap_end:
+  65              	
+  66              	
+  67              	/* Vector Table */
+  68              	
+  69              	    .section ".cs3.interrupt_vector"
+  70              	    .globl  __cs3_interrupt_vector_cortex_m
+  72              	
+  73              	__cs3_interrupt_vector_cortex_m:
+  74 0000 00000000 	    .long   __cs3_stack                 /* Top of Stack                 */
+  75 0004 00000000 	    .long   __cs3_reset                 /* Reset Handler                */
+  76 0008 00000000 	    .long   NMI_Handler                 /* NMI Handler                  */
+  77 000c 00000000 	    .long   HardFault_Handler           /* Hard Fault Handler           */
+  78 0010 00000000 	    .long   MemManage_Handler           /* MPU Fault Handler            */
+  79 0014 00000000 	    .long   BusFault_Handler            /* Bus Fault Handler            */
+  80 0018 00000000 	    .long   UsageFault_Handler          /* Usage Fault Handler          */
+  81 001c 00000000 	    .long   0                           /* Reserved                     */
+  82 0020 00000000 	    .long   0                           /* Reserved                     */
+  83 0024 00000000 	    .long   0                           /* Reserved                     */
+  84 0028 00000000 	    .long   0                           /* Reserved                     */
+  85 002c 00000000 	    .long   SVC_Handler                 /* SVCall Handler               */
+  86 0030 00000000 	    .long   DebugMon_Handler            /* Debug Monitor Handler        */
+  87 0034 00000000 	    .long   0                           /* Reserved                     */
+  88 0038 00000000 	    .long   PendSV_Handler              /* PendSV Handler               */
+  89 003c 00000000 	    .long   SysTick_Handler             /* SysTick Handler              */
+  90              	
+  91              	    /* External Interrupts */
+  92 0040 00000000 	    .long    WDT_IRQHandler        /*  0:  Watchdog Timer            */
+  93 0044 00000000 	    .long    RTC_IRQHandler        /*  1:  Real Time Clock           */
+  94 0048 00000000 	    .long    TIM0_IRQHandler       /*  2:  Timer0 / Timer1           */
+  95 004c 00000000 	    .long    TIM2_IRQHandler       /*  3:  Timer2 / Timer3           */
+  96 0050 00000000 	    .long    MCIA_IRQHandler       /*  4:  MCIa                      */
+  97 0054 00000000 	    .long    MCIB_IRQHandler       /*  5:  MCIb                      */
+  98 0058 00000000 	    .long    UART0_IRQHandler      /*  6:  UART0 - DUT FPGA          */
+  99 005c 00000000 	    .long    UART1_IRQHandler      /*  7:  UART1 - DUT FPGA          */
+ 100 0060 00000000 	    .long    UART2_IRQHandler      /*  8:  UART2 - DUT FPGA          */
+ 101 0064 00000000 	    .long    UART4_IRQHandler      /*  9:  UART4 - not connected     */
+ 102 0068 00000000 	    .long    AACI_IRQHandler       /* 10: AACI / AC97                */
+ 103 006c 00000000 	    .long    CLCD_IRQHandler       /* 11: CLCD Combined Interrupt    */
+ 104 0070 00000000 	    .long    ENET_IRQHandler       /* 12: Ethernet                   */
+ 105 0074 00000000 	    .long    USBDC_IRQHandler      /* 13: USB Device                 */
+ 106 0078 00000000 	    .long    USBHC_IRQHandler      /* 14: USB Host Controller        */
+ 107 007c 00000000 	    .long    CHLCD_IRQHandler      /* 15: Character LCD              */
+ 108 0080 00000000 	    .long    FLEXRAY_IRQHandler    /* 16: Flexray                    */
+ 109 0084 00000000 	    .long    CAN_IRQHandler        /* 17: CAN                        */
+ 110 0088 00000000 	    .long    LIN_IRQHandler        /* 18: LIN                        */
+ 111 008c 00000000 	    .long    I2C_IRQHandler        /* 19: I2C ADC/DAC                */
+ 112 0090 00000000 	    .long    0                     /* 20: Reserved                   */
+ 113 0094 00000000 	    .long    0                     /* 21: Reserved                   */
+ 114 0098 00000000 	    .long    0                     /* 22: Reserved                   */
+ 115 009c 00000000 	    .long    0                     /* 23: Reserved                   */
+ 116 00a0 00000000 	    .long    0                     /* 24: Reserved                   */
+ 117 00a4 00000000 	    .long    0                     /* 25: Reserved                   */
+ 118 00a8 00000000 	    .long    0                     /* 26: Reserved                   */
+ 119 00ac 00000000 	    .long    0                     /* 27: Reserved                   */
+ 120 00b0 00000000 	    .long    CPU_CLCD_IRQHandler   /* 28: Reserved - CPU FPGA CLCD   */
+ 121 00b4 00000000 	    .long    0                     /* 29: Reserved - CPU FPGA        */
+ 122 00b8 00000000 	    .long    UART3_IRQHandler      /* 30: UART3    - CPU FPGA        */
+ 123 00bc 00000000 	    .long    SPI_IRQHandler        /* 31: SPI Touchscreen - CPU FPGA */
+ 124              	
+ 126              	
+ 127              	
+ 128              	    .thumb
+ 129              	
+ 130              	
+ 131              	/* Reset Handler */
+ 132              	
+ 133              	    .section .cs3.reset,"x",%progbits
+ 134              	    .thumb_func
+ 135              	    .globl  __cs3_reset_cortex_m
+ 137              	__cs3_reset_cortex_m:
+ 138              	    .fnstart
+ 139 0000 0148     	    ;LDR     R0, =SystemInit
+ 140 0002 8047     	    ;BLX     R0
+ 141 0004 0148     	    LDR     R0,=_start
+ 142 0006 0047     	    BX      R0
+ 143 0008 00000000 	    .pool
+ 143      00000000 
+ 144              	    .cantunwind
+ 145              	    .fnend
+ 147              	
+ 148              	    .section ".text"
+ 149              	
+ 150              	/* Exception Handlers */
+ 151              	
+ 152              	    .weak   NMI_Handler
+ 154              	NMI_Handler:
+ 155 0000 FEE7     	    B       .
+ 157              	
+ 158              	    .weak   HardFault_Handler
+ 160              	HardFault_Handler:
+ 161 0002 FEE7     	    B       .
+ 163              	
+ 164              	    .weak   MemManage_Handler
+ 166              	MemManage_Handler:
+ 167 0004 FEE7     	    B       .
+ 169              	
+ 170              	    .weak   BusFault_Handler
+ 172              	BusFault_Handler:
+ 173 0006 FEE7     	    B       .
+ 175              	
+ 176              	    .weak   UsageFault_Handler
+ 178              	UsageFault_Handler:
+ 179 0008 FEE7     	    B       .
+ 181              	
+ 182              	    .weak   SVC_Handler
+ 184              	SVC_Handler:
+ 185 000a FEE7     	    B       .
+ 187              	
+ 188              	    .weak   DebugMon_Handler
+ 190              	DebugMon_Handler:
+ 191 000c FEE7     	    B       .
+ 193              	
+ 194              	    .weak   PendSV_Handler
+ 196              	PendSV_Handler:
+ 197 000e FEE7     	    B       .
+ 199              	
+ 200              	    .weak   SysTick_Handler
+ 202              	SysTick_Handler:
+ 203 0010 FEE7     	    B       .
+ 205              	
+ 206              	
+ 207              	/* IRQ Handlers */
+ 208              	
+ 209              	    .globl  Default_Handler
+ 211              	Default_Handler:
+ 212 0012 FEE7     	    B       .
+ 214              	
+ 215              	    .macro  def_irq_handler handler
+ 216              	    .weak   \handler
+ 217              	    .set    \handler, Default_Handler
+ 218              	    .endm
+ 219              	
+ 220              	    def_irq_handler    WDT_IRQHandler
+ 221              	    def_irq_handler    RTC_IRQHandler
+ 222              	    def_irq_handler    TIM0_IRQHandler
+ 223              	    def_irq_handler    TIM2_IRQHandler
+ 224              	    def_irq_handler    MCIA_IRQHandler
+ 225              	    def_irq_handler    MCIB_IRQHandler
+ 226              	    def_irq_handler    UART0_IRQHandler
+ 227              	    def_irq_handler    UART1_IRQHandler
+ 228              	    def_irq_handler    UART2_IRQHandler
+ 229              	    def_irq_handler    UART3_IRQHandler
+ 230              	    def_irq_handler    UART4_IRQHandler
+ 231              	    def_irq_handler    AACI_IRQHandler
+ 232              	    def_irq_handler    CLCD_IRQHandler
+ 233              	    def_irq_handler    ENET_IRQHandler
+ 234              	    def_irq_handler    USBDC_IRQHandler
+ 235              	    def_irq_handler    USBHC_IRQHandler
+ 236              	    def_irq_handler    CHLCD_IRQHandler
+ 237              	    def_irq_handler    FLEXRAY_IRQHandler
+ 238              	    def_irq_handler    CAN_IRQHandler
+ 239              	    def_irq_handler    LIN_IRQHandler
+ 240              	    def_irq_handler    I2C_IRQHandler
+ 241              	    def_irq_handler    CPU_CLCD_IRQHandler
+ 242              	    def_irq_handler    SPI_IRQHandler
+ 243              	
+ 244              	    .end
+DEFINED SYMBOLS
+ ../startup_ARMCM3.S:35     *ABS*:00000400 Stack_Size
+ ../startup_ARMCM3.S:37     .stack:00000000 $d
+ ../startup_ARMCM3.S:40     .stack:00000000 __cs3_stack_mem
+                            *ABS*:00000400 __cs3_stack_size
+ ../startup_ARMCM3.S:54     *ABS*:00000c00 Heap_Size
+ ../startup_ARMCM3.S:57     .heap:00000000 $d
+ ../startup_ARMCM3.S:60     .heap:00000000 __cs3_heap_start
+ ../startup_ARMCM3.S:64     .heap:00000c00 __cs3_heap_end
+ ../startup_ARMCM3.S:73     .cs3.interrupt_vector:00000000 __cs3_interrupt_vector_cortex_m
+ ../startup_ARMCM3.S:154    .text:00000000 NMI_Handler
+ ../startup_ARMCM3.S:160    .text:00000002 HardFault_Handler
+ ../startup_ARMCM3.S:166    .text:00000004 MemManage_Handler
+ ../startup_ARMCM3.S:172    .text:00000006 BusFault_Handler
+ ../startup_ARMCM3.S:178    .text:00000008 UsageFault_Handler
+ ../startup_ARMCM3.S:184    .text:0000000a SVC_Handler
+ ../startup_ARMCM3.S:190    .text:0000000c DebugMon_Handler
+ ../startup_ARMCM3.S:196    .text:0000000e PendSV_Handler
+ ../startup_ARMCM3.S:202    .text:00000010 SysTick_Handler
+ ../startup_ARMCM3.S:211    .text:00000012 WDT_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 RTC_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 TIM0_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 TIM2_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 MCIA_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 MCIB_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 UART0_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 UART1_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 UART2_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 UART4_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 AACI_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 CLCD_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 ENET_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 USBDC_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 USBHC_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 CHLCD_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 FLEXRAY_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 CAN_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 LIN_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 I2C_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 CPU_CLCD_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 UART3_IRQHandler
+ ../startup_ARMCM3.S:211    .text:00000012 SPI_IRQHandler
+ ../startup_ARMCM3.S:137    .cs3.reset:00000000 __cs3_reset_cortex_m
+ ../startup_ARMCM3.S:139    .cs3.reset:00000000 $t
+ ../startup_ARMCM3.S:143    .cs3.reset:00000008 $d
+             .ARM.exidx.cs3.reset:00000000 $d
+ ../startup_ARMCM3.S:155    .text:00000000 $t
+ ../startup_ARMCM3.S:211    .text:00000012 Default_Handler
+                   .debug_aranges:0000000c $d
+
+UNDEFINED SYMBOLS
+__cs3_stack
+__cs3_reset
+SystemInit
+_start

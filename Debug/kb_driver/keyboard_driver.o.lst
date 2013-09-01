@@ -1,0 +1,669 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"keyboard_driver.c"
+  23              	.Ltext0:
+  24              		.file 1 "../kb_driver/keyboard_driver.c"
+ 16080              		.align	2
+ 16081              		.global	init_keyboard
+ 16082              		.thumb
+ 16083              		.thumb_func
+ 16085              	init_keyboard:
+ 16086              	.LFB29:
+   1:../kb_driver/keyboard_driver.c **** #include "keyboard_driver.h"
+   2:../kb_driver/keyboard_driver.c **** 
+   3:../kb_driver/keyboard_driver.c **** void init_keyboard(void)
+   4:../kb_driver/keyboard_driver.c **** {
+ 16087              		.loc 1 4 0
+ 16088              		.cfi_startproc
+ 16089              		@ args = 0, pretend = 0, frame = 0
+ 16090              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16091              		@ link register save eliminated.
+ 16092 0000 80B4     		push	{r7}
+ 16093              	.LCFI0:
+ 16094              		.cfi_def_cfa_offset 4
+ 16095 0002 00AF     		add	r7, sp, #0
+ 16096              		.cfi_offset 7, -4
+ 16097              	.LCFI1:
+ 16098              		.cfi_def_cfa_register 7
+   5:../kb_driver/keyboard_driver.c **** 	btn_cnt = buttons_em;
+ 16099              		.loc 1 5 0
+ 16100 0004 214B     		ldr	r3, .L2
+ 16101 0006 4FF00C02 		mov	r2, #12
+ 16102 000a 1A70     		strb	r2, [r3, #0]
+   6:../kb_driver/keyboard_driver.c **** 
+   7:../kb_driver/keyboard_driver.c **** 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; //Clock port
+ 16103              		.loc 1 7 0
+ 16104 000c 204B     		ldr	r3, .L2+4
+ 16105 000e 204A     		ldr	r2, .L2+4
+ 16106 0010 9269     		ldr	r2, [r2, #24]
+ 16107 0012 42F00402 		orr	r2, r2, #4
+ 16108 0016 9A61     		str	r2, [r3, #24]
+   8:../kb_driver/keyboard_driver.c **** 	GPIOA->CRL	&= ~(GPIO_CRL_CNF0_0 | GPIO_CRL_CNF1_0 | GPIO_CRL_CNF2_0); //Ножки 0,1,2 - вхо�
+ 16109              		.loc 1 8 0
+ 16110 0018 1E4A     		ldr	r2, .L2+8
+ 16111 001a 1E4B     		ldr	r3, .L2+8
+ 16112 001c 1B68     		ldr	r3, [r3, #0]
+ 16113 001e 23F48863 		bic	r3, r3, #1088
+ 16114 0022 23F00403 		bic	r3, r3, #4
+ 16115 0026 1360     		str	r3, [r2, #0]
+   9:../kb_driver/keyboard_driver.c **** 	GPIOA->CRL |= (GPIO_CRL_CNF0_1 | GPIO_CRL_CNF1_1 | GPIO_CRL_CNF2_1);	 //подтяжка к
+ 16116              		.loc 1 9 0
+ 16117 0028 1A4A     		ldr	r2, .L2+8
+ 16118 002a 1A4B     		ldr	r3, .L2+8
+ 16119 002c 1B68     		ldr	r3, [r3, #0]
+ 16120 002e 43F40863 		orr	r3, r3, #2176
+ 16121 0032 43F00803 		orr	r3, r3, #8
+ 16122 0036 1360     		str	r3, [r2, #0]
+  10:../kb_driver/keyboard_driver.c **** 	GPIOA->ODR |= (GPIO_ODR_ODR0 | GPIO_ODR_ODR1 | GPIO_ODR_ODR2);     		 //плюсу
+ 16123              		.loc 1 10 0
+ 16124 0038 164B     		ldr	r3, .L2+8
+ 16125 003a 164A     		ldr	r2, .L2+8
+ 16126 003c D268     		ldr	r2, [r2, #12]
+ 16127 003e 42F00702 		orr	r2, r2, #7
+ 16128 0042 DA60     		str	r2, [r3, #12]
+  11:../kb_driver/keyboard_driver.c **** 	//GPIOA->CRL 	&= ~(GPIO_CRL_MODE1_0 | GPIO_CRL_MODE1_1);//дефолтно
+  12:../kb_driver/keyboard_driver.c **** 	
+  13:../kb_driver/keyboard_driver.c **** 	GPIOA->CRL	&= ~(GPIO_CRL_CNF3_0 | GPIO_CRL_CNF4_0 | GPIO_CRL_CNF5_0 | GPIO_CRL_CNF6_0);// Ножк
+ 16129              		.loc 1 13 0
+ 16130 0044 134A     		ldr	r2, .L2+8
+ 16131 0046 134B     		ldr	r3, .L2+8
+ 16132 0048 1B68     		ldr	r3, [r3, #0]
+ 16133 004a 23F08863 		bic	r3, r3, #71303168
+ 16134 004e 23F48823 		bic	r3, r3, #278528
+ 16135 0052 1360     		str	r3, [r2, #0]
+  14:../kb_driver/keyboard_driver.c **** 	GPIOA->CRL	&= ~(GPIO_CRL_CNF3_1 | GPIO_CRL_CNF4_1 | GPIO_CRL_CNF5_1 | GPIO_CRL_CNF6_1);//
+ 16136              		.loc 1 14 0
+ 16137 0054 0F4A     		ldr	r2, .L2+8
+ 16138 0056 0F4B     		ldr	r3, .L2+8
+ 16139 0058 1B68     		ldr	r3, [r3, #0]
+ 16140 005a 23F00863 		bic	r3, r3, #142606336
+ 16141 005e 23F40823 		bic	r3, r3, #557056
+ 16142 0062 1360     		str	r3, [r2, #0]
+  15:../kb_driver/keyboard_driver.c **** 	GPIOA->CRL 	|= (GPIO_CRL_MODE3_0 | GPIO_CRL_MODE4_0 | GPIO_CRL_MODE5_0 | GPIO_CRL_MODE6_0);// 50MH
+ 16143              		.loc 1 15 0
+ 16144 0064 0B4A     		ldr	r2, .L2+8
+ 16145 0066 0B4B     		ldr	r3, .L2+8
+ 16146 0068 1B68     		ldr	r3, [r3, #0]
+ 16147 006a 43F08873 		orr	r3, r3, #17825792
+ 16148 006e 43F48833 		orr	r3, r3, #69632
+ 16149 0072 1360     		str	r3, [r2, #0]
+  16:../kb_driver/keyboard_driver.c **** 	GPIOA->CRL 	|= (GPIO_CRL_MODE3_1 | GPIO_CRL_MODE4_1 | GPIO_CRL_MODE5_1 | GPIO_CRL_MODE6_1);//
+ 16150              		.loc 1 16 0
+ 16151 0074 074A     		ldr	r2, .L2+8
+ 16152 0076 074B     		ldr	r3, .L2+8
+ 16153 0078 1B68     		ldr	r3, [r3, #0]
+ 16154 007a 43F00873 		orr	r3, r3, #35651584
+ 16155 007e 43F40833 		orr	r3, r3, #139264
+ 16156 0082 1360     		str	r3, [r2, #0]
+  17:../kb_driver/keyboard_driver.c **** }
+ 16157              		.loc 1 17 0
+ 16158 0084 BD46     		mov	sp, r7
+ 16159 0086 80BC     		pop	{r7}
+ 16160 0088 7047     		bx	lr
+ 16161              	.L3:
+ 16162 008a 00BF     		.align	2
+ 16163              	.L2:
+ 16164 008c 00000000 		.word	btn_cnt
+ 16165 0090 00100240 		.word	1073876992
+ 16166 0094 00080140 		.word	1073809408
+ 16167              		.cfi_endproc
+ 16168              	.LFE29:
+ 16170              		.align	2
+ 16171              		.global	kb_strobe
+ 16172              		.thumb
+ 16173              		.thumb_func
+ 16175              	kb_strobe:
+ 16176              	.LFB30:
+  18:../kb_driver/keyboard_driver.c **** 
+  19:../kb_driver/keyboard_driver.c **** void kb_strobe(void)
+  20:../kb_driver/keyboard_driver.c **** {
+ 16177              		.loc 1 20 0
+ 16178              		.cfi_startproc
+ 16179              		@ args = 0, pretend = 0, frame = 16
+ 16180              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16181 0098 90B5     		push	{r4, r7, lr}
+ 16182              	.LCFI2:
+ 16183              		.cfi_def_cfa_offset 12
+ 16184 009a 85B0     		sub	sp, sp, #20
+ 16185              	.LCFI3:
+ 16186              		.cfi_def_cfa_offset 32
+ 16187 009c 00AF     		add	r7, sp, #0
+ 16188              		.cfi_offset 14, -4
+ 16189              		.cfi_offset 7, -8
+ 16190              		.cfi_offset 4, -12
+ 16191              	.LCFI4:
+ 16192              		.cfi_def_cfa_register 7
+  21:../kb_driver/keyboard_driver.c **** 	uint8_t cols_[] = cols;
+ 16193              		.loc 1 21 0
+ 16194 009e 5B4B     		ldr	r3, .L17
+ 16195 00a0 1B68     		ldr	r3, [r3, #0]
+ 16196 00a2 BB60     		str	r3, [r7, #8]
+  22:../kb_driver/keyboard_driver.c **** 	uint8_t rows_[] = rows;
+ 16197              		.loc 1 22 0
+ 16198 00a4 5A4A     		ldr	r2, .L17+4
+ 16199 00a6 07F10403 		add	r3, r7, #4
+ 16200 00aa 1268     		ldr	r2, [r2, #0]
+ 16201 00ac 1146     		mov	r1, r2	@ movhi
+ 16202 00ae 1980     		strh	r1, [r3, #0]	@ movhi
+ 16203 00b0 03F10203 		add	r3, r3, #2
+ 16204 00b4 4FEA1242 		lsr	r2, r2, #16
+ 16205 00b8 1A70     		strb	r2, [r3, #0]
+ 16206              	.LBB2:
+  23:../kb_driver/keyboard_driver.c **** 
+  24:../kb_driver/keyboard_driver.c **** 	for (uint8_t col=0; col<cols_num; col++)//Перебираем все колонки
+ 16207              		.loc 1 24 0
+ 16208 00ba 4FF00003 		mov	r3, #0
+ 16209 00be FB73     		strb	r3, [r7, #15]
+ 16210 00c0 9BE0     		b	.L5
+ 16211              	.L16:
+ 16212              	.LBB3:
+  25:../kb_driver/keyboard_driver.c **** 	{
+  26:../kb_driver/keyboard_driver.c **** 		for (uint8_t i=0; i<cols_num; i++)//Формируем маску
+ 16213              		.loc 1 26 0
+ 16214 00c2 4FF00003 		mov	r3, #0
+ 16215 00c6 BB73     		strb	r3, [r7, #14]
+ 16216 00c8 22E0     		b	.L6
+ 16217              	.L9:
+  27:../kb_driver/keyboard_driver.c **** 		{
+  28:../kb_driver/keyboard_driver.c **** 			if (i == col){KB_PORT->ODR &= ~cols_[i];}
+ 16218              		.loc 1 28 0
+ 16219 00ca BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 16220 00cc FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 16221 00ce 9A42     		cmp	r2, r3
+ 16222 00d0 0ED1     		bne	.L7
+ 16223              		.loc 1 28 0 is_stmt 0 discriminator 1
+ 16224 00d2 504B     		ldr	r3, .L17+8
+ 16225 00d4 4F4A     		ldr	r2, .L17+8
+ 16226 00d6 D168     		ldr	r1, [r2, #12]
+ 16227 00d8 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 16228 00da 07F11000 		add	r0, r7, #16
+ 16229 00de 8218     		adds	r2, r0, r2
+ 16230 00e0 12F8082C 		ldrb	r2, [r2, #-8]	@ zero_extendqisi2
+ 16231 00e4 6FEA0202 		mvn	r2, r2
+ 16232 00e8 01EA0202 		and	r2, r1, r2
+ 16233 00ec DA60     		str	r2, [r3, #12]
+ 16234 00ee 0BE0     		b	.L8
+ 16235              	.L7:
+  29:../kb_driver/keyboard_driver.c **** 			else{ KB_PORT->ODR |= cols_[i];}
+ 16236              		.loc 1 29 0 is_stmt 1
+ 16237 00f0 484B     		ldr	r3, .L17+8
+ 16238 00f2 484A     		ldr	r2, .L17+8
+ 16239 00f4 D168     		ldr	r1, [r2, #12]
+ 16240 00f6 BA7B     		ldrb	r2, [r7, #14]	@ zero_extendqisi2
+ 16241 00f8 07F11000 		add	r0, r7, #16
+ 16242 00fc 8218     		adds	r2, r0, r2
+ 16243 00fe 12F8082C 		ldrb	r2, [r2, #-8]	@ zero_extendqisi2
+ 16244 0102 41EA0202 		orr	r2, r1, r2
+ 16245 0106 DA60     		str	r2, [r3, #12]
+ 16246              	.L8:
+  26:../kb_driver/keyboard_driver.c **** 		for (uint8_t i=0; i<cols_num; i++)//Формируем маску
+ 16247              		.loc 1 26 0
+ 16248 0108 BB7B     		ldrb	r3, [r7, #14]
+ 16249 010a 03F10103 		add	r3, r3, #1
+ 16250 010e BB73     		strb	r3, [r7, #14]
+ 16251              	.L6:
+  26:../kb_driver/keyboard_driver.c **** 		for (uint8_t i=0; i<cols_num; i++)//Формируем маску
+ 16252              		.loc 1 26 0 is_stmt 0 discriminator 1
+ 16253 0110 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 16254 0112 032B     		cmp	r3, #3
+ 16255 0114 D9D9     		bls	.L9
+ 16256              	.LBE3:
+ 16257              	.LBB4:
+  30:../kb_driver/keyboard_driver.c **** 		}
+  31:../kb_driver/keyboard_driver.c **** 
+  32:../kb_driver/keyboard_driver.c **** 		for (uint8_t row=0; row<rows_num; row++)//Опрашиваем построчно
+ 16258              		.loc 1 32 0 is_stmt 1
+ 16259 0116 4FF00003 		mov	r3, #0
+ 16260 011a 7B73     		strb	r3, [r7, #13]
+ 16261 011c 66E0     		b	.L10
+ 16262              	.L15:
+  33:../kb_driver/keyboard_driver.c **** 		{
+  34:../kb_driver/keyboard_driver.c **** 			if ((KB_PORT->IDR & rows_[row]) == 0)
+ 16263              		.loc 1 34 0
+ 16264 011e 3D4B     		ldr	r3, .L17+8
+ 16265 0120 9A68     		ldr	r2, [r3, #8]
+ 16266 0122 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 16267 0124 07F11001 		add	r1, r7, #16
+ 16268 0128 CB18     		adds	r3, r1, r3
+ 16269 012a 13F80C3C 		ldrb	r3, [r3, #-12]	@ zero_extendqisi2
+ 16270 012e 02EA0303 		and	r3, r2, r3
+ 16271 0132 002B     		cmp	r3, #0
+ 16272 0134 16D1     		bne	.L11
+  35:../kb_driver/keyboard_driver.c **** 			{
+  36:../kb_driver/keyboard_driver.c **** 				check_buttons[col][row]++;
+ 16273              		.loc 1 36 0
+ 16274 0136 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16275 0138 797B     		ldrb	r1, [r7, #13]	@ zero_extendqisi2
+ 16276 013a 3748     		ldr	r0, .L17+12
+ 16277 013c 1346     		mov	r3, r2
+ 16278 013e 4FEA4303 		lsl	r3, r3, #1
+ 16279 0142 9B18     		adds	r3, r3, r2
+ 16280 0144 5B18     		adds	r3, r3, r1
+ 16281 0146 C318     		adds	r3, r0, r3
+ 16282 0148 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16283 014a 03F10103 		add	r3, r3, #1
+ 16284 014e D8B2     		uxtb	r0, r3
+ 16285 0150 314C     		ldr	r4, .L17+12
+ 16286 0152 1346     		mov	r3, r2
+ 16287 0154 4FEA4303 		lsl	r3, r3, #1
+ 16288 0158 9B18     		adds	r3, r3, r2
+ 16289 015a 5B18     		adds	r3, r3, r1
+ 16290 015c E318     		adds	r3, r4, r3
+ 16291 015e 0246     		mov	r2, r0
+ 16292 0160 1A70     		strb	r2, [r3, #0]
+ 16293 0162 3FE0     		b	.L12
+ 16294              	.L11:
+  37:../kb_driver/keyboard_driver.c **** 			}
+  38:../kb_driver/keyboard_driver.c **** 			else{
+  39:../kb_driver/keyboard_driver.c **** 				if (check_buttons[col][row] >= trashhold1 &&
+ 16295              		.loc 1 39 0
+ 16296 0164 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16297 0166 787B     		ldrb	r0, [r7, #13]	@ zero_extendqisi2
+ 16298 0168 2B49     		ldr	r1, .L17+12
+ 16299 016a 1346     		mov	r3, r2
+ 16300 016c 4FEA4303 		lsl	r3, r3, #1
+ 16301 0170 9B18     		adds	r3, r3, r2
+ 16302 0172 1B18     		adds	r3, r3, r0
+ 16303 0174 CB18     		adds	r3, r1, r3
+ 16304 0176 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16305 0178 092B     		cmp	r3, #9
+ 16306 017a 13D9     		bls	.L13
+  40:../kb_driver/keyboard_driver.c **** 						check_buttons[col][row] <= trashhold2){
+ 16307              		.loc 1 40 0 discriminator 1
+ 16308 017c FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16309 017e 787B     		ldrb	r0, [r7, #13]	@ zero_extendqisi2
+ 16310 0180 2549     		ldr	r1, .L17+12
+ 16311 0182 1346     		mov	r3, r2
+ 16312 0184 4FEA4303 		lsl	r3, r3, #1
+ 16313 0188 9B18     		adds	r3, r3, r2
+ 16314 018a 1B18     		adds	r3, r3, r0
+ 16315 018c CB18     		adds	r3, r1, r3
+ 16316 018e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+  39:../kb_driver/keyboard_driver.c **** 				if (check_buttons[col][row] >= trashhold1 &&
+ 16317              		.loc 1 39 0 discriminator 1
+ 16318 0190 462B     		cmp	r3, #70
+ 16319 0192 07D8     		bhi	.L13
+  41:../kb_driver/keyboard_driver.c **** 					add_button(col, row, '0');//0 means short press
+ 16320              		.loc 1 41 0
+ 16321 0194 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16322 0196 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 16323 0198 1046     		mov	r0, r2
+ 16324 019a 1946     		mov	r1, r3
+ 16325 019c 4FF03002 		mov	r2, #48
+ 16326 01a0 FFF7FEFF 		bl	add_button
+ 16327              	.L13:
+  42:../kb_driver/keyboard_driver.c **** 				}
+  43:../kb_driver/keyboard_driver.c **** 				if(check_buttons[col][row] > trashhold2){
+ 16328              		.loc 1 43 0
+ 16329 01a4 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16330 01a6 787B     		ldrb	r0, [r7, #13]	@ zero_extendqisi2
+ 16331 01a8 1B49     		ldr	r1, .L17+12
+ 16332 01aa 1346     		mov	r3, r2
+ 16333 01ac 4FEA4303 		lsl	r3, r3, #1
+ 16334 01b0 9B18     		adds	r3, r3, r2
+ 16335 01b2 1B18     		adds	r3, r3, r0
+ 16336 01b4 CB18     		adds	r3, r1, r3
+ 16337 01b6 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16338 01b8 462B     		cmp	r3, #70
+ 16339 01ba 07D9     		bls	.L14
+  44:../kb_driver/keyboard_driver.c **** 					add_button(col, row, '1');//1 means long press
+ 16340              		.loc 1 44 0
+ 16341 01bc FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16342 01be 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 16343 01c0 1046     		mov	r0, r2
+ 16344 01c2 1946     		mov	r1, r3
+ 16345 01c4 4FF03102 		mov	r2, #49
+ 16346 01c8 FFF7FEFF 		bl	add_button
+ 16347              	.L14:
+  45:../kb_driver/keyboard_driver.c **** 				}
+  46:../kb_driver/keyboard_driver.c **** 
+  47:../kb_driver/keyboard_driver.c **** 				check_buttons[col][row]=0;
+ 16348              		.loc 1 47 0
+ 16349 01cc FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 16350 01ce 787B     		ldrb	r0, [r7, #13]	@ zero_extendqisi2
+ 16351 01d0 1149     		ldr	r1, .L17+12
+ 16352 01d2 1346     		mov	r3, r2
+ 16353 01d4 4FEA4303 		lsl	r3, r3, #1
+ 16354 01d8 9B18     		adds	r3, r3, r2
+ 16355 01da 1B18     		adds	r3, r3, r0
+ 16356 01dc CB18     		adds	r3, r1, r3
+ 16357 01de 4FF00002 		mov	r2, #0
+ 16358 01e2 1A70     		strb	r2, [r3, #0]
+ 16359              	.L12:
+  32:../kb_driver/keyboard_driver.c **** 		for (uint8_t row=0; row<rows_num; row++)//Опрашиваем построчно
+ 16360              		.loc 1 32 0
+ 16361 01e4 7B7B     		ldrb	r3, [r7, #13]
+ 16362 01e6 03F10103 		add	r3, r3, #1
+ 16363 01ea 7B73     		strb	r3, [r7, #13]
+ 16364              	.L10:
+  32:../kb_driver/keyboard_driver.c **** 		for (uint8_t row=0; row<rows_num; row++)//Опрашиваем построчно
+ 16365              		.loc 1 32 0 is_stmt 0 discriminator 1
+ 16366 01ec 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 16367 01ee 022B     		cmp	r3, #2
+ 16368 01f0 95D9     		bls	.L15
+ 16369              	.LBE4:
+  24:../kb_driver/keyboard_driver.c **** 	for (uint8_t col=0; col<cols_num; col++)//Перебираем все колонки
+ 16370              		.loc 1 24 0 is_stmt 1
+ 16371 01f2 FB7B     		ldrb	r3, [r7, #15]
+ 16372 01f4 03F10103 		add	r3, r3, #1
+ 16373 01f8 FB73     		strb	r3, [r7, #15]
+ 16374              	.L5:
+  24:../kb_driver/keyboard_driver.c **** 	for (uint8_t col=0; col<cols_num; col++)//Перебираем все колонки
+ 16375              		.loc 1 24 0 is_stmt 0 discriminator 1
+ 16376 01fa FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 16377 01fc 032B     		cmp	r3, #3
+ 16378 01fe 7FF660AF 		bls	.L16
+ 16379              	.LBE2:
+  48:../kb_driver/keyboard_driver.c **** 			}
+  49:../kb_driver/keyboard_driver.c **** 		}
+  50:../kb_driver/keyboard_driver.c **** 	}
+  51:../kb_driver/keyboard_driver.c **** }
+ 16380              		.loc 1 51 0 is_stmt 1
+ 16381 0202 07F11407 		add	r7, r7, #20
+ 16382 0206 BD46     		mov	sp, r7
+ 16383 0208 90BD     		pop	{r4, r7, pc}
+ 16384              	.L18:
+ 16385 020a 00BF     		.align	2
+ 16386              	.L17:
+ 16387 020c 10000000 		.word	C.16.5651
+ 16388 0210 14000000 		.word	C.17.5652
+ 16389 0214 00080140 		.word	1073809408
+ 16390 0218 00000000 		.word	check_buttons
+ 16391              		.cfi_endproc
+ 16392              	.LFE30:
+ 16394              		.section	.rodata
+ 16395              		.align	2
+ 16396              	.LC0:
+ 16397 0000 31323334 		.ascii	"123456789*0#\000"
+ 16397      35363738 
+ 16397      392A3023 
+ 16397      00
+ 16398              		.text
+ 16399              		.align	2
+ 16400              		.global	add_button
+ 16401              		.thumb
+ 16402              		.thumb_func
+ 16404              	add_button:
+ 16405              	.LFB31:
+  52:../kb_driver/keyboard_driver.c **** 
+  53:../kb_driver/keyboard_driver.c **** void add_button(uint8_t col, uint8_t row, uint8_t duration){
+ 16406              		.loc 1 53 0
+ 16407              		.cfi_startproc
+ 16408              		@ args = 0, pretend = 0, frame = 8
+ 16409              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16410              		@ link register save eliminated.
+ 16411 021c 80B4     		push	{r7}
+ 16412              	.LCFI5:
+ 16413              		.cfi_def_cfa_offset 4
+ 16414 021e 83B0     		sub	sp, sp, #12
+ 16415              	.LCFI6:
+ 16416              		.cfi_def_cfa_offset 16
+ 16417 0220 00AF     		add	r7, sp, #0
+ 16418              		.cfi_offset 7, -4
+ 16419              	.LCFI7:
+ 16420              		.cfi_def_cfa_register 7
+ 16421 0222 1346     		mov	r3, r2
+ 16422 0224 0246     		mov	r2, r0
+ 16423 0226 FA71     		strb	r2, [r7, #7]
+ 16424 0228 0A46     		mov	r2, r1
+ 16425 022a BA71     		strb	r2, [r7, #6]
+ 16426 022c 7B71     		strb	r3, [r7, #5]
+  54:../kb_driver/keyboard_driver.c **** 	if (btn_cnt == 0) btn_cnt = buttons_em;
+ 16427              		.loc 1 54 0
+ 16428 022e 154B     		ldr	r3, .L21
+ 16429 0230 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16430 0232 002B     		cmp	r3, #0
+ 16431 0234 03D1     		bne	.L20
+ 16432              		.loc 1 54 0 is_stmt 0 discriminator 1
+ 16433 0236 134B     		ldr	r3, .L21
+ 16434 0238 4FF00C02 		mov	r2, #12
+ 16435 023c 1A70     		strb	r2, [r3, #0]
+ 16436              	.L20:
+  55:../kb_driver/keyboard_driver.c **** 	buttons[btn_cnt-1] = templates[col*rows_num+row];
+ 16437              		.loc 1 55 0 is_stmt 1
+ 16438 023e 114B     		ldr	r3, .L21
+ 16439 0240 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16440 0242 03F1FF31 		add	r1, r3, #-1
+ 16441 0246 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 16442 0248 1346     		mov	r3, r2
+ 16443 024a 4FEA4303 		lsl	r3, r3, #1
+ 16444 024e 9A18     		adds	r2, r3, r2
+ 16445 0250 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 16446 0252 D318     		adds	r3, r2, r3
+ 16447 0254 0C4A     		ldr	r2, .L21+4
+ 16448 0256 D25C     		ldrb	r2, [r2, r3]	@ zero_extendqisi2
+ 16449 0258 0C4B     		ldr	r3, .L21+8
+ 16450 025a 5A54     		strb	r2, [r3, r1]
+  56:../kb_driver/keyboard_driver.c **** 	durations[btn_cnt-1] = duration;
+ 16451              		.loc 1 56 0
+ 16452 025c 094B     		ldr	r3, .L21
+ 16453 025e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16454 0260 03F1FF33 		add	r3, r3, #-1
+ 16455 0264 0A4A     		ldr	r2, .L21+12
+ 16456 0266 7979     		ldrb	r1, [r7, #5]
+ 16457 0268 D154     		strb	r1, [r2, r3]
+  57:../kb_driver/keyboard_driver.c **** 	btn_cnt--;
+ 16458              		.loc 1 57 0
+ 16459 026a 064B     		ldr	r3, .L21
+ 16460 026c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16461 026e 03F1FF33 		add	r3, r3, #-1
+ 16462 0272 DAB2     		uxtb	r2, r3
+ 16463 0274 034B     		ldr	r3, .L21
+ 16464 0276 1A70     		strb	r2, [r3, #0]
+  58:../kb_driver/keyboard_driver.c **** }
+ 16465              		.loc 1 58 0
+ 16466 0278 07F10C07 		add	r7, r7, #12
+ 16467 027c BD46     		mov	sp, r7
+ 16468 027e 80BC     		pop	{r7}
+ 16469 0280 7047     		bx	lr
+ 16470              	.L22:
+ 16471 0282 00BF     		.align	2
+ 16472              	.L21:
+ 16473 0284 00000000 		.word	btn_cnt
+ 16474 0288 00000000 		.word	.LC0
+ 16475 028c 00000000 		.word	buttons
+ 16476 0290 00000000 		.word	durations
+ 16477              		.cfi_endproc
+ 16478              	.LFE31:
+ 16480              		.align	2
+ 16481              		.global	get_btn
+ 16482              		.thumb
+ 16483              		.thumb_func
+ 16485              	get_btn:
+ 16486              	.LFB32:
+  59:../kb_driver/keyboard_driver.c **** 
+  60:../kb_driver/keyboard_driver.c **** uint16_t get_btn(void){
+ 16487              		.loc 1 60 0
+ 16488              		.cfi_startproc
+ 16489              		@ args = 0, pretend = 0, frame = 8
+ 16490              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16491              		@ link register save eliminated.
+ 16492 0294 80B4     		push	{r7}
+ 16493              	.LCFI8:
+ 16494              		.cfi_def_cfa_offset 4
+ 16495 0296 83B0     		sub	sp, sp, #12
+ 16496              	.LCFI9:
+ 16497              		.cfi_def_cfa_offset 16
+ 16498 0298 00AF     		add	r7, sp, #0
+ 16499              		.cfi_offset 7, -4
+ 16500              	.LCFI10:
+ 16501              		.cfi_def_cfa_register 7
+  61:../kb_driver/keyboard_driver.c **** 	uint16_t resp;
+  62:../kb_driver/keyboard_driver.c **** 	if(btn_cnt < buttons_em){
+ 16502              		.loc 1 62 0
+ 16503 029a 144B     		ldr	r3, .L26
+ 16504 029c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16505 029e 0B2B     		cmp	r3, #11
+ 16506 02a0 1CD8     		bhi	.L24
+  63:../kb_driver/keyboard_driver.c **** 		resp = 0;
+ 16507              		.loc 1 63 0
+ 16508 02a2 4FF00003 		mov	r3, #0
+ 16509 02a6 FB80     		strh	r3, [r7, #6]	@ movhi
+  64:../kb_driver/keyboard_driver.c **** 		resp = buttons[btn_cnt];
+ 16510              		.loc 1 64 0
+ 16511 02a8 104B     		ldr	r3, .L26
+ 16512 02aa 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16513 02ac 104A     		ldr	r2, .L26+4
+ 16514 02ae D35C     		ldrb	r3, [r2, r3]	@ zero_extendqisi2
+ 16515 02b0 FB80     		strh	r3, [r7, #6]	@ movhi
+  65:../kb_driver/keyboard_driver.c **** 		resp |= durations[btn_cnt]<<8;
+ 16516              		.loc 1 65 0
+ 16517 02b2 0E4B     		ldr	r3, .L26
+ 16518 02b4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16519 02b6 0F4A     		ldr	r2, .L26+8
+ 16520 02b8 D35C     		ldrb	r3, [r2, r3]	@ zero_extendqisi2
+ 16521 02ba 4FEA0323 		lsl	r3, r3, #8
+ 16522 02be 9AB2     		uxth	r2, r3
+ 16523 02c0 FB88     		ldrh	r3, [r7, #6]
+ 16524 02c2 42EA0303 		orr	r3, r2, r3
+ 16525 02c6 9BB2     		uxth	r3, r3
+ 16526 02c8 FB80     		strh	r3, [r7, #6]	@ movhi
+  66:../kb_driver/keyboard_driver.c **** 		btn_cnt++;
+ 16527              		.loc 1 66 0
+ 16528 02ca 084B     		ldr	r3, .L26
+ 16529 02cc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16530 02ce 03F10103 		add	r3, r3, #1
+ 16531 02d2 DAB2     		uxtb	r2, r3
+ 16532 02d4 054B     		ldr	r3, .L26
+ 16533 02d6 1A70     		strb	r2, [r3, #0]
+  67:../kb_driver/keyboard_driver.c **** 		return resp;
+ 16534              		.loc 1 67 0
+ 16535 02d8 FB88     		ldrh	r3, [r7, #6]
+ 16536 02da 01E0     		b	.L25
+ 16537              	.L24:
+  68:../kb_driver/keyboard_driver.c **** 	}
+  69:../kb_driver/keyboard_driver.c **** 	else return 0;
+ 16538              		.loc 1 69 0
+ 16539 02dc 4FF00003 		mov	r3, #0
+ 16540              	.L25:
+  70:../kb_driver/keyboard_driver.c **** }
+ 16541              		.loc 1 70 0
+ 16542 02e0 1846     		mov	r0, r3
+ 16543 02e2 07F10C07 		add	r7, r7, #12
+ 16544 02e6 BD46     		mov	sp, r7
+ 16545 02e8 80BC     		pop	{r7}
+ 16546 02ea 7047     		bx	lr
+ 16547              	.L27:
+ 16548              		.align	2
+ 16549              	.L26:
+ 16550 02ec 00000000 		.word	btn_cnt
+ 16551 02f0 00000000 		.word	buttons
+ 16552 02f4 00000000 		.word	durations
+ 16553              		.cfi_endproc
+ 16554              	.LFE32:
+ 16556              		.align	2
+ 16557              		.global	get_btn_simple
+ 16558              		.thumb
+ 16559              		.thumb_func
+ 16561              	get_btn_simple:
+ 16562              	.LFB33:
+  71:../kb_driver/keyboard_driver.c **** 
+  72:../kb_driver/keyboard_driver.c **** uint8_t get_btn_simple(void){
+ 16563              		.loc 1 72 0
+ 16564              		.cfi_startproc
+ 16565              		@ args = 0, pretend = 0, frame = 0
+ 16566              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16567              		@ link register save eliminated.
+ 16568 02f8 80B4     		push	{r7}
+ 16569              	.LCFI11:
+ 16570              		.cfi_def_cfa_offset 4
+ 16571 02fa 00AF     		add	r7, sp, #0
+ 16572              		.cfi_offset 7, -4
+ 16573              	.LCFI12:
+ 16574              		.cfi_def_cfa_register 7
+  73:../kb_driver/keyboard_driver.c **** 	if(btn_cnt < buttons_em){
+ 16575              		.loc 1 73 0
+ 16576 02fc 0D4B     		ldr	r3, .L31
+ 16577 02fe 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16578 0300 0B2B     		cmp	r3, #11
+ 16579 0302 11D8     		bhi	.L29
+  74:../kb_driver/keyboard_driver.c **** 		btn_cnt++;
+ 16580              		.loc 1 74 0
+ 16581 0304 0B4B     		ldr	r3, .L31
+ 16582 0306 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16583 0308 03F10103 		add	r3, r3, #1
+ 16584 030c DAB2     		uxtb	r2, r3
+ 16585 030e 094B     		ldr	r3, .L31
+ 16586 0310 1A70     		strb	r2, [r3, #0]
+  75:../kb_driver/keyboard_driver.c **** 		return buttons[btn_cnt--];
+ 16587              		.loc 1 75 0
+ 16588 0312 084B     		ldr	r3, .L31
+ 16589 0314 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 16590 0316 1346     		mov	r3, r2
+ 16591 0318 0749     		ldr	r1, .L31+4
+ 16592 031a CB5C     		ldrb	r3, [r1, r3]	@ zero_extendqisi2
+ 16593 031c 02F1FF32 		add	r2, r2, #-1
+ 16594 0320 D1B2     		uxtb	r1, r2
+ 16595 0322 044A     		ldr	r2, .L31
+ 16596 0324 1170     		strb	r1, [r2, #0]
+ 16597 0326 01E0     		b	.L30
+ 16598              	.L29:
+  76:../kb_driver/keyboard_driver.c **** 	}
+  77:../kb_driver/keyboard_driver.c **** 	else return 0;
+ 16599              		.loc 1 77 0
+ 16600 0328 4FF00003 		mov	r3, #0
+ 16601              	.L30:
+  78:../kb_driver/keyboard_driver.c **** }
+ 16602              		.loc 1 78 0
+ 16603 032c 1846     		mov	r0, r3
+ 16604 032e BD46     		mov	sp, r7
+ 16605 0330 80BC     		pop	{r7}
+ 16606 0332 7047     		bx	lr
+ 16607              	.L32:
+ 16608              		.align	2
+ 16609              	.L31:
+ 16610 0334 00000000 		.word	btn_cnt
+ 16611 0338 00000000 		.word	buttons
+ 16612              		.cfi_endproc
+ 16613              	.LFE33:
+ 16615              		.section	.rodata
+ 16616 000d 000000   		.align	2
+ 16619              	C.16.5651:
+ 16620 0010 08       		.byte	8
+ 16621 0011 10       		.byte	16
+ 16622 0012 20       		.byte	32
+ 16623 0013 40       		.byte	64
+ 16624              		.align	2
+ 16627              	C.17.5652:
+ 16628 0014 01       		.byte	1
+ 16629 0015 02       		.byte	2
+ 16630 0016 04       		.byte	4
+ 16631 0017 00       		.text
+ 16632              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 keyboard_driver.c
+                            *COM*:0000000c check_buttons
+                            *COM*:0000000c buttons
+                            *COM*:0000000c durations
+                            *COM*:00000001 btn_cnt
+     /tmp/cc9OY6SE.s:16080  .text:00000000 $t
+     /tmp/cc9OY6SE.s:16085  .text:00000000 init_keyboard
+     /tmp/cc9OY6SE.s:16164  .text:0000008c $d
+     /tmp/cc9OY6SE.s:16170  .text:00000098 $t
+     /tmp/cc9OY6SE.s:16175  .text:00000098 kb_strobe
+     /tmp/cc9OY6SE.s:16404  .text:0000021c add_button
+     /tmp/cc9OY6SE.s:16387  .text:0000020c $d
+     /tmp/cc9OY6SE.s:16619  .rodata:00000010 C.16.5651
+     /tmp/cc9OY6SE.s:16627  .rodata:00000014 C.17.5652
+     /tmp/cc9OY6SE.s:16395  .rodata:00000000 $d
+     /tmp/cc9OY6SE.s:16399  .text:0000021c $t
+     /tmp/cc9OY6SE.s:16473  .text:00000284 $d
+     /tmp/cc9OY6SE.s:16480  .text:00000294 $t
+     /tmp/cc9OY6SE.s:16485  .text:00000294 get_btn
+     /tmp/cc9OY6SE.s:16550  .text:000002ec $d
+     /tmp/cc9OY6SE.s:16556  .text:000002f8 $t
+     /tmp/cc9OY6SE.s:16561  .text:000002f8 get_btn_simple
+     /tmp/cc9OY6SE.s:16610  .text:00000334 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

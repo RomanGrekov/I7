@@ -1,0 +1,78 @@
+#include "keyboard_driver.h"
+
+void init_keyboard(void)
+{
+	btn_cnt = buttons_em;
+
+	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; //Clock port
+	GPIOA->CRL	&= ~(GPIO_CRL_CNF0_0 | GPIO_CRL_CNF1_0 | GPIO_CRL_CNF2_0); //Ножки 0,1,2 - входы, 
+	GPIOA->CRL |= (GPIO_CRL_CNF0_1 | GPIO_CRL_CNF1_1 | GPIO_CRL_CNF2_1);	 //подтяжка к
+	GPIOA->ODR |= (GPIO_ODR_ODR0 | GPIO_ODR_ODR1 | GPIO_ODR_ODR2);     		 //плюсу
+	//GPIOA->CRL 	&= ~(GPIO_CRL_MODE1_0 | GPIO_CRL_MODE1_1);//дефолтно
+	
+	GPIOA->CRL	&= ~(GPIO_CRL_CNF3_0 | GPIO_CRL_CNF4_0 | GPIO_CRL_CNF5_0 | GPIO_CRL_CNF6_0);// Ножки 3,4,5,6 - выходы
+	GPIOA->CRL	&= ~(GPIO_CRL_CNF3_1 | GPIO_CRL_CNF4_1 | GPIO_CRL_CNF5_1 | GPIO_CRL_CNF6_1);//
+	GPIOA->CRL 	|= (GPIO_CRL_MODE3_0 | GPIO_CRL_MODE4_0 | GPIO_CRL_MODE5_0 | GPIO_CRL_MODE6_0);// 50MHz
+	GPIOA->CRL 	|= (GPIO_CRL_MODE3_1 | GPIO_CRL_MODE4_1 | GPIO_CRL_MODE5_1 | GPIO_CRL_MODE6_1);//
+}
+
+void kb_strobe(void)
+{
+	uint8_t cols_[] = cols;
+	uint8_t rows_[] = rows;
+
+	for (uint8_t col=0; col<cols_num; col++)//Перебираем все колонки
+	{
+		for (uint8_t i=0; i<cols_num; i++)//Формируем маску
+		{
+			if (i == col){KB_PORT->ODR &= ~cols_[i];}
+			else{ KB_PORT->ODR |= cols_[i];}
+		}
+
+		for (uint8_t row=0; row<rows_num; row++)//Опрашиваем построчно
+		{
+			if ((KB_PORT->IDR & rows_[row]) == 0)
+			{
+				check_buttons[col][row]++;
+			}
+			else{
+				if (check_buttons[col][row] >= trashhold1 &&
+						check_buttons[col][row] <= trashhold2){
+					add_button(col, row, '0');//0 means short press
+				}
+				if(check_buttons[col][row] > trashhold2){
+					add_button(col, row, '1');//1 means long press
+				}
+
+				check_buttons[col][row]=0;
+			}
+		}
+	}
+}
+
+void add_button(uint8_t col, uint8_t row, uint8_t duration){
+	if (btn_cnt == 0) btn_cnt = buttons_em;
+	buttons[btn_cnt-1] = templates[col*rows_num+row];
+	durations[btn_cnt-1] = duration;
+	btn_cnt--;
+}
+
+uint16_t get_btn(void){
+	uint16_t resp;
+	if(btn_cnt < buttons_em){
+		resp = 0;
+		resp = buttons[btn_cnt];
+		resp |= durations[btn_cnt]<<8;
+		btn_cnt++;
+		return resp;
+	}
+	else return 0;
+}
+
+uint8_t get_btn_simple(void){
+	if(btn_cnt < buttons_em){
+		btn_cnt++;
+		return buttons[btn_cnt--];
+	}
+	else return 0;
+}

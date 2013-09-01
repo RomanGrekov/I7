@@ -1,0 +1,433 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"Main.c"
+  23              	.Ltext0:
+  24              		.file 1 "../Main.c"
+ 16386              		.align	2
+ 16387              	.LC0:
+ 16388 0000 4C434420 		.ascii	"LCD test OK\000"
+ 16388      74657374 
+ 16388      204F4B00 
+ 16389              		.text
+ 16390              		.align	2
+ 16391              		.global	main
+ 16392              		.thumb
+ 16393              		.thumb_func
+ 16395              	main:
+ 16396              	.LFB29:
+   1:../Main.c     **** #include "libs/stm32f10x.h"
+   2:../Main.c     **** #include "hd44780_driver/hd44780_driver.h"
+   3:../Main.c     **** #include "clock/clock.h"
+   4:../Main.c     **** #include "delay/delay.h"
+   5:../Main.c     **** #include "common/common_funcs.h"
+   6:../Main.c     **** #include "kb_driver/keyboard_driver.h"
+   7:../Main.c     **** #include "USART/usart.h"
+   8:../Main.c     **** #include "usart_funcs/usart_funcs.h"
+   9:../Main.c     **** #include "sim900/sim900.h"
+  10:../Main.c     **** 
+  11:../Main.c     **** void InitAll(void);
+  12:../Main.c     **** 
+  13:../Main.c     **** 
+  14:../Main.c     **** int main(void)
+  15:../Main.c     **** {
+ 16397              		.loc 1 15 0
+ 16398              		.cfi_startproc
+ 16399              		@ args = 0, pretend = 0, frame = 0
+ 16400              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16401 0000 80B5     		push	{r7, lr}
+ 16402              	.LCFI0:
+ 16403              		.cfi_def_cfa_offset 8
+ 16404 0002 00AF     		add	r7, sp, #0
+ 16405              		.cfi_offset 14, -4
+ 16406              		.cfi_offset 7, -8
+ 16407              	.LCFI1:
+ 16408              		.cfi_def_cfa_register 7
+  16:../Main.c     ****         InitAll();
+ 16409              		.loc 1 16 0
+ 16410 0004 FFF7FEFF 		bl	InitAll
+  17:../Main.c     **** 
+  18:../Main.c     ****         lcd_out("LCD test OK");
+ 16411              		.loc 1 18 0
+ 16412 0008 0948     		ldr	r0, .L3
+ 16413 000a FFF7FEFF 		bl	lcd_out
+  19:../Main.c     ****         //SendStr("USART test OK");
+  20:../Main.c     **** 		delay_timer_ms(1000);
+ 16414              		.loc 1 20 0
+ 16415 000e 4FF47A70 		mov	r0, #1000
+ 16416 0012 FFF7FEFF 		bl	delay_timer_ms
+  21:../Main.c     **** 		lcd_clear();
+ 16417              		.loc 1 21 0
+ 16418 0016 FFF7FEFF 		bl	lcd_clear
+ 16419              	.L2:
+  22:../Main.c     **** 
+  23:../Main.c     ****         while(1)
+  24:../Main.c     ****         {
+  25:../Main.c     ****             delay_timer_ms(1000);
+ 16420              		.loc 1 25 0 discriminator 1
+ 16421 001a 4FF47A70 		mov	r0, #1000
+ 16422 001e FFF7FEFF 		bl	delay_timer_ms
+  26:../Main.c     ****             GPIOB->ODR ^= GPIO_ODR_ODR0;
+ 16423              		.loc 1 26 0 discriminator 1
+ 16424 0022 044B     		ldr	r3, .L3+4
+ 16425 0024 034A     		ldr	r2, .L3+4
+ 16426 0026 D268     		ldr	r2, [r2, #12]
+ 16427 0028 82F00102 		eor	r2, r2, #1
+ 16428 002c DA60     		str	r2, [r3, #12]
+  27:../Main.c     ****             //itoa(buttons[0][0], 10, buf);
+  28:../Main.c     ****             //lcd_clear();
+  29:../Main.c     ****             //lcd_out(buf);
+  30:../Main.c     **** 
+  31:../Main.c     ****             //kb_strobe();
+  32:../Main.c     ****             //GPIOA->BSRR = GPIO_BSRR_BS0;
+  33:../Main.c     ****             //GPIOA->BSRR = GPIO_BSRR_BR0;
+  34:../Main.c     **** 
+  35:../Main.c     ****     }
+ 16429              		.loc 1 35 0 discriminator 1
+ 16430 002e F4E7     		b	.L2
+ 16431              	.L4:
+ 16432              		.align	2
+ 16433              	.L3:
+ 16434 0030 00000000 		.word	.LC0
+ 16435 0034 000C0140 		.word	1073810432
+ 16436              		.cfi_endproc
+ 16437              	.LFE29:
+ 16439              		.section	.rodata
+ 16440              		.align	2
+ 16441              	.LC1:
+ 16442 000c 61740D00 		.ascii	"at\015\000"
+ 16443              		.align	2
+ 16444              	.LC2:
+ 16445 0010 61746430 		.ascii	"atd0506073568;\015\000"
+ 16445      35303630 
+ 16445      37333536 
+ 16445      383B0D00 
+ 16446              		.align	2
+ 16447              	.LC3:
+ 16448 0020 6174610D 		.ascii	"ata\015\000"
+ 16448      00
+ 16449 0025 000000   		.text
+ 16450              		.align	2
+ 16451              		.global	TIM2_IRQHandler
+ 16452              		.thumb
+ 16453              		.thumb_func
+ 16455              	TIM2_IRQHandler:
+ 16456              	.LFB30:
+  36:../Main.c     **** 
+  37:../Main.c     **** }
+  38:../Main.c     **** 
+  39:../Main.c     **** void TIM2_IRQHandler(void)
+  40:../Main.c     **** {
+ 16457              		.loc 1 40 0
+ 16458              		.cfi_startproc
+ 16459              		@ args = 0, pretend = 0, frame = 8
+ 16460              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16461 0038 80B5     		push	{r7, lr}
+ 16462              	.LCFI2:
+ 16463              		.cfi_def_cfa_offset 8
+ 16464 003a 82B0     		sub	sp, sp, #8
+ 16465              	.LCFI3:
+ 16466              		.cfi_def_cfa_offset 16
+ 16467 003c 00AF     		add	r7, sp, #0
+ 16468              		.cfi_offset 14, -4
+ 16469              		.cfi_offset 7, -8
+ 16470              	.LCFI4:
+ 16471              		.cfi_def_cfa_register 7
+  41:../Main.c     **** 	uint16_t my_btn;
+  42:../Main.c     **** 	uint8_t tmp;
+  43:../Main.c     **** 	TIM2->SR &= ~TIM_SR_UIF;
+ 16472              		.loc 1 43 0
+ 16473 003e 4FF08043 		mov	r3, #1073741824
+ 16474 0042 4FF08042 		mov	r2, #1073741824
+ 16475 0046 128A     		ldrh	r2, [r2, #16]	@ movhi
+ 16476 0048 92B2     		uxth	r2, r2
+ 16477 004a 22F00102 		bic	r2, r2, #1
+ 16478 004e 92B2     		uxth	r2, r2
+ 16479 0050 1A82     		strh	r2, [r3, #16]	@ movhi
+  44:../Main.c     **** 	//GPIOB->ODR ^= GPIO_ODR_ODR1;
+  45:../Main.c     **** 	kb_strobe();
+ 16480              		.loc 1 45 0
+ 16481 0052 FFF7FEFF 		bl	kb_strobe
+  46:../Main.c     **** 	my_btn = get_btn();
+ 16482              		.loc 1 46 0
+ 16483 0056 FFF7FEFF 		bl	get_btn
+ 16484 005a 0346     		mov	r3, r0
+ 16485 005c FB80     		strh	r3, [r7, #6]	@ movhi
+  47:../Main.c     **** 	if (my_btn != 0){
+ 16486              		.loc 1 47 0
+ 16487 005e FB88     		ldrh	r3, [r7, #6]
+ 16488 0060 002B     		cmp	r3, #0
+ 16489 0062 26D0     		beq	.L6
+  48:../Main.c     **** 		//lcd_send(my_btn, 1);
+  49:../Main.c     **** 		//lcd_send('-',1);
+  50:../Main.c     **** 		//lcd_send((my_btn & 0xff00)>>8, 1);
+  51:../Main.c     **** 
+  52:../Main.c     **** 		tmp = my_btn;
+ 16490              		.loc 1 52 0
+ 16491 0064 FB88     		ldrh	r3, [r7, #6]	@ movhi
+ 16492 0066 7B71     		strb	r3, [r7, #5]
+  53:../Main.c     **** 		if(tmp == '*')lcd_clear();
+ 16493              		.loc 1 53 0
+ 16494 0068 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16495 006a 2A2B     		cmp	r3, #42
+ 16496 006c 01D1     		bne	.L7
+ 16497              		.loc 1 53 0 is_stmt 0 discriminator 1
+ 16498 006e FFF7FEFF 		bl	lcd_clear
+ 16499              	.L7:
+  54:../Main.c     **** 		if(tmp == '1')SendStr("at\r");
+ 16500              		.loc 1 54 0 is_stmt 1
+ 16501 0072 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16502 0074 312B     		cmp	r3, #49
+ 16503 0076 02D1     		bne	.L8
+ 16504              		.loc 1 54 0 is_stmt 0 discriminator 1
+ 16505 0078 1648     		ldr	r0, .L13
+ 16506 007a FFF7FEFF 		bl	SendStr
+ 16507              	.L8:
+  55:../Main.c     **** 		if(tmp == '2')SendStr("atd0506073568;\r");
+ 16508              		.loc 1 55 0 is_stmt 1
+ 16509 007e 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16510 0080 322B     		cmp	r3, #50
+ 16511 0082 02D1     		bne	.L9
+ 16512              		.loc 1 55 0 is_stmt 0 discriminator 1
+ 16513 0084 1448     		ldr	r0, .L13+4
+ 16514 0086 FFF7FEFF 		bl	SendStr
+ 16515              	.L9:
+  56:../Main.c     **** 		if(tmp == '3')SendStr("ata\r");
+ 16516              		.loc 1 56 0 is_stmt 1
+ 16517 008a 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16518 008c 332B     		cmp	r3, #51
+ 16519 008e 02D1     		bne	.L10
+ 16520              		.loc 1 56 0 is_stmt 0 discriminator 1
+ 16521 0090 1248     		ldr	r0, .L13+8
+ 16522 0092 FFF7FEFF 		bl	SendStr
+ 16523              	.L10:
+  57:../Main.c     **** 		if(tmp == '4')SwitchSim900(1);
+ 16524              		.loc 1 57 0 is_stmt 1
+ 16525 0096 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16526 0098 342B     		cmp	r3, #52
+ 16527 009a 03D1     		bne	.L11
+ 16528              		.loc 1 57 0 is_stmt 0 discriminator 1
+ 16529 009c 4FF00100 		mov	r0, #1
+ 16530 00a0 FFF7FEFF 		bl	SwitchSim900
+ 16531              	.L11:
+  58:../Main.c     **** 		if(tmp == '5')SwitchSim900(0);
+ 16532              		.loc 1 58 0 is_stmt 1
+ 16533 00a4 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16534 00a6 352B     		cmp	r3, #53
+ 16535 00a8 03D1     		bne	.L6
+ 16536              		.loc 1 58 0 is_stmt 0 discriminator 1
+ 16537 00aa 4FF00000 		mov	r0, #0
+ 16538 00ae FFF7FEFF 		bl	SwitchSim900
+ 16539              	.L6:
+  59:../Main.c     **** 		//USART_PutChar(tmp);
+  60:../Main.c     **** 		//lcd_out(my_btn);
+  61:../Main.c     **** 	}
+  62:../Main.c     **** 
+  63:../Main.c     **** 	tmp = GetChar();
+ 16540              		.loc 1 63 0 is_stmt 1
+ 16541 00b2 FFF7FEFF 		bl	GetChar
+ 16542 00b6 0346     		mov	r3, r0
+ 16543 00b8 7B71     		strb	r3, [r7, #5]
+  64:../Main.c     **** 	if (tmp != 0){
+ 16544              		.loc 1 64 0
+ 16545 00ba 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16546 00bc 002B     		cmp	r3, #0
+ 16547 00be 05D0     		beq	.L5
+  65:../Main.c     **** 		//lcd_clear();
+  66:../Main.c     **** 		lcd_send(tmp, 1);
+ 16548              		.loc 1 66 0
+ 16549 00c0 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16550 00c2 1846     		mov	r0, r3
+ 16551 00c4 4FF00101 		mov	r1, #1
+ 16552 00c8 FFF7FEFF 		bl	lcd_send
+ 16553              	.L5:
+  67:../Main.c     **** 	}
+  68:../Main.c     **** 
+  69:../Main.c     **** }
+ 16554              		.loc 1 69 0
+ 16555 00cc 07F10807 		add	r7, r7, #8
+ 16556 00d0 BD46     		mov	sp, r7
+ 16557 00d2 80BD     		pop	{r7, pc}
+ 16558              	.L14:
+ 16559              		.align	2
+ 16560              	.L13:
+ 16561 00d4 0C000000 		.word	.LC1
+ 16562 00d8 10000000 		.word	.LC2
+ 16563 00dc 20000000 		.word	.LC3
+ 16564              		.cfi_endproc
+ 16565              	.LFE30:
+ 16567              		.align	2
+ 16568              		.global	InitAll
+ 16569              		.thumb
+ 16570              		.thumb_func
+ 16572              	InitAll:
+ 16573              	.LFB31:
+  70:../Main.c     **** 
+  71:../Main.c     **** void InitAll(void)
+  72:../Main.c     **** {
+ 16574              		.loc 1 72 0
+ 16575              		.cfi_startproc
+ 16576              		@ args = 0, pretend = 0, frame = 0
+ 16577              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16578 00e0 80B5     		push	{r7, lr}
+ 16579              	.LCFI5:
+ 16580              		.cfi_def_cfa_offset 8
+ 16581 00e2 00AF     		add	r7, sp, #0
+ 16582              		.cfi_offset 14, -4
+ 16583              		.cfi_offset 7, -8
+ 16584              	.LCFI6:
+ 16585              		.cfi_def_cfa_register 7
+  73:../Main.c     ****     RCC->APB2ENR |= RCC_APB2ENR_IOPBEN; //Clock port
+ 16586              		.loc 1 73 0
+ 16587 00e4 184B     		ldr	r3, .L16
+ 16588 00e6 184A     		ldr	r2, .L16
+ 16589 00e8 9269     		ldr	r2, [r2, #24]
+ 16590 00ea 42F00802 		orr	r2, r2, #8
+ 16591 00ee 9A61     		str	r2, [r3, #24]
+  74:../Main.c     **** 
+  75:../Main.c     ****     GPIOB->CRL      &= ~(GPIO_CRL_CNF0 | GPIO_CRL_CNF1);
+ 16592              		.loc 1 75 0
+ 16593 00f0 164B     		ldr	r3, .L16+4
+ 16594 00f2 164A     		ldr	r2, .L16+4
+ 16595 00f4 1268     		ldr	r2, [r2, #0]
+ 16596 00f6 22F0CC02 		bic	r2, r2, #204
+ 16597 00fa 1A60     		str	r2, [r3, #0]
+  76:../Main.c     ****     GPIOB->CRL      |= (GPIO_CRL_MODE0_0 | GPIO_CRL_MODE1_0);
+ 16598              		.loc 1 76 0
+ 16599 00fc 134B     		ldr	r3, .L16+4
+ 16600 00fe 134A     		ldr	r2, .L16+4
+ 16601 0100 1268     		ldr	r2, [r2, #0]
+ 16602 0102 42F01102 		orr	r2, r2, #17
+ 16603 0106 1A60     		str	r2, [r3, #0]
+  77:../Main.c     **** 
+  78:../Main.c     ****     InitRCC();
+ 16604              		.loc 1 78 0
+ 16605 0108 FFF7FEFF 		bl	InitRCC
+  79:../Main.c     **** 	//Разрешаем прерывание если кварц плохо
+  80:../Main.c     **** 	init_bad_clock_inter();
+ 16606              		.loc 1 80 0
+ 16607 010c FFF7FEFF 		bl	init_bad_clock_inter
+  81:../Main.c     **** 
+  82:../Main.c     ****     lcd_init();
+ 16608              		.loc 1 82 0
+ 16609 0110 FFF7FEFF 		bl	lcd_init
+  83:../Main.c     ****     lcd_set_state(1, 0, 0);
+ 16610              		.loc 1 83 0
+ 16611 0114 4FF00100 		mov	r0, #1
+ 16612 0118 4FF00001 		mov	r1, #0
+ 16613 011c 4FF00002 		mov	r2, #0
+ 16614 0120 FFF7FEFF 		bl	lcd_set_state
+  84:../Main.c     **** 
+  85:../Main.c     ****     init_keyboard();
+ 16615              		.loc 1 85 0
+ 16616 0124 FFF7FEFF 		bl	init_keyboard
+  86:../Main.c     **** 
+  87:../Main.c     ****     timer2_init(10);
+ 16617              		.loc 1 87 0
+ 16618 0128 4FF00A00 		mov	r0, #10
+ 16619 012c FFF7FEFF 		bl	timer2_init
+  88:../Main.c     **** 
+  89:../Main.c     ****     InitUSART(9600);
+ 16620              		.loc 1 89 0
+ 16621 0130 4FF41650 		mov	r0, #9600
+ 16622 0134 FFF7FEFF 		bl	InitUSART
+  90:../Main.c     ****     usart_interrupt_init();
+ 16623              		.loc 1 90 0
+ 16624 0138 FFF7FEFF 		bl	usart_interrupt_init
+  91:../Main.c     ****     FlushBuf();
+ 16625              		.loc 1 91 0
+ 16626 013c FFF7FEFF 		bl	FlushBuf
+  92:../Main.c     **** 
+  93:../Main.c     ****     InitSim900();
+ 16627              		.loc 1 93 0
+ 16628 0140 FFF7FEFF 		bl	InitSim900
+  94:../Main.c     ****    }
+ 16629              		.loc 1 94 0
+ 16630 0144 80BD     		pop	{r7, pc}
+ 16631              	.L17:
+ 16632 0146 00BF     		.align	2
+ 16633              	.L16:
+ 16634 0148 00100240 		.word	1073876992
+ 16635 014c 000C0140 		.word	1073810432
+ 16636              		.cfi_endproc
+ 16637              	.LFE31:
+ 16639              		.align	2
+ 16640              		.global	HardFault_Handler
+ 16641              		.thumb
+ 16642              		.thumb_func
+ 16644              	HardFault_Handler:
+ 16645              	.LFB32:
+  95:../Main.c     **** 
+  96:../Main.c     **** // где-то в main.c
+  97:../Main.c     **** void HardFault_Handler(void)
+  98:../Main.c     **** {// пустой обработчик вместо бесконечного цикла
+ 16646              		.loc 1 98 0
+ 16647              		.cfi_startproc
+ 16648              		@ args = 0, pretend = 0, frame = 0
+ 16649              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16650              		@ link register save eliminated.
+ 16651 0150 80B4     		push	{r7}
+ 16652              	.LCFI7:
+ 16653              		.cfi_def_cfa_offset 4
+ 16654 0152 00AF     		add	r7, sp, #0
+ 16655              		.cfi_offset 7, -4
+ 16656              	.LCFI8:
+ 16657              		.cfi_def_cfa_register 7
+  99:../Main.c     **** 
+ 100:../Main.c     **** }
+ 16658              		.loc 1 100 0
+ 16659 0154 BD46     		mov	sp, r7
+ 16660 0156 80BC     		pop	{r7}
+ 16661 0158 7047     		bx	lr
+ 16662              		.cfi_endproc
+ 16663              	.LFE32:
+ 16665              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Main.c
+                            *COM*:0000000c check_buttons
+                            *COM*:0000000c buttons
+                            *COM*:0000000c durations
+                            *COM*:00000001 btn_cnt
+     /tmp/cc2iS2qD.s:16386  .rodata:00000000 $d
+     /tmp/cc2iS2qD.s:16390  .text:00000000 $t
+     /tmp/cc2iS2qD.s:16395  .text:00000000 main
+     /tmp/cc2iS2qD.s:16572  .text:000000e0 InitAll
+     /tmp/cc2iS2qD.s:16434  .text:00000030 $d
+     /tmp/cc2iS2qD.s:16450  .text:00000038 $t
+     /tmp/cc2iS2qD.s:16455  .text:00000038 TIM2_IRQHandler
+     /tmp/cc2iS2qD.s:16561  .text:000000d4 $d
+     /tmp/cc2iS2qD.s:16567  .text:000000e0 $t
+     /tmp/cc2iS2qD.s:16634  .text:00000148 $d
+     /tmp/cc2iS2qD.s:16639  .text:00000150 $t
+     /tmp/cc2iS2qD.s:16644  .text:00000150 HardFault_Handler
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+lcd_out
+delay_timer_ms
+lcd_clear
+kb_strobe
+get_btn
+SendStr
+SwitchSim900
+GetChar
+lcd_send
+InitRCC
+init_bad_clock_inter
+lcd_init
+lcd_set_state
+init_keyboard
+timer2_init
+InitUSART
+usart_interrupt_init
+FlushBuf
+InitSim900
