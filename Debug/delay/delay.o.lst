@@ -1561,178 +1561,244 @@
  16092              		.cfi_endproc
  16093              	.LFE14:
  16095              		.align	2
- 16096              		.global	delay_timer_ms
+ 16096              		.global	delay_timer_ms_init
  16097              		.thumb
  16098              		.thumb_func
- 16100              	delay_timer_ms:
+ 16100              	delay_timer_ms_init:
  16101              	.LFB29:
    1:../delay/delay.c **** #include "delay.h"
    2:../delay/delay.c **** 
-   3:../delay/delay.c **** void delay_timer_ms(uint16_t ms)
-   4:../delay/delay.c **** {
- 16102              		.loc 1 4 0
+   3:../delay/delay.c **** void delay_timer_ms_init(void){
+ 16102              		.loc 1 3 0
  16103              		.cfi_startproc
- 16104              		@ args = 0, pretend = 0, frame = 8
+ 16104              		@ args = 0, pretend = 0, frame = 0
  16105              		@ frame_needed = 1, uses_anonymous_args = 0
  16106              		@ link register save eliminated.
  16107 0034 80B4     		push	{r7}
  16108              	.LCFI3:
  16109              		.cfi_def_cfa_offset 4
- 16110 0036 83B0     		sub	sp, sp, #12
- 16111              	.LCFI4:
- 16112              		.cfi_def_cfa_offset 16
- 16113 0038 00AF     		add	r7, sp, #0
- 16114              		.cfi_offset 7, -4
- 16115              	.LCFI5:
- 16116              		.cfi_def_cfa_register 7
- 16117 003a 0346     		mov	r3, r0
- 16118 003c FB80     		strh	r3, [r7, #6]	@ movhi
-   5:../delay/delay.c **** 	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN; //Enable timer4 clock
- 16119              		.loc 1 5 0
- 16120 003e 144B     		ldr	r3, .L6
- 16121 0040 134A     		ldr	r2, .L6
- 16122 0042 D269     		ldr	r2, [r2, #28]
- 16123 0044 42F00402 		orr	r2, r2, #4
- 16124 0048 DA61     		str	r2, [r3, #28]
-   6:../delay/delay.c **** 	TIM4->PSC = F_CPU/1000 - 1; //Presceler 
- 16125              		.loc 1 6 0
- 16126 004a 124B     		ldr	r3, .L6+4
- 16127 004c 42F6DF62 		movw	r2, #11999
- 16128 0050 1A85     		strh	r2, [r3, #40]	@ movhi
-   7:../delay/delay.c **** 	TIM4->CNT = 65535-ms;//Загружаем число миллисекунд в счетный ре
- 16129              		.loc 1 7 0
- 16130 0052 104B     		ldr	r3, .L6+4
- 16131 0054 FA88     		ldrh	r2, [r7, #6]	@ movhi
- 16132 0056 6FEA0202 		mvn	r2, r2
- 16133 005a 92B2     		uxth	r2, r2
- 16134 005c 9A84     		strh	r2, [r3, #36]	@ movhi
-   8:../delay/delay.c **** 	TIM4->CR1 = TIM_CR1_CEN;//Запускаем счет
- 16135              		.loc 1 8 0
- 16136 005e 0D4B     		ldr	r3, .L6+4
- 16137 0060 4FF00102 		mov	r2, #1
- 16138 0064 1A80     		strh	r2, [r3, #0]	@ movhi
-   9:../delay/delay.c **** 	while((TIM4->SR & TIM_SR_UIF)==0);//Ждем окончания счета
- 16139              		.loc 1 9 0
- 16140 0066 00BF     		nop
- 16141              	.L5:
- 16142              		.loc 1 9 0 is_stmt 0 discriminator 1
- 16143 0068 0A4B     		ldr	r3, .L6+4
- 16144 006a 1B8A     		ldrh	r3, [r3, #16]	@ movhi
- 16145 006c 9BB2     		uxth	r3, r3
- 16146 006e 03F00103 		and	r3, r3, #1
- 16147 0072 002B     		cmp	r3, #0
- 16148 0074 F8D0     		beq	.L5
-  10:../delay/delay.c **** 	TIM4->SR &= ~TIM_SR_UIF;//Теперь флаг события надо сбросить вруч�
- 16149              		.loc 1 10 0 is_stmt 1
- 16150 0076 074B     		ldr	r3, .L6+4
- 16151 0078 064A     		ldr	r2, .L6+4
- 16152 007a 128A     		ldrh	r2, [r2, #16]	@ movhi
- 16153 007c 92B2     		uxth	r2, r2
- 16154 007e 22F00102 		bic	r2, r2, #1
- 16155 0082 92B2     		uxth	r2, r2
- 16156 0084 1A82     		strh	r2, [r3, #16]	@ movhi
-  11:../delay/delay.c **** }
- 16157              		.loc 1 11 0
- 16158 0086 07F10C07 		add	r7, r7, #12
- 16159 008a BD46     		mov	sp, r7
- 16160 008c 80BC     		pop	{r7}
- 16161 008e 7047     		bx	lr
- 16162              	.L7:
- 16163              		.align	2
- 16164              	.L6:
- 16165 0090 00100240 		.word	1073876992
- 16166 0094 00080040 		.word	1073743872
- 16167              		.cfi_endproc
- 16168              	.LFE29:
- 16170              		.align	2
- 16171              		.global	timer2_init
- 16172              		.thumb
- 16173              		.thumb_func
- 16175              	timer2_init:
- 16176              	.LFB30:
-  12:../delay/delay.c **** 
-  13:../delay/delay.c **** void timer2_init(uint16_t ms)
-  14:../delay/delay.c **** {
- 16177              		.loc 1 14 0
- 16178              		.cfi_startproc
- 16179              		@ args = 0, pretend = 0, frame = 8
- 16180              		@ frame_needed = 1, uses_anonymous_args = 0
- 16181 0098 80B5     		push	{r7, lr}
- 16182              	.LCFI6:
- 16183              		.cfi_def_cfa_offset 8
- 16184 009a 82B0     		sub	sp, sp, #8
- 16185              	.LCFI7:
- 16186              		.cfi_def_cfa_offset 16
- 16187 009c 00AF     		add	r7, sp, #0
- 16188              		.cfi_offset 14, -4
- 16189              		.cfi_offset 7, -8
- 16190              	.LCFI8:
- 16191              		.cfi_def_cfa_register 7
- 16192 009e 0346     		mov	r3, r0
- 16193 00a0 FB80     		strh	r3, [r7, #6]	@ movhi
-  15:../delay/delay.c **** 	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; //Enable timer4 clock
- 16194              		.loc 1 15 0
- 16195 00a2 154B     		ldr	r3, .L9
- 16196 00a4 144A     		ldr	r2, .L9
- 16197 00a6 D269     		ldr	r2, [r2, #28]
- 16198 00a8 42F00102 		orr	r2, r2, #1
- 16199 00ac DA61     		str	r2, [r3, #28]
-  16:../delay/delay.c **** 	TIM2->PSC = F_CPU/1000 - 1; //Presceler
- 16200              		.loc 1 16 0
- 16201 00ae 4FF08043 		mov	r3, #1073741824
- 16202 00b2 42F6DF62 		movw	r2, #11999
- 16203 00b6 1A85     		strh	r2, [r3, #40]	@ movhi
-  17:../delay/delay.c **** 	TIM2->ARR = ms; //Max cnt
- 16204              		.loc 1 17 0
- 16205 00b8 4FF08043 		mov	r3, #1073741824
- 16206 00bc FA88     		ldrh	r2, [r7, #6]	@ movhi
- 16207 00be 9A85     		strh	r2, [r3, #44]	@ movhi
-  18:../delay/delay.c **** 	TIM2->CR1 |= TIM_CR1_CEN; // Enable count
- 16208              		.loc 1 18 0
- 16209 00c0 4FF08043 		mov	r3, #1073741824
- 16210 00c4 4FF08042 		mov	r2, #1073741824
- 16211 00c8 1288     		ldrh	r2, [r2, #0]	@ movhi
+ 16110 0036 00AF     		add	r7, sp, #0
+ 16111              		.cfi_offset 7, -4
+ 16112              	.LCFI4:
+ 16113              		.cfi_def_cfa_register 7
+   4:../delay/delay.c **** 	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN; //Enable timer4 clock
+ 16114              		.loc 1 4 0
+ 16115 0038 0E4B     		ldr	r3, .L5
+ 16116 003a 0E4A     		ldr	r2, .L5
+ 16117 003c D269     		ldr	r2, [r2, #28]
+ 16118 003e 42F00402 		orr	r2, r2, #4
+ 16119 0042 DA61     		str	r2, [r3, #28]
+   5:../delay/delay.c **** 	TIM4->PSC = F_CPU/1000 - 1; //Presceler
+ 16120              		.loc 1 5 0
+ 16121 0044 0C4B     		ldr	r3, .L5+4
+ 16122 0046 42F6DF62 		movw	r2, #11999
+ 16123 004a 1A85     		strh	r2, [r3, #40]	@ movhi
+   6:../delay/delay.c **** 	TIM4->CNT = 65535;//Загружаем число миллисекунд в счетный рег�
+ 16124              		.loc 1 6 0
+ 16125 004c 0A4B     		ldr	r3, .L5+4
+ 16126 004e 4FF6FF72 		movw	r2, #65535
+ 16127 0052 9A84     		strh	r2, [r3, #36]	@ movhi
+   7:../delay/delay.c **** 	TIM4->CR1 = TIM_CR1_CEN;//Запускаем счет
+ 16128              		.loc 1 7 0
+ 16129 0054 084B     		ldr	r3, .L5+4
+ 16130 0056 4FF00102 		mov	r2, #1
+ 16131 005a 1A80     		strh	r2, [r3, #0]	@ movhi
+   8:../delay/delay.c **** 	TIM4->SR &= ~TIM_SR_UIF;//Теперь флаг события надо сбросить вруч�
+ 16132              		.loc 1 8 0
+ 16133 005c 064B     		ldr	r3, .L5+4
+ 16134 005e 064A     		ldr	r2, .L5+4
+ 16135 0060 128A     		ldrh	r2, [r2, #16]	@ movhi
+ 16136 0062 92B2     		uxth	r2, r2
+ 16137 0064 22F00102 		bic	r2, r2, #1
+ 16138 0068 92B2     		uxth	r2, r2
+ 16139 006a 1A82     		strh	r2, [r3, #16]	@ movhi
+   9:../delay/delay.c **** }
+ 16140              		.loc 1 9 0
+ 16141 006c BD46     		mov	sp, r7
+ 16142 006e 80BC     		pop	{r7}
+ 16143 0070 7047     		bx	lr
+ 16144              	.L6:
+ 16145 0072 00BF     		.align	2
+ 16146              	.L5:
+ 16147 0074 00100240 		.word	1073876992
+ 16148 0078 00080040 		.word	1073743872
+ 16149              		.cfi_endproc
+ 16150              	.LFE29:
+ 16152              		.align	2
+ 16153              		.global	delay_timer_ms
+ 16154              		.thumb
+ 16155              		.thumb_func
+ 16157              	delay_timer_ms:
+ 16158              	.LFB30:
+  10:../delay/delay.c **** 
+  11:../delay/delay.c **** void delay_timer_ms(uint16_t ms)
+  12:../delay/delay.c **** {
+ 16159              		.loc 1 12 0
+ 16160              		.cfi_startproc
+ 16161              		@ args = 0, pretend = 0, frame = 8
+ 16162              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16163              		@ link register save eliminated.
+ 16164 007c 80B4     		push	{r7}
+ 16165              	.LCFI5:
+ 16166              		.cfi_def_cfa_offset 4
+ 16167 007e 83B0     		sub	sp, sp, #12
+ 16168              	.LCFI6:
+ 16169              		.cfi_def_cfa_offset 16
+ 16170 0080 00AF     		add	r7, sp, #0
+ 16171              		.cfi_offset 7, -4
+ 16172              	.LCFI7:
+ 16173              		.cfi_def_cfa_register 7
+ 16174 0082 0346     		mov	r3, r0
+ 16175 0084 FB80     		strh	r3, [r7, #6]	@ movhi
+  13:../delay/delay.c **** 	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN; //Enable timer4 clock
+ 16176              		.loc 1 13 0
+ 16177 0086 144B     		ldr	r3, .L9
+ 16178 0088 134A     		ldr	r2, .L9
+ 16179 008a D269     		ldr	r2, [r2, #28]
+ 16180 008c 42F00402 		orr	r2, r2, #4
+ 16181 0090 DA61     		str	r2, [r3, #28]
+  14:../delay/delay.c **** 	TIM4->PSC = F_CPU/1000 - 1; //Presceler 
+ 16182              		.loc 1 14 0
+ 16183 0092 124B     		ldr	r3, .L9+4
+ 16184 0094 42F6DF62 		movw	r2, #11999
+ 16185 0098 1A85     		strh	r2, [r3, #40]	@ movhi
+  15:../delay/delay.c **** 	TIM4->CNT = 65535-ms;//Загружаем число миллисекунд в счетный ре
+ 16186              		.loc 1 15 0
+ 16187 009a 104B     		ldr	r3, .L9+4
+ 16188 009c FA88     		ldrh	r2, [r7, #6]	@ movhi
+ 16189 009e 6FEA0202 		mvn	r2, r2
+ 16190 00a2 92B2     		uxth	r2, r2
+ 16191 00a4 9A84     		strh	r2, [r3, #36]	@ movhi
+  16:../delay/delay.c **** 	TIM4->CR1 = TIM_CR1_CEN;//Запускаем счет
+ 16192              		.loc 1 16 0
+ 16193 00a6 0D4B     		ldr	r3, .L9+4
+ 16194 00a8 4FF00102 		mov	r2, #1
+ 16195 00ac 1A80     		strh	r2, [r3, #0]	@ movhi
+  17:../delay/delay.c **** 	while((TIM4->SR & TIM_SR_UIF)==0);//Ждем окончания счета
+ 16196              		.loc 1 17 0
+ 16197 00ae 00BF     		nop
+ 16198              	.L8:
+ 16199              		.loc 1 17 0 is_stmt 0 discriminator 1
+ 16200 00b0 0A4B     		ldr	r3, .L9+4
+ 16201 00b2 1B8A     		ldrh	r3, [r3, #16]	@ movhi
+ 16202 00b4 9BB2     		uxth	r3, r3
+ 16203 00b6 03F00103 		and	r3, r3, #1
+ 16204 00ba 002B     		cmp	r3, #0
+ 16205 00bc F8D0     		beq	.L8
+  18:../delay/delay.c **** 	TIM4->SR &= ~TIM_SR_UIF;//Теперь флаг события надо сбросить вруч�
+ 16206              		.loc 1 18 0 is_stmt 1
+ 16207 00be 074B     		ldr	r3, .L9+4
+ 16208 00c0 064A     		ldr	r2, .L9+4
+ 16209 00c2 128A     		ldrh	r2, [r2, #16]	@ movhi
+ 16210 00c4 92B2     		uxth	r2, r2
+ 16211 00c6 22F00102 		bic	r2, r2, #1
  16212 00ca 92B2     		uxth	r2, r2
- 16213 00cc 42F00102 		orr	r2, r2, #1
- 16214 00d0 92B2     		uxth	r2, r2
- 16215 00d2 1A80     		strh	r2, [r3, #0]	@ movhi
-  19:../delay/delay.c **** 	TIM2->DIER|= TIM_DIER_UIE;//Enable interruption by overcount
- 16216              		.loc 1 19 0
- 16217 00d4 4FF08043 		mov	r3, #1073741824
- 16218 00d8 4FF08042 		mov	r2, #1073741824
- 16219 00dc 9289     		ldrh	r2, [r2, #12]	@ movhi
- 16220 00de 92B2     		uxth	r2, r2
- 16221 00e0 42F00102 		orr	r2, r2, #1
- 16222 00e4 92B2     		uxth	r2, r2
- 16223 00e6 9A81     		strh	r2, [r3, #12]	@ movhi
-  20:../delay/delay.c **** 	
-  21:../delay/delay.c **** 	NVIC_EnableIRQ(TIM2_IRQn);//Allow timer3 unterruption
- 16224              		.loc 1 21 0
- 16225 00e8 4FF01C00 		mov	r0, #28
- 16226 00ec FFF788FF 		bl	NVIC_EnableIRQ
-  22:../delay/delay.c **** }
- 16227              		.loc 1 22 0
- 16228 00f0 07F10807 		add	r7, r7, #8
- 16229 00f4 BD46     		mov	sp, r7
- 16230 00f6 80BD     		pop	{r7, pc}
- 16231              	.L10:
- 16232              		.align	2
- 16233              	.L9:
- 16234 00f8 00100240 		.word	1073876992
- 16235              		.cfi_endproc
- 16236              	.LFE30:
- 16238              	.Letext0:
+ 16213 00cc 1A82     		strh	r2, [r3, #16]	@ movhi
+  19:../delay/delay.c **** }
+ 16214              		.loc 1 19 0
+ 16215 00ce 07F10C07 		add	r7, r7, #12
+ 16216 00d2 BD46     		mov	sp, r7
+ 16217 00d4 80BC     		pop	{r7}
+ 16218 00d6 7047     		bx	lr
+ 16219              	.L10:
+ 16220              		.align	2
+ 16221              	.L9:
+ 16222 00d8 00100240 		.word	1073876992
+ 16223 00dc 00080040 		.word	1073743872
+ 16224              		.cfi_endproc
+ 16225              	.LFE30:
+ 16227              		.align	2
+ 16228              		.global	timer2_init
+ 16229              		.thumb
+ 16230              		.thumb_func
+ 16232              	timer2_init:
+ 16233              	.LFB31:
+  20:../delay/delay.c **** 
+  21:../delay/delay.c **** void timer2_init(uint16_t ms)
+  22:../delay/delay.c **** {
+ 16234              		.loc 1 22 0
+ 16235              		.cfi_startproc
+ 16236              		@ args = 0, pretend = 0, frame = 8
+ 16237              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16238 00e0 80B5     		push	{r7, lr}
+ 16239              	.LCFI8:
+ 16240              		.cfi_def_cfa_offset 8
+ 16241 00e2 82B0     		sub	sp, sp, #8
+ 16242              	.LCFI9:
+ 16243              		.cfi_def_cfa_offset 16
+ 16244 00e4 00AF     		add	r7, sp, #0
+ 16245              		.cfi_offset 14, -4
+ 16246              		.cfi_offset 7, -8
+ 16247              	.LCFI10:
+ 16248              		.cfi_def_cfa_register 7
+ 16249 00e6 0346     		mov	r3, r0
+ 16250 00e8 FB80     		strh	r3, [r7, #6]	@ movhi
+  23:../delay/delay.c **** 	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; //Enable timer4 clock
+ 16251              		.loc 1 23 0
+ 16252 00ea 154B     		ldr	r3, .L12
+ 16253 00ec 144A     		ldr	r2, .L12
+ 16254 00ee D269     		ldr	r2, [r2, #28]
+ 16255 00f0 42F00102 		orr	r2, r2, #1
+ 16256 00f4 DA61     		str	r2, [r3, #28]
+  24:../delay/delay.c **** 	TIM2->PSC = F_CPU/1000 - 1; //Presceler
+ 16257              		.loc 1 24 0
+ 16258 00f6 4FF08043 		mov	r3, #1073741824
+ 16259 00fa 42F6DF62 		movw	r2, #11999
+ 16260 00fe 1A85     		strh	r2, [r3, #40]	@ movhi
+  25:../delay/delay.c **** 	TIM2->ARR = ms; //Max cnt
+ 16261              		.loc 1 25 0
+ 16262 0100 4FF08043 		mov	r3, #1073741824
+ 16263 0104 FA88     		ldrh	r2, [r7, #6]	@ movhi
+ 16264 0106 9A85     		strh	r2, [r3, #44]	@ movhi
+  26:../delay/delay.c **** 	TIM2->CR1 |= TIM_CR1_CEN; // Enable count
+ 16265              		.loc 1 26 0
+ 16266 0108 4FF08043 		mov	r3, #1073741824
+ 16267 010c 4FF08042 		mov	r2, #1073741824
+ 16268 0110 1288     		ldrh	r2, [r2, #0]	@ movhi
+ 16269 0112 92B2     		uxth	r2, r2
+ 16270 0114 42F00102 		orr	r2, r2, #1
+ 16271 0118 92B2     		uxth	r2, r2
+ 16272 011a 1A80     		strh	r2, [r3, #0]	@ movhi
+  27:../delay/delay.c **** 	TIM2->DIER|= TIM_DIER_UIE;//Enable interruption by overcount
+ 16273              		.loc 1 27 0
+ 16274 011c 4FF08043 		mov	r3, #1073741824
+ 16275 0120 4FF08042 		mov	r2, #1073741824
+ 16276 0124 9289     		ldrh	r2, [r2, #12]	@ movhi
+ 16277 0126 92B2     		uxth	r2, r2
+ 16278 0128 42F00102 		orr	r2, r2, #1
+ 16279 012c 92B2     		uxth	r2, r2
+ 16280 012e 9A81     		strh	r2, [r3, #12]	@ movhi
+  28:../delay/delay.c **** 	
+  29:../delay/delay.c **** 	NVIC_EnableIRQ(TIM2_IRQn);//Allow timer3 unterruption
+ 16281              		.loc 1 29 0
+ 16282 0130 4FF01C00 		mov	r0, #28
+ 16283 0134 FFF764FF 		bl	NVIC_EnableIRQ
+  30:../delay/delay.c **** }
+ 16284              		.loc 1 30 0
+ 16285 0138 07F10807 		add	r7, r7, #8
+ 16286 013c BD46     		mov	sp, r7
+ 16287 013e 80BD     		pop	{r7, pc}
+ 16288              	.L13:
+ 16289              		.align	2
+ 16290              	.L12:
+ 16291 0140 00100240 		.word	1073876992
+ 16292              		.cfi_endproc
+ 16293              	.LFE31:
+ 16295              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 delay.c
-     /tmp/cchk7pz1.s:16051  .text:00000000 $t
-     /tmp/cchk7pz1.s:16055  .text:00000000 NVIC_EnableIRQ
-     /tmp/cchk7pz1.s:16091  .text:00000030 $d
-     /tmp/cchk7pz1.s:16095  .text:00000034 $t
-     /tmp/cchk7pz1.s:16100  .text:00000034 delay_timer_ms
-     /tmp/cchk7pz1.s:16165  .text:00000090 $d
-     /tmp/cchk7pz1.s:16170  .text:00000098 $t
-     /tmp/cchk7pz1.s:16175  .text:00000098 timer2_init
-     /tmp/cchk7pz1.s:16234  .text:000000f8 $d
+     /tmp/ccV3WNtL.s:16051  .text:00000000 $t
+     /tmp/ccV3WNtL.s:16055  .text:00000000 NVIC_EnableIRQ
+     /tmp/ccV3WNtL.s:16091  .text:00000030 $d
+     /tmp/ccV3WNtL.s:16095  .text:00000034 $t
+     /tmp/ccV3WNtL.s:16100  .text:00000034 delay_timer_ms_init
+     /tmp/ccV3WNtL.s:16147  .text:00000074 $d
+     /tmp/ccV3WNtL.s:16152  .text:0000007c $t
+     /tmp/ccV3WNtL.s:16157  .text:0000007c delay_timer_ms
+     /tmp/ccV3WNtL.s:16222  .text:000000d8 $d
+     /tmp/ccV3WNtL.s:16227  .text:000000e0 $t
+     /tmp/ccV3WNtL.s:16232  .text:000000e0 timer2_init
+     /tmp/ccV3WNtL.s:16291  .text:00000140 $d
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

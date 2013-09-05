@@ -13,799 +13,897 @@
   13              		.file	"hd44780_driver.c"
   23              	.Ltext0:
   24              		.file 1 "../hd44780_driver/hd44780_driver.c"
- 16199              		.align	2
- 16200              		.global	lcd_delay
- 16201              		.thumb
- 16202              		.thumb_func
- 16204              	lcd_delay:
- 16205              	.LFB29:
+ 16205              	lcd_cnt:
+ 16206 0000 00       		.space	1
+ 16207              		.text
+ 16208              		.align	2
+ 16209              		.global	lcd_delay
+ 16210              		.thumb
+ 16211              		.thumb_func
+ 16213              	lcd_delay:
+ 16214              	.LFB29:
    1:../hd44780_driver/hd44780_driver.c **** #include "hd44780_driver.h"
    2:../hd44780_driver/hd44780_driver.c **** 
-   3:../hd44780_driver/hd44780_driver.c **** void lcd_delay(void) {
- 16206              		.loc 1 3 0
- 16207              		.cfi_startproc
- 16208              		@ args = 0, pretend = 0, frame = 8
- 16209              		@ frame_needed = 1, uses_anonymous_args = 0
- 16210              		@ link register save eliminated.
- 16211 0000 80B4     		push	{r7}
- 16212              	.LCFI0:
- 16213              		.cfi_def_cfa_offset 4
- 16214 0002 83B0     		sub	sp, sp, #12
- 16215              	.LCFI1:
- 16216              		.cfi_def_cfa_offset 16
- 16217 0004 00AF     		add	r7, sp, #0
- 16218              		.cfi_offset 7, -4
- 16219              	.LCFI2:
- 16220              		.cfi_def_cfa_register 7
-   4:../hd44780_driver/hd44780_driver.c **** 	volatile uint32_t tmpvar;
-   5:../hd44780_driver/hd44780_driver.c **** 	for (tmpvar=3000;tmpvar!=0;tmpvar--);
- 16221              		.loc 1 5 0
- 16222 0006 40F6B833 		movw	r3, #3000
- 16223 000a 7B60     		str	r3, [r7, #4]
- 16224 000c 03E0     		b	.L2
- 16225              	.L3:
- 16226              		.loc 1 5 0 is_stmt 0 discriminator 2
- 16227 000e 7B68     		ldr	r3, [r7, #4]
- 16228 0010 03F1FF33 		add	r3, r3, #-1
- 16229 0014 7B60     		str	r3, [r7, #4]
- 16230              	.L2:
- 16231              		.loc 1 5 0 discriminator 1
- 16232 0016 7B68     		ldr	r3, [r7, #4]
- 16233 0018 002B     		cmp	r3, #0
- 16234 001a F8D1     		bne	.L3
-   6:../hd44780_driver/hd44780_driver.c **** }
- 16235              		.loc 1 6 0 is_stmt 1
- 16236 001c 07F10C07 		add	r7, r7, #12
- 16237 0020 BD46     		mov	sp, r7
- 16238 0022 80BC     		pop	{r7}
- 16239 0024 7047     		bx	lr
- 16240              		.cfi_endproc
- 16241              	.LFE29:
- 16243 0026 00BF     		.align	2
- 16244              		.global	lcd_init
- 16245              		.thumb
- 16246              		.thumb_func
- 16248              	lcd_init:
- 16249              	.LFB30:
-   7:../hd44780_driver/hd44780_driver.c **** 
-   8:../hd44780_driver/hd44780_driver.c **** void lcd_init() {
- 16250              		.loc 1 8 0
- 16251              		.cfi_startproc
- 16252              		@ args = 0, pretend = 0, frame = 0
- 16253              		@ frame_needed = 1, uses_anonymous_args = 0
- 16254 0028 80B5     		push	{r7, lr}
- 16255              	.LCFI3:
- 16256              		.cfi_def_cfa_offset 8
- 16257 002a 00AF     		add	r7, sp, #0
- 16258              		.cfi_offset 14, -4
- 16259              		.cfi_offset 7, -8
- 16260              	.LCFI4:
- 16261              		.cfi_def_cfa_register 7
-   9:../hd44780_driver/hd44780_driver.c **** 	LCD_CLOCK_REG |= LCD_CLOCK_BIT;
- 16262              		.loc 1 9 0
- 16263 002c 174B     		ldr	r3, .L5
- 16264 002e 174A     		ldr	r2, .L5
- 16265 0030 9269     		ldr	r2, [r2, #24]
- 16266 0032 42F00802 		orr	r2, r2, #8
- 16267 0036 9A61     		str	r2, [r3, #24]
-  10:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRH |= LCD_PORT_CRH_S;
- 16268              		.loc 1 10 0
- 16269 0038 154A     		ldr	r2, .L5+4
- 16270 003a 154B     		ldr	r3, .L5+4
- 16271 003c 5968     		ldr	r1, [r3, #4]
- 16272 003e 154B     		ldr	r3, .L5+8
- 16273 0040 41EA0303 		orr	r3, r1, r3
- 16274 0044 5360     		str	r3, [r2, #4]
-  11:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRL |= LCD_PORT_CRL_S;
- 16275              		.loc 1 11 0
- 16276 0046 124B     		ldr	r3, .L5+4
- 16277 0048 114A     		ldr	r2, .L5+4
- 16278 004a 1268     		ldr	r2, [r2, #0]
- 16279 004c 1A60     		str	r2, [r3, #0]
-  12:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRH &= ~(LCD_PORT_CRH_C);
- 16280              		.loc 1 12 0
- 16281 004e 104A     		ldr	r2, .L5+4
- 16282 0050 0F4B     		ldr	r3, .L5+4
- 16283 0052 5968     		ldr	r1, [r3, #4]
- 16284 0054 104B     		ldr	r3, .L5+12
- 16285 0056 01EA0303 		and	r3, r1, r3
- 16286 005a 5360     		str	r3, [r2, #4]
-  13:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRL &= ~(LCD_PORT_CRL_C);
- 16287              		.loc 1 13 0
- 16288 005c 0C4B     		ldr	r3, .L5+4
- 16289 005e 0C4A     		ldr	r2, .L5+4
- 16290 0060 1268     		ldr	r2, [r2, #0]
- 16291 0062 1A60     		str	r2, [r3, #0]
-  14:../hd44780_driver/hd44780_driver.c **** 	lcd_set_4bit_mode();
- 16292              		.loc 1 14 0
- 16293 0064 FFF7FEFF 		bl	lcd_set_4bit_mode
-  15:../hd44780_driver/hd44780_driver.c **** 	lcd_set_state(LCD_ENABLE,CURSOR_ENABLE,NO_BLINK);
- 16294              		.loc 1 15 0
- 16295 0068 4FF00100 		mov	r0, #1
- 16296 006c 4FF00101 		mov	r1, #1
- 16297 0070 4FF00002 		mov	r2, #0
- 16298 0074 FFF7FEFF 		bl	lcd_set_state
-  16:../hd44780_driver/hd44780_driver.c **** 	lcd_clear();
- 16299              		.loc 1 16 0
- 16300 0078 FFF7FEFF 		bl	lcd_clear
-  17:../hd44780_driver/hd44780_driver.c **** 	lcd_send(0x06,COMMAND);
- 16301              		.loc 1 17 0
- 16302 007c 4FF00600 		mov	r0, #6
- 16303 0080 4FF00001 		mov	r1, #0
- 16304 0084 FFF7FEFF 		bl	lcd_send
-  18:../hd44780_driver/hd44780_driver.c **** }
- 16305              		.loc 1 18 0
- 16306 0088 80BD     		pop	{r7, pc}
- 16307              	.L6:
- 16308 008a 00BF     		.align	2
- 16309              	.L5:
- 16310 008c 00100240 		.word	1073876992
- 16311 0090 000C0140 		.word	1073810432
- 16312 0094 00111111 		.word	286331136
- 16313 0098 FF111111 		.word	286331391
- 16314              		.cfi_endproc
- 16315              	.LFE30:
- 16317              		.align	2
- 16318              		.global	lcd_set_user_char
- 16319              		.thumb
- 16320              		.thumb_func
- 16322              	lcd_set_user_char:
- 16323              	.LFB31:
-  19:../hd44780_driver/hd44780_driver.c **** 
-  20:../hd44780_driver/hd44780_driver.c **** void lcd_set_user_char(uint8_t char_num, uint8_t * char_data) {
- 16324              		.loc 1 20 0
- 16325              		.cfi_startproc
- 16326              		@ args = 0, pretend = 0, frame = 16
- 16327              		@ frame_needed = 1, uses_anonymous_args = 0
- 16328 009c 80B5     		push	{r7, lr}
- 16329              	.LCFI5:
- 16330              		.cfi_def_cfa_offset 8
- 16331 009e 84B0     		sub	sp, sp, #16
- 16332              	.LCFI6:
- 16333              		.cfi_def_cfa_offset 24
- 16334 00a0 00AF     		add	r7, sp, #0
- 16335              		.cfi_offset 14, -4
- 16336              		.cfi_offset 7, -8
- 16337              	.LCFI7:
- 16338              		.cfi_def_cfa_register 7
- 16339 00a2 0346     		mov	r3, r0
- 16340 00a4 3960     		str	r1, [r7, #0]
- 16341 00a6 FB71     		strb	r3, [r7, #7]
-  21:../hd44780_driver/hd44780_driver.c **** 	uint8_t i;
-  22:../hd44780_driver/hd44780_driver.c **** 	lcd_send(((1<<6) | (char_num * 8) ), COMMAND);
- 16342              		.loc 1 22 0
- 16343 00a8 FB79     		ldrb	r3, [r7, #7]
- 16344 00aa 4FEAC303 		lsl	r3, r3, #3
- 16345 00ae DBB2     		uxtb	r3, r3
- 16346 00b0 DBB2     		uxtb	r3, r3
- 16347 00b2 43F04003 		orr	r3, r3, #64
- 16348 00b6 DBB2     		uxtb	r3, r3
- 16349 00b8 DBB2     		uxtb	r3, r3
- 16350 00ba 1846     		mov	r0, r3
- 16351 00bc 4FF00001 		mov	r1, #0
- 16352 00c0 FFF7FEFF 		bl	lcd_send
-  23:../hd44780_driver/hd44780_driver.c **** 	for (i=0;i<=7;i++) {
- 16353              		.loc 1 23 0
- 16354 00c4 4FF00003 		mov	r3, #0
- 16355 00c8 FB73     		strb	r3, [r7, #15]
- 16356 00ca 0CE0     		b	.L8
- 16357              	.L9:
-  24:../hd44780_driver/hd44780_driver.c **** 		lcd_send(char_data[i],DATA);
- 16358              		.loc 1 24 0 discriminator 2
- 16359 00cc FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
- 16360 00ce 3A68     		ldr	r2, [r7, #0]
- 16361 00d0 D318     		adds	r3, r2, r3
- 16362 00d2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 16363 00d4 1846     		mov	r0, r3
- 16364 00d6 4FF00101 		mov	r1, #1
- 16365 00da FFF7FEFF 		bl	lcd_send
-  23:../hd44780_driver/hd44780_driver.c **** 	for (i=0;i<=7;i++) {
- 16366              		.loc 1 23 0 discriminator 2
- 16367 00de FB7B     		ldrb	r3, [r7, #15]
- 16368 00e0 03F10103 		add	r3, r3, #1
- 16369 00e4 FB73     		strb	r3, [r7, #15]
- 16370              	.L8:
-  23:../hd44780_driver/hd44780_driver.c **** 	for (i=0;i<=7;i++) {
- 16371              		.loc 1 23 0 is_stmt 0 discriminator 1
- 16372 00e6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
- 16373 00e8 072B     		cmp	r3, #7
- 16374 00ea EFD9     		bls	.L9
-  25:../hd44780_driver/hd44780_driver.c **** 	}
-  26:../hd44780_driver/hd44780_driver.c **** 	lcd_send((1<<7), COMMAND);
- 16375              		.loc 1 26 0 is_stmt 1
- 16376 00ec 4FF08000 		mov	r0, #128
- 16377 00f0 4FF00001 		mov	r1, #0
- 16378 00f4 FFF7FEFF 		bl	lcd_send
-  27:../hd44780_driver/hd44780_driver.c **** }
- 16379              		.loc 1 27 0
- 16380 00f8 07F11007 		add	r7, r7, #16
- 16381 00fc BD46     		mov	sp, r7
- 16382 00fe 80BD     		pop	{r7, pc}
- 16383              		.cfi_endproc
- 16384              	.LFE31:
- 16386              		.align	2
- 16387              		.global	lcd_set_xy
- 16388              		.thumb
- 16389              		.thumb_func
- 16391              	lcd_set_xy:
- 16392              	.LFB32:
-  28:../hd44780_driver/hd44780_driver.c **** 
-  29:../hd44780_driver/hd44780_driver.c **** void lcd_set_xy(uint8_t x, uint8_t y)  {
- 16393              		.loc 1 29 0
- 16394              		.cfi_startproc
- 16395              		@ args = 0, pretend = 0, frame = 8
- 16396              		@ frame_needed = 1, uses_anonymous_args = 0
- 16397 0100 80B5     		push	{r7, lr}
- 16398              	.LCFI8:
- 16399              		.cfi_def_cfa_offset 8
- 16400 0102 82B0     		sub	sp, sp, #8
- 16401              	.LCFI9:
- 16402              		.cfi_def_cfa_offset 16
- 16403 0104 00AF     		add	r7, sp, #0
- 16404              		.cfi_offset 14, -4
- 16405              		.cfi_offset 7, -8
- 16406              	.LCFI10:
- 16407              		.cfi_def_cfa_register 7
- 16408 0106 0246     		mov	r2, r0
- 16409 0108 0B46     		mov	r3, r1
- 16410 010a FA71     		strb	r2, [r7, #7]
- 16411 010c BB71     		strb	r3, [r7, #6]
-  30:../hd44780_driver/hd44780_driver.c **** 	if (y==0) {
- 16412              		.loc 1 30 0
- 16413 010e BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
- 16414 0110 002B     		cmp	r3, #0
- 16415 0112 09D1     		bne	.L11
-  31:../hd44780_driver/hd44780_driver.c **** 		lcd_send( ((1<<7) | (x)),COMMAND);
- 16416              		.loc 1 31 0
- 16417 0114 FB79     		ldrb	r3, [r7, #7]
- 16418 0116 63F07F03 		orn	r3, r3, #127
- 16419 011a DBB2     		uxtb	r3, r3
- 16420 011c 1846     		mov	r0, r3
- 16421 011e 4FF00001 		mov	r1, #0
- 16422 0122 FFF7FEFF 		bl	lcd_send
- 16423 0126 08E0     		b	.L10
- 16424              	.L11:
-  32:../hd44780_driver/hd44780_driver.c **** 	} else {
-  33:../hd44780_driver/hd44780_driver.c **** 		lcd_send( ((3<<6) | (x)),COMMAND);
+   3:../hd44780_driver/hd44780_driver.c **** uint8_t lcd_cnt = 0;
+   4:../hd44780_driver/hd44780_driver.c **** 
+   5:../hd44780_driver/hd44780_driver.c **** void lcd_delay(void) {
+ 16215              		.loc 1 5 0
+ 16216              		.cfi_startproc
+ 16217              		@ args = 0, pretend = 0, frame = 8
+ 16218              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16219              		@ link register save eliminated.
+ 16220 0000 80B4     		push	{r7}
+ 16221              	.LCFI0:
+ 16222              		.cfi_def_cfa_offset 4
+ 16223 0002 83B0     		sub	sp, sp, #12
+ 16224              	.LCFI1:
+ 16225              		.cfi_def_cfa_offset 16
+ 16226 0004 00AF     		add	r7, sp, #0
+ 16227              		.cfi_offset 7, -4
+ 16228              	.LCFI2:
+ 16229              		.cfi_def_cfa_register 7
+   6:../hd44780_driver/hd44780_driver.c **** 	volatile uint32_t tmpvar;
+   7:../hd44780_driver/hd44780_driver.c **** 	for (tmpvar=3000;tmpvar!=0;tmpvar--);
+ 16230              		.loc 1 7 0
+ 16231 0006 40F6B833 		movw	r3, #3000
+ 16232 000a 7B60     		str	r3, [r7, #4]
+ 16233 000c 03E0     		b	.L2
+ 16234              	.L3:
+ 16235              		.loc 1 7 0 is_stmt 0 discriminator 2
+ 16236 000e 7B68     		ldr	r3, [r7, #4]
+ 16237 0010 03F1FF33 		add	r3, r3, #-1
+ 16238 0014 7B60     		str	r3, [r7, #4]
+ 16239              	.L2:
+ 16240              		.loc 1 7 0 discriminator 1
+ 16241 0016 7B68     		ldr	r3, [r7, #4]
+ 16242 0018 002B     		cmp	r3, #0
+ 16243 001a F8D1     		bne	.L3
+   8:../hd44780_driver/hd44780_driver.c **** }
+ 16244              		.loc 1 8 0 is_stmt 1
+ 16245 001c 07F10C07 		add	r7, r7, #12
+ 16246 0020 BD46     		mov	sp, r7
+ 16247 0022 80BC     		pop	{r7}
+ 16248 0024 7047     		bx	lr
+ 16249              		.cfi_endproc
+ 16250              	.LFE29:
+ 16252 0026 00BF     		.align	2
+ 16253              		.global	lcd_init
+ 16254              		.thumb
+ 16255              		.thumb_func
+ 16257              	lcd_init:
+ 16258              	.LFB30:
+   9:../hd44780_driver/hd44780_driver.c **** 
+  10:../hd44780_driver/hd44780_driver.c **** void lcd_init() {
+ 16259              		.loc 1 10 0
+ 16260              		.cfi_startproc
+ 16261              		@ args = 0, pretend = 0, frame = 0
+ 16262              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16263 0028 80B5     		push	{r7, lr}
+ 16264              	.LCFI3:
+ 16265              		.cfi_def_cfa_offset 8
+ 16266 002a 00AF     		add	r7, sp, #0
+ 16267              		.cfi_offset 14, -4
+ 16268              		.cfi_offset 7, -8
+ 16269              	.LCFI4:
+ 16270              		.cfi_def_cfa_register 7
+  11:../hd44780_driver/hd44780_driver.c **** 	LCD_CLOCK_REG |= LCD_CLOCK_BIT;
+ 16271              		.loc 1 11 0
+ 16272 002c 174B     		ldr	r3, .L5
+ 16273 002e 174A     		ldr	r2, .L5
+ 16274 0030 9269     		ldr	r2, [r2, #24]
+ 16275 0032 42F00802 		orr	r2, r2, #8
+ 16276 0036 9A61     		str	r2, [r3, #24]
+  12:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRH |= LCD_PORT_CRH_S;
+ 16277              		.loc 1 12 0
+ 16278 0038 154A     		ldr	r2, .L5+4
+ 16279 003a 154B     		ldr	r3, .L5+4
+ 16280 003c 5968     		ldr	r1, [r3, #4]
+ 16281 003e 154B     		ldr	r3, .L5+8
+ 16282 0040 41EA0303 		orr	r3, r1, r3
+ 16283 0044 5360     		str	r3, [r2, #4]
+  13:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRL |= LCD_PORT_CRL_S;
+ 16284              		.loc 1 13 0
+ 16285 0046 124B     		ldr	r3, .L5+4
+ 16286 0048 114A     		ldr	r2, .L5+4
+ 16287 004a 1268     		ldr	r2, [r2, #0]
+ 16288 004c 1A60     		str	r2, [r3, #0]
+  14:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRH &= ~(LCD_PORT_CRH_C);
+ 16289              		.loc 1 14 0
+ 16290 004e 104A     		ldr	r2, .L5+4
+ 16291 0050 0F4B     		ldr	r3, .L5+4
+ 16292 0052 5968     		ldr	r1, [r3, #4]
+ 16293 0054 104B     		ldr	r3, .L5+12
+ 16294 0056 01EA0303 		and	r3, r1, r3
+ 16295 005a 5360     		str	r3, [r2, #4]
+  15:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->CRL &= ~(LCD_PORT_CRL_C);
+ 16296              		.loc 1 15 0
+ 16297 005c 0C4B     		ldr	r3, .L5+4
+ 16298 005e 0C4A     		ldr	r2, .L5+4
+ 16299 0060 1268     		ldr	r2, [r2, #0]
+ 16300 0062 1A60     		str	r2, [r3, #0]
+  16:../hd44780_driver/hd44780_driver.c **** 	lcd_set_4bit_mode();
+ 16301              		.loc 1 16 0
+ 16302 0064 FFF7FEFF 		bl	lcd_set_4bit_mode
+  17:../hd44780_driver/hd44780_driver.c **** 	lcd_set_state(LCD_ENABLE,CURSOR_ENABLE,NO_BLINK);
+ 16303              		.loc 1 17 0
+ 16304 0068 4FF00100 		mov	r0, #1
+ 16305 006c 4FF00101 		mov	r1, #1
+ 16306 0070 4FF00002 		mov	r2, #0
+ 16307 0074 FFF7FEFF 		bl	lcd_set_state
+  18:../hd44780_driver/hd44780_driver.c **** 	lcd_clear();
+ 16308              		.loc 1 18 0
+ 16309 0078 FFF7FEFF 		bl	lcd_clear
+  19:../hd44780_driver/hd44780_driver.c **** 	lcd_send(0x06,COMMAND);
+ 16310              		.loc 1 19 0
+ 16311 007c 4FF00600 		mov	r0, #6
+ 16312 0080 4FF00001 		mov	r1, #0
+ 16313 0084 FFF7FEFF 		bl	lcd_send
+  20:../hd44780_driver/hd44780_driver.c **** }
+ 16314              		.loc 1 20 0
+ 16315 0088 80BD     		pop	{r7, pc}
+ 16316              	.L6:
+ 16317 008a 00BF     		.align	2
+ 16318              	.L5:
+ 16319 008c 00100240 		.word	1073876992
+ 16320 0090 000C0140 		.word	1073810432
+ 16321 0094 00111111 		.word	286331136
+ 16322 0098 FF111111 		.word	286331391
+ 16323              		.cfi_endproc
+ 16324              	.LFE30:
+ 16326              		.align	2
+ 16327              		.global	lcd_set_user_char
+ 16328              		.thumb
+ 16329              		.thumb_func
+ 16331              	lcd_set_user_char:
+ 16332              	.LFB31:
+  21:../hd44780_driver/hd44780_driver.c **** 
+  22:../hd44780_driver/hd44780_driver.c **** void lcd_set_user_char(uint8_t char_num, uint8_t * char_data) {
+ 16333              		.loc 1 22 0
+ 16334              		.cfi_startproc
+ 16335              		@ args = 0, pretend = 0, frame = 16
+ 16336              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16337 009c 80B5     		push	{r7, lr}
+ 16338              	.LCFI5:
+ 16339              		.cfi_def_cfa_offset 8
+ 16340 009e 84B0     		sub	sp, sp, #16
+ 16341              	.LCFI6:
+ 16342              		.cfi_def_cfa_offset 24
+ 16343 00a0 00AF     		add	r7, sp, #0
+ 16344              		.cfi_offset 14, -4
+ 16345              		.cfi_offset 7, -8
+ 16346              	.LCFI7:
+ 16347              		.cfi_def_cfa_register 7
+ 16348 00a2 0346     		mov	r3, r0
+ 16349 00a4 3960     		str	r1, [r7, #0]
+ 16350 00a6 FB71     		strb	r3, [r7, #7]
+  23:../hd44780_driver/hd44780_driver.c **** 	uint8_t i;
+  24:../hd44780_driver/hd44780_driver.c **** 	lcd_send(((1<<6) | (char_num * 8) ), COMMAND);
+ 16351              		.loc 1 24 0
+ 16352 00a8 FB79     		ldrb	r3, [r7, #7]
+ 16353 00aa 4FEAC303 		lsl	r3, r3, #3
+ 16354 00ae DBB2     		uxtb	r3, r3
+ 16355 00b0 DBB2     		uxtb	r3, r3
+ 16356 00b2 43F04003 		orr	r3, r3, #64
+ 16357 00b6 DBB2     		uxtb	r3, r3
+ 16358 00b8 DBB2     		uxtb	r3, r3
+ 16359 00ba 1846     		mov	r0, r3
+ 16360 00bc 4FF00001 		mov	r1, #0
+ 16361 00c0 FFF7FEFF 		bl	lcd_send
+  25:../hd44780_driver/hd44780_driver.c **** 	for (i=0;i<=7;i++) {
+ 16362              		.loc 1 25 0
+ 16363 00c4 4FF00003 		mov	r3, #0
+ 16364 00c8 FB73     		strb	r3, [r7, #15]
+ 16365 00ca 0CE0     		b	.L8
+ 16366              	.L9:
+  26:../hd44780_driver/hd44780_driver.c **** 		lcd_send(char_data[i],DATA);
+ 16367              		.loc 1 26 0 discriminator 2
+ 16368 00cc FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 16369 00ce 3A68     		ldr	r2, [r7, #0]
+ 16370 00d0 D318     		adds	r3, r2, r3
+ 16371 00d2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16372 00d4 1846     		mov	r0, r3
+ 16373 00d6 4FF00101 		mov	r1, #1
+ 16374 00da FFF7FEFF 		bl	lcd_send
+  25:../hd44780_driver/hd44780_driver.c **** 	for (i=0;i<=7;i++) {
+ 16375              		.loc 1 25 0 discriminator 2
+ 16376 00de FB7B     		ldrb	r3, [r7, #15]
+ 16377 00e0 03F10103 		add	r3, r3, #1
+ 16378 00e4 FB73     		strb	r3, [r7, #15]
+ 16379              	.L8:
+  25:../hd44780_driver/hd44780_driver.c **** 	for (i=0;i<=7;i++) {
+ 16380              		.loc 1 25 0 is_stmt 0 discriminator 1
+ 16381 00e6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 16382 00e8 072B     		cmp	r3, #7
+ 16383 00ea EFD9     		bls	.L9
+  27:../hd44780_driver/hd44780_driver.c **** 	}
+  28:../hd44780_driver/hd44780_driver.c **** 	lcd_send((1<<7), COMMAND);
+ 16384              		.loc 1 28 0 is_stmt 1
+ 16385 00ec 4FF08000 		mov	r0, #128
+ 16386 00f0 4FF00001 		mov	r1, #0
+ 16387 00f4 FFF7FEFF 		bl	lcd_send
+  29:../hd44780_driver/hd44780_driver.c **** }
+ 16388              		.loc 1 29 0
+ 16389 00f8 07F11007 		add	r7, r7, #16
+ 16390 00fc BD46     		mov	sp, r7
+ 16391 00fe 80BD     		pop	{r7, pc}
+ 16392              		.cfi_endproc
+ 16393              	.LFE31:
+ 16395              		.align	2
+ 16396              		.global	lcd_set_xy
+ 16397              		.thumb
+ 16398              		.thumb_func
+ 16400              	lcd_set_xy:
+ 16401              	.LFB32:
+  30:../hd44780_driver/hd44780_driver.c **** 
+  31:../hd44780_driver/hd44780_driver.c **** void lcd_set_xy(uint8_t x, uint8_t y)  {
+ 16402              		.loc 1 31 0
+ 16403              		.cfi_startproc
+ 16404              		@ args = 0, pretend = 0, frame = 8
+ 16405              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16406 0100 80B5     		push	{r7, lr}
+ 16407              	.LCFI8:
+ 16408              		.cfi_def_cfa_offset 8
+ 16409 0102 82B0     		sub	sp, sp, #8
+ 16410              	.LCFI9:
+ 16411              		.cfi_def_cfa_offset 16
+ 16412 0104 00AF     		add	r7, sp, #0
+ 16413              		.cfi_offset 14, -4
+ 16414              		.cfi_offset 7, -8
+ 16415              	.LCFI10:
+ 16416              		.cfi_def_cfa_register 7
+ 16417 0106 0246     		mov	r2, r0
+ 16418 0108 0B46     		mov	r3, r1
+ 16419 010a FA71     		strb	r2, [r7, #7]
+ 16420 010c BB71     		strb	r3, [r7, #6]
+  32:../hd44780_driver/hd44780_driver.c **** 	if (y==0) {
+ 16421              		.loc 1 32 0
+ 16422 010e BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 16423 0110 002B     		cmp	r3, #0
+ 16424 0112 09D1     		bne	.L11
+  33:../hd44780_driver/hd44780_driver.c **** 		lcd_send( ((1<<7) | (x)),COMMAND);
  16425              		.loc 1 33 0
- 16426 0128 FB79     		ldrb	r3, [r7, #7]
- 16427 012a 63F03F03 		orn	r3, r3, #63
- 16428 012e DBB2     		uxtb	r3, r3
- 16429 0130 1846     		mov	r0, r3
- 16430 0132 4FF00001 		mov	r1, #0
- 16431 0136 FFF7FEFF 		bl	lcd_send
- 16432              	.L10:
-  34:../hd44780_driver/hd44780_driver.c **** 	}
-  35:../hd44780_driver/hd44780_driver.c **** }
- 16433              		.loc 1 35 0
- 16434 013a 07F10807 		add	r7, r7, #8
- 16435 013e BD46     		mov	sp, r7
- 16436 0140 80BD     		pop	{r7, pc}
- 16437              		.cfi_endproc
- 16438              	.LFE32:
- 16440 0142 00BF     		.align	2
- 16441              		.global	lcd_out
- 16442              		.thumb
- 16443              		.thumb_func
- 16445              	lcd_out:
- 16446              	.LFB33:
-  36:../hd44780_driver/hd44780_driver.c **** 
-  37:../hd44780_driver/hd44780_driver.c **** 
-  38:../hd44780_driver/hd44780_driver.c **** void lcd_out(char * txt) {
- 16447              		.loc 1 38 0
- 16448              		.cfi_startproc
- 16449              		@ args = 0, pretend = 0, frame = 8
- 16450              		@ frame_needed = 1, uses_anonymous_args = 0
- 16451 0144 80B5     		push	{r7, lr}
- 16452              	.LCFI11:
- 16453              		.cfi_def_cfa_offset 8
- 16454 0146 82B0     		sub	sp, sp, #8
- 16455              	.LCFI12:
- 16456              		.cfi_def_cfa_offset 16
- 16457 0148 00AF     		add	r7, sp, #0
- 16458              		.cfi_offset 14, -4
- 16459              		.cfi_offset 7, -8
- 16460              	.LCFI13:
- 16461              		.cfi_def_cfa_register 7
- 16462 014a 7860     		str	r0, [r7, #4]
-  39:../hd44780_driver/hd44780_driver.c **** 	while(*txt) {
- 16463              		.loc 1 39 0
- 16464 014c 0AE0     		b	.L14
- 16465              	.L15:
-  40:../hd44780_driver/hd44780_driver.c **** 		lcd_send(*txt,DATA);
- 16466              		.loc 1 40 0
- 16467 014e 7B68     		ldr	r3, [r7, #4]
- 16468 0150 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 16469 0152 1846     		mov	r0, r3
- 16470 0154 4FF00101 		mov	r1, #1
- 16471 0158 FFF7FEFF 		bl	lcd_send
-  41:../hd44780_driver/hd44780_driver.c **** 		txt++;
+ 16426 0114 FB79     		ldrb	r3, [r7, #7]
+ 16427 0116 63F07F03 		orn	r3, r3, #127
+ 16428 011a DBB2     		uxtb	r3, r3
+ 16429 011c 1846     		mov	r0, r3
+ 16430 011e 4FF00001 		mov	r1, #0
+ 16431 0122 FFF7FEFF 		bl	lcd_send
+ 16432 0126 08E0     		b	.L10
+ 16433              	.L11:
+  34:../hd44780_driver/hd44780_driver.c **** 	} else {
+  35:../hd44780_driver/hd44780_driver.c **** 		lcd_send( ((3<<6) | (x)),COMMAND);
+ 16434              		.loc 1 35 0
+ 16435 0128 FB79     		ldrb	r3, [r7, #7]
+ 16436 012a 63F03F03 		orn	r3, r3, #63
+ 16437 012e DBB2     		uxtb	r3, r3
+ 16438 0130 1846     		mov	r0, r3
+ 16439 0132 4FF00001 		mov	r1, #0
+ 16440 0136 FFF7FEFF 		bl	lcd_send
+ 16441              	.L10:
+  36:../hd44780_driver/hd44780_driver.c **** 	}
+  37:../hd44780_driver/hd44780_driver.c **** }
+ 16442              		.loc 1 37 0
+ 16443 013a 07F10807 		add	r7, r7, #8
+ 16444 013e BD46     		mov	sp, r7
+ 16445 0140 80BD     		pop	{r7, pc}
+ 16446              		.cfi_endproc
+ 16447              	.LFE32:
+ 16449 0142 00BF     		.align	2
+ 16450              		.global	lcd_out
+ 16451              		.thumb
+ 16452              		.thumb_func
+ 16454              	lcd_out:
+ 16455              	.LFB33:
+  38:../hd44780_driver/hd44780_driver.c **** 
+  39:../hd44780_driver/hd44780_driver.c **** 
+  40:../hd44780_driver/hd44780_driver.c **** void lcd_out(char * txt) {
+ 16456              		.loc 1 40 0
+ 16457              		.cfi_startproc
+ 16458              		@ args = 0, pretend = 0, frame = 8
+ 16459              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16460 0144 80B5     		push	{r7, lr}
+ 16461              	.LCFI11:
+ 16462              		.cfi_def_cfa_offset 8
+ 16463 0146 82B0     		sub	sp, sp, #8
+ 16464              	.LCFI12:
+ 16465              		.cfi_def_cfa_offset 16
+ 16466 0148 00AF     		add	r7, sp, #0
+ 16467              		.cfi_offset 14, -4
+ 16468              		.cfi_offset 7, -8
+ 16469              	.LCFI13:
+ 16470              		.cfi_def_cfa_register 7
+ 16471 014a 7860     		str	r0, [r7, #4]
+  41:../hd44780_driver/hd44780_driver.c **** 	while(*txt) {
  16472              		.loc 1 41 0
- 16473 015c 7B68     		ldr	r3, [r7, #4]
- 16474 015e 03F10103 		add	r3, r3, #1
- 16475 0162 7B60     		str	r3, [r7, #4]
- 16476              	.L14:
-  39:../hd44780_driver/hd44780_driver.c **** 	while(*txt) {
- 16477              		.loc 1 39 0 discriminator 1
- 16478 0164 7B68     		ldr	r3, [r7, #4]
- 16479 0166 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 16480 0168 002B     		cmp	r3, #0
- 16481 016a F0D1     		bne	.L15
-  42:../hd44780_driver/hd44780_driver.c **** 	}
-  43:../hd44780_driver/hd44780_driver.c **** }
- 16482              		.loc 1 43 0
- 16483 016c 07F10807 		add	r7, r7, #8
- 16484 0170 BD46     		mov	sp, r7
- 16485 0172 80BD     		pop	{r7, pc}
- 16486              		.cfi_endproc
- 16487              	.LFE33:
- 16489              		.align	2
- 16490              		.global	lcd_clear
- 16491              		.thumb
- 16492              		.thumb_func
- 16494              	lcd_clear:
- 16495              	.LFB34:
-  44:../hd44780_driver/hd44780_driver.c **** 
-  45:../hd44780_driver/hd44780_driver.c **** void lcd_clear(void) {
- 16496              		.loc 1 45 0
- 16497              		.cfi_startproc
- 16498              		@ args = 0, pretend = 0, frame = 0
- 16499              		@ frame_needed = 1, uses_anonymous_args = 0
- 16500 0174 80B5     		push	{r7, lr}
- 16501              	.LCFI14:
- 16502              		.cfi_def_cfa_offset 8
- 16503 0176 00AF     		add	r7, sp, #0
- 16504              		.cfi_offset 14, -4
- 16505              		.cfi_offset 7, -8
- 16506              	.LCFI15:
- 16507              		.cfi_def_cfa_register 7
-  46:../hd44780_driver/hd44780_driver.c **** 	lcd_send(0x01,COMMAND);
- 16508              		.loc 1 46 0
- 16509 0178 4FF00100 		mov	r0, #1
- 16510 017c 4FF00001 		mov	r1, #0
- 16511 0180 FFF7FEFF 		bl	lcd_send
-  47:../hd44780_driver/hd44780_driver.c **** }
- 16512              		.loc 1 47 0
- 16513 0184 80BD     		pop	{r7, pc}
- 16514              		.cfi_endproc
- 16515              	.LFE34:
- 16517 0186 00BF     		.align	2
- 16518              		.global	lcd_set_state
- 16519              		.thumb
- 16520              		.thumb_func
- 16522              	lcd_set_state:
- 16523              	.LFB35:
-  48:../hd44780_driver/hd44780_driver.c **** 
-  49:../hd44780_driver/hd44780_driver.c **** void lcd_set_state(lcd_state state, cursor_state cur_state, cursor_mode cur_mode)  {
- 16524              		.loc 1 49 0
- 16525              		.cfi_startproc
- 16526              		@ args = 0, pretend = 0, frame = 8
- 16527              		@ frame_needed = 1, uses_anonymous_args = 0
- 16528 0188 80B5     		push	{r7, lr}
- 16529              	.LCFI16:
- 16530              		.cfi_def_cfa_offset 8
- 16531 018a 82B0     		sub	sp, sp, #8
- 16532              	.LCFI17:
- 16533              		.cfi_def_cfa_offset 16
- 16534 018c 00AF     		add	r7, sp, #0
- 16535              		.cfi_offset 14, -4
- 16536              		.cfi_offset 7, -8
- 16537              	.LCFI18:
- 16538              		.cfi_def_cfa_register 7
- 16539 018e 1346     		mov	r3, r2
- 16540 0190 0246     		mov	r2, r0
- 16541 0192 FA71     		strb	r2, [r7, #7]
- 16542 0194 0A46     		mov	r2, r1
- 16543 0196 BA71     		strb	r2, [r7, #6]
- 16544 0198 7B71     		strb	r3, [r7, #5]
-  50:../hd44780_driver/hd44780_driver.c **** 	if (state==LCD_DISABLE)  {
- 16545              		.loc 1 50 0
- 16546 019a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16547 019c 002B     		cmp	r3, #0
- 16548 019e 06D1     		bne	.L18
-  51:../hd44780_driver/hd44780_driver.c **** 		lcd_send(0x08,COMMAND);
- 16549              		.loc 1 51 0
- 16550 01a0 4FF00800 		mov	r0, #8
- 16551 01a4 4FF00001 		mov	r1, #0
- 16552 01a8 FFF7FEFF 		bl	lcd_send
- 16553 01ac 23E0     		b	.L17
- 16554              	.L18:
-  52:../hd44780_driver/hd44780_driver.c **** 	} else {
-  53:../hd44780_driver/hd44780_driver.c **** 		if (cur_state==CURSOR_DISABLE) {
- 16555              		.loc 1 53 0
- 16556 01ae BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
- 16557 01b0 002B     		cmp	r3, #0
- 16558 01b2 10D1     		bne	.L20
-  54:../hd44780_driver/hd44780_driver.c **** 			if (cur_mode==NO_BLINK)  {
- 16559              		.loc 1 54 0
- 16560 01b4 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
- 16561 01b6 002B     		cmp	r3, #0
- 16562 01b8 06D1     		bne	.L21
-  55:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0C,COMMAND);
- 16563              		.loc 1 55 0
- 16564 01ba 4FF00C00 		mov	r0, #12
- 16565 01be 4FF00001 		mov	r1, #0
- 16566 01c2 FFF7FEFF 		bl	lcd_send
- 16567 01c6 16E0     		b	.L17
- 16568              	.L21:
-  56:../hd44780_driver/hd44780_driver.c **** 			} else {
-  57:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0D,COMMAND);
- 16569              		.loc 1 57 0
- 16570 01c8 4FF00D00 		mov	r0, #13
- 16571 01cc 4FF00001 		mov	r1, #0
- 16572 01d0 FFF7FEFF 		bl	lcd_send
- 16573 01d4 0FE0     		b	.L17
+ 16473 014c 08E0     		b	.L14
+ 16474              	.L15:
+  42:../hd44780_driver/hd44780_driver.c **** 		lcd_send_byte(*txt);
+ 16475              		.loc 1 42 0
+ 16476 014e 7B68     		ldr	r3, [r7, #4]
+ 16477 0150 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16478 0152 1846     		mov	r0, r3
+ 16479 0154 FFF7FEFF 		bl	lcd_send_byte
+  43:../hd44780_driver/hd44780_driver.c **** 		txt++;
+ 16480              		.loc 1 43 0
+ 16481 0158 7B68     		ldr	r3, [r7, #4]
+ 16482 015a 03F10103 		add	r3, r3, #1
+ 16483 015e 7B60     		str	r3, [r7, #4]
+ 16484              	.L14:
+  41:../hd44780_driver/hd44780_driver.c **** 	while(*txt) {
+ 16485              		.loc 1 41 0 discriminator 1
+ 16486 0160 7B68     		ldr	r3, [r7, #4]
+ 16487 0162 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16488 0164 002B     		cmp	r3, #0
+ 16489 0166 F2D1     		bne	.L15
+  44:../hd44780_driver/hd44780_driver.c **** 	}
+  45:../hd44780_driver/hd44780_driver.c **** }
+ 16490              		.loc 1 45 0
+ 16491 0168 07F10807 		add	r7, r7, #8
+ 16492 016c BD46     		mov	sp, r7
+ 16493 016e 80BD     		pop	{r7, pc}
+ 16494              		.cfi_endproc
+ 16495              	.LFE33:
+ 16497              		.align	2
+ 16498              		.global	lcd_clear
+ 16499              		.thumb
+ 16500              		.thumb_func
+ 16502              	lcd_clear:
+ 16503              	.LFB34:
+  46:../hd44780_driver/hd44780_driver.c **** 
+  47:../hd44780_driver/hd44780_driver.c **** void lcd_clear(void) {
+ 16504              		.loc 1 47 0
+ 16505              		.cfi_startproc
+ 16506              		@ args = 0, pretend = 0, frame = 0
+ 16507              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16508 0170 80B5     		push	{r7, lr}
+ 16509              	.LCFI14:
+ 16510              		.cfi_def_cfa_offset 8
+ 16511 0172 00AF     		add	r7, sp, #0
+ 16512              		.cfi_offset 14, -4
+ 16513              		.cfi_offset 7, -8
+ 16514              	.LCFI15:
+ 16515              		.cfi_def_cfa_register 7
+  48:../hd44780_driver/hd44780_driver.c **** 	lcd_send(0x01,COMMAND);
+ 16516              		.loc 1 48 0
+ 16517 0174 4FF00100 		mov	r0, #1
+ 16518 0178 4FF00001 		mov	r1, #0
+ 16519 017c FFF7FEFF 		bl	lcd_send
+  49:../hd44780_driver/hd44780_driver.c **** 	lcd_set_xy(0, 0);
+ 16520              		.loc 1 49 0
+ 16521 0180 4FF00000 		mov	r0, #0
+ 16522 0184 4FF00001 		mov	r1, #0
+ 16523 0188 FFF7FEFF 		bl	lcd_set_xy
+  50:../hd44780_driver/hd44780_driver.c **** 	lcd_cnt = 0;
+ 16524              		.loc 1 50 0
+ 16525 018c 024B     		ldr	r3, .L17
+ 16526 018e 4FF00002 		mov	r2, #0
+ 16527 0192 1A70     		strb	r2, [r3, #0]
+  51:../hd44780_driver/hd44780_driver.c **** }
+ 16528              		.loc 1 51 0
+ 16529 0194 80BD     		pop	{r7, pc}
+ 16530              	.L18:
+ 16531 0196 00BF     		.align	2
+ 16532              	.L17:
+ 16533 0198 00000000 		.word	lcd_cnt
+ 16534              		.cfi_endproc
+ 16535              	.LFE34:
+ 16537              		.align	2
+ 16538              		.global	lcd_set_state
+ 16539              		.thumb
+ 16540              		.thumb_func
+ 16542              	lcd_set_state:
+ 16543              	.LFB35:
+  52:../hd44780_driver/hd44780_driver.c **** 
+  53:../hd44780_driver/hd44780_driver.c **** void lcd_set_state(lcd_state state, cursor_state cur_state, cursor_mode cur_mode)  {
+ 16544              		.loc 1 53 0
+ 16545              		.cfi_startproc
+ 16546              		@ args = 0, pretend = 0, frame = 8
+ 16547              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16548 019c 80B5     		push	{r7, lr}
+ 16549              	.LCFI16:
+ 16550              		.cfi_def_cfa_offset 8
+ 16551 019e 82B0     		sub	sp, sp, #8
+ 16552              	.LCFI17:
+ 16553              		.cfi_def_cfa_offset 16
+ 16554 01a0 00AF     		add	r7, sp, #0
+ 16555              		.cfi_offset 14, -4
+ 16556              		.cfi_offset 7, -8
+ 16557              	.LCFI18:
+ 16558              		.cfi_def_cfa_register 7
+ 16559 01a2 1346     		mov	r3, r2
+ 16560 01a4 0246     		mov	r2, r0
+ 16561 01a6 FA71     		strb	r2, [r7, #7]
+ 16562 01a8 0A46     		mov	r2, r1
+ 16563 01aa BA71     		strb	r2, [r7, #6]
+ 16564 01ac 7B71     		strb	r3, [r7, #5]
+  54:../hd44780_driver/hd44780_driver.c **** 	if (state==LCD_DISABLE)  {
+ 16565              		.loc 1 54 0
+ 16566 01ae FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16567 01b0 002B     		cmp	r3, #0
+ 16568 01b2 06D1     		bne	.L20
+  55:../hd44780_driver/hd44780_driver.c **** 		lcd_send(0x08,COMMAND);
+ 16569              		.loc 1 55 0
+ 16570 01b4 4FF00800 		mov	r0, #8
+ 16571 01b8 4FF00001 		mov	r1, #0
+ 16572 01bc FFF7FEFF 		bl	lcd_send
+ 16573 01c0 23E0     		b	.L19
  16574              	.L20:
-  58:../hd44780_driver/hd44780_driver.c **** 			}
-  59:../hd44780_driver/hd44780_driver.c **** 		} else  {
-  60:../hd44780_driver/hd44780_driver.c **** 			if (cur_mode==NO_BLINK)  {
- 16575              		.loc 1 60 0
- 16576 01d6 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
- 16577 01d8 002B     		cmp	r3, #0
- 16578 01da 06D1     		bne	.L22
-  61:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0E,COMMAND);
- 16579              		.loc 1 61 0
- 16580 01dc 4FF00E00 		mov	r0, #14
- 16581 01e0 4FF00001 		mov	r1, #0
- 16582 01e4 FFF7FEFF 		bl	lcd_send
- 16583 01e8 05E0     		b	.L17
- 16584              	.L22:
-  62:../hd44780_driver/hd44780_driver.c **** 			} else {
-  63:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0F,COMMAND);
- 16585              		.loc 1 63 0
- 16586 01ea 4FF00F00 		mov	r0, #15
- 16587 01ee 4FF00001 		mov	r1, #0
- 16588 01f2 FFF7FEFF 		bl	lcd_send
- 16589              	.L17:
-  64:../hd44780_driver/hd44780_driver.c **** 			}
-  65:../hd44780_driver/hd44780_driver.c **** 		}
-  66:../hd44780_driver/hd44780_driver.c **** 	}
-  67:../hd44780_driver/hd44780_driver.c **** }
- 16590              		.loc 1 67 0
- 16591 01f6 07F10807 		add	r7, r7, #8
- 16592 01fa BD46     		mov	sp, r7
- 16593 01fc 80BD     		pop	{r7, pc}
- 16594              		.cfi_endproc
- 16595              	.LFE35:
- 16597 01fe 00BF     		.align	2
- 16598              		.global	lcd_set_4bit_mode
- 16599              		.thumb
- 16600              		.thumb_func
- 16602              	lcd_set_4bit_mode:
- 16603              	.LFB36:
-  68:../hd44780_driver/hd44780_driver.c **** 
-  69:../hd44780_driver/hd44780_driver.c **** void lcd_set_4bit_mode(void) {
- 16604              		.loc 1 69 0
- 16605              		.cfi_startproc
- 16606              		@ args = 0, pretend = 0, frame = 0
- 16607              		@ frame_needed = 1, uses_anonymous_args = 0
- 16608 0200 80B5     		push	{r7, lr}
- 16609              	.LCFI19:
- 16610              		.cfi_def_cfa_offset 8
- 16611 0202 00AF     		add	r7, sp, #0
- 16612              		.cfi_offset 14, -4
- 16613              		.cfi_offset 7, -8
- 16614              	.LCFI20:
- 16615              		.cfi_def_cfa_register 7
-  70:../hd44780_driver/hd44780_driver.c **** 
-  71:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
- 16616              		.loc 1 71 0
- 16617 0204 1E4B     		ldr	r3, .L24
- 16618 0206 4FF07C42 		mov	r2, #-67108864
- 16619 020a 1A61     		str	r2, [r3, #16]
-  72:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB5_BS);
- 16620              		.loc 1 72 0
- 16621 020c 1C4B     		ldr	r3, .L24
- 16622 020e 4FF40052 		mov	r2, #8192
- 16623 0212 1A61     		str	r2, [r3, #16]
-  73:../hd44780_driver/hd44780_driver.c **** 
-  74:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
- 16624              		.loc 1 74 0
- 16625 0214 1A4B     		ldr	r3, .L24
- 16626 0216 4FF40062 		mov	r2, #2048
- 16627 021a 1A61     		str	r2, [r3, #16]
-  75:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16628              		.loc 1 75 0
- 16629 021c FFF7FEFF 		bl	lcd_delay
-  76:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
- 16630              		.loc 1 76 0
- 16631 0220 174B     		ldr	r3, .L24
- 16632 0222 4FF00062 		mov	r2, #134217728
- 16633 0226 1A61     		str	r2, [r3, #16]
-  77:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16634              		.loc 1 77 0
- 16635 0228 FFF7FEFF 		bl	lcd_delay
-  78:../hd44780_driver/hd44780_driver.c **** 
-  79:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
- 16636              		.loc 1 79 0
- 16637 022c 144B     		ldr	r3, .L24
- 16638 022e 4FF07C42 		mov	r2, #-67108864
- 16639 0232 1A61     		str	r2, [r3, #16]
-  80:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB5_BS);
- 16640              		.loc 1 80 0
- 16641 0234 124B     		ldr	r3, .L24
- 16642 0236 4FF40052 		mov	r2, #8192
- 16643 023a 1A61     		str	r2, [r3, #16]
-  81:../hd44780_driver/hd44780_driver.c **** 
-  82:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
- 16644              		.loc 1 82 0
- 16645 023c 104B     		ldr	r3, .L24
- 16646 023e 4FF40062 		mov	r2, #2048
- 16647 0242 1A61     		str	r2, [r3, #16]
-  83:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16648              		.loc 1 83 0
- 16649 0244 FFF7FEFF 		bl	lcd_delay
-  84:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
- 16650              		.loc 1 84 0
- 16651 0248 0D4B     		ldr	r3, .L24
- 16652 024a 4FF00062 		mov	r2, #134217728
- 16653 024e 1A61     		str	r2, [r3, #16]
-  85:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16654              		.loc 1 85 0
- 16655 0250 FFF7FEFF 		bl	lcd_delay
-  86:../hd44780_driver/hd44780_driver.c **** 
-  87:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
- 16656              		.loc 1 87 0
- 16657 0254 0A4B     		ldr	r3, .L24
- 16658 0256 4FF07C42 		mov	r2, #-67108864
- 16659 025a 1A61     		str	r2, [r3, #16]
-  88:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BS);
- 16660              		.loc 1 88 0
- 16661 025c 084B     		ldr	r3, .L24
- 16662 025e 4FF40042 		mov	r2, #32768
- 16663 0262 1A61     		str	r2, [r3, #16]
-  89:../hd44780_driver/hd44780_driver.c **** 
-  90:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
- 16664              		.loc 1 90 0
- 16665 0264 064B     		ldr	r3, .L24
- 16666 0266 4FF40062 		mov	r2, #2048
- 16667 026a 1A61     		str	r2, [r3, #16]
-  91:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16668              		.loc 1 91 0
- 16669 026c FFF7FEFF 		bl	lcd_delay
-  92:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
- 16670              		.loc 1 92 0
- 16671 0270 034B     		ldr	r3, .L24
- 16672 0272 4FF00062 		mov	r2, #134217728
- 16673 0276 1A61     		str	r2, [r3, #16]
-  93:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16674              		.loc 1 93 0
- 16675 0278 FFF7FEFF 		bl	lcd_delay
-  94:../hd44780_driver/hd44780_driver.c **** 
-  95:../hd44780_driver/hd44780_driver.c **** }
- 16676              		.loc 1 95 0
- 16677 027c 80BD     		pop	{r7, pc}
- 16678              	.L25:
- 16679 027e 00BF     		.align	2
- 16680              	.L24:
- 16681 0280 000C0140 		.word	1073810432
- 16682              		.cfi_endproc
- 16683              	.LFE36:
- 16685              		.align	2
- 16686              		.global	lcd_send
- 16687              		.thumb
- 16688              		.thumb_func
- 16690              	lcd_send:
- 16691              	.LFB37:
-  96:../hd44780_driver/hd44780_driver.c **** 
-  97:../hd44780_driver/hd44780_driver.c **** void lcd_send(uint8_t byte, dat_or_comm dc)  {
- 16692              		.loc 1 97 0
- 16693              		.cfi_startproc
- 16694              		@ args = 0, pretend = 0, frame = 8
- 16695              		@ frame_needed = 1, uses_anonymous_args = 0
- 16696 0284 80B5     		push	{r7, lr}
- 16697              	.LCFI21:
- 16698              		.cfi_def_cfa_offset 8
- 16699 0286 82B0     		sub	sp, sp, #8
- 16700              	.LCFI22:
- 16701              		.cfi_def_cfa_offset 16
- 16702 0288 00AF     		add	r7, sp, #0
- 16703              		.cfi_offset 14, -4
- 16704              		.cfi_offset 7, -8
- 16705              	.LCFI23:
- 16706              		.cfi_def_cfa_register 7
- 16707 028a 0246     		mov	r2, r0
- 16708 028c 0B46     		mov	r3, r1
- 16709 028e FA71     		strb	r2, [r7, #7]
- 16710 0290 BB71     		strb	r3, [r7, #6]
+  56:../hd44780_driver/hd44780_driver.c **** 	} else {
+  57:../hd44780_driver/hd44780_driver.c **** 		if (cur_state==CURSOR_DISABLE) {
+ 16575              		.loc 1 57 0
+ 16576 01c2 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 16577 01c4 002B     		cmp	r3, #0
+ 16578 01c6 10D1     		bne	.L22
+  58:../hd44780_driver/hd44780_driver.c **** 			if (cur_mode==NO_BLINK)  {
+ 16579              		.loc 1 58 0
+ 16580 01c8 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16581 01ca 002B     		cmp	r3, #0
+ 16582 01cc 06D1     		bne	.L23
+  59:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0C,COMMAND);
+ 16583              		.loc 1 59 0
+ 16584 01ce 4FF00C00 		mov	r0, #12
+ 16585 01d2 4FF00001 		mov	r1, #0
+ 16586 01d6 FFF7FEFF 		bl	lcd_send
+ 16587 01da 16E0     		b	.L19
+ 16588              	.L23:
+  60:../hd44780_driver/hd44780_driver.c **** 			} else {
+  61:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0D,COMMAND);
+ 16589              		.loc 1 61 0
+ 16590 01dc 4FF00D00 		mov	r0, #13
+ 16591 01e0 4FF00001 		mov	r1, #0
+ 16592 01e4 FFF7FEFF 		bl	lcd_send
+ 16593 01e8 0FE0     		b	.L19
+ 16594              	.L22:
+  62:../hd44780_driver/hd44780_driver.c **** 			}
+  63:../hd44780_driver/hd44780_driver.c **** 		} else  {
+  64:../hd44780_driver/hd44780_driver.c **** 			if (cur_mode==NO_BLINK)  {
+ 16595              		.loc 1 64 0
+ 16596 01ea 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 16597 01ec 002B     		cmp	r3, #0
+ 16598 01ee 06D1     		bne	.L24
+  65:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0E,COMMAND);
+ 16599              		.loc 1 65 0
+ 16600 01f0 4FF00E00 		mov	r0, #14
+ 16601 01f4 4FF00001 		mov	r1, #0
+ 16602 01f8 FFF7FEFF 		bl	lcd_send
+ 16603 01fc 05E0     		b	.L19
+ 16604              	.L24:
+  66:../hd44780_driver/hd44780_driver.c **** 			} else {
+  67:../hd44780_driver/hd44780_driver.c **** 				lcd_send(0x0F,COMMAND);
+ 16605              		.loc 1 67 0
+ 16606 01fe 4FF00F00 		mov	r0, #15
+ 16607 0202 4FF00001 		mov	r1, #0
+ 16608 0206 FFF7FEFF 		bl	lcd_send
+ 16609              	.L19:
+  68:../hd44780_driver/hd44780_driver.c **** 			}
+  69:../hd44780_driver/hd44780_driver.c **** 		}
+  70:../hd44780_driver/hd44780_driver.c **** 	}
+  71:../hd44780_driver/hd44780_driver.c **** }
+ 16610              		.loc 1 71 0
+ 16611 020a 07F10807 		add	r7, r7, #8
+ 16612 020e BD46     		mov	sp, r7
+ 16613 0210 80BD     		pop	{r7, pc}
+ 16614              		.cfi_endproc
+ 16615              	.LFE35:
+ 16617 0212 00BF     		.align	2
+ 16618              		.global	lcd_set_4bit_mode
+ 16619              		.thumb
+ 16620              		.thumb_func
+ 16622              	lcd_set_4bit_mode:
+ 16623              	.LFB36:
+  72:../hd44780_driver/hd44780_driver.c **** 
+  73:../hd44780_driver/hd44780_driver.c **** void lcd_set_4bit_mode(void) {
+ 16624              		.loc 1 73 0
+ 16625              		.cfi_startproc
+ 16626              		@ args = 0, pretend = 0, frame = 0
+ 16627              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16628 0214 80B5     		push	{r7, lr}
+ 16629              	.LCFI19:
+ 16630              		.cfi_def_cfa_offset 8
+ 16631 0216 00AF     		add	r7, sp, #0
+ 16632              		.cfi_offset 14, -4
+ 16633              		.cfi_offset 7, -8
+ 16634              	.LCFI20:
+ 16635              		.cfi_def_cfa_register 7
+  74:../hd44780_driver/hd44780_driver.c **** 
+  75:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
+ 16636              		.loc 1 75 0
+ 16637 0218 1E4B     		ldr	r3, .L26
+ 16638 021a 4FF07C42 		mov	r2, #-67108864
+ 16639 021e 1A61     		str	r2, [r3, #16]
+  76:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB5_BS);
+ 16640              		.loc 1 76 0
+ 16641 0220 1C4B     		ldr	r3, .L26
+ 16642 0222 4FF40052 		mov	r2, #8192
+ 16643 0226 1A61     		str	r2, [r3, #16]
+  77:../hd44780_driver/hd44780_driver.c **** 
+  78:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
+ 16644              		.loc 1 78 0
+ 16645 0228 1A4B     		ldr	r3, .L26
+ 16646 022a 4FF40062 		mov	r2, #2048
+ 16647 022e 1A61     		str	r2, [r3, #16]
+  79:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16648              		.loc 1 79 0
+ 16649 0230 FFF7FEFF 		bl	lcd_delay
+  80:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
+ 16650              		.loc 1 80 0
+ 16651 0234 174B     		ldr	r3, .L26
+ 16652 0236 4FF00062 		mov	r2, #134217728
+ 16653 023a 1A61     		str	r2, [r3, #16]
+  81:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16654              		.loc 1 81 0
+ 16655 023c FFF7FEFF 		bl	lcd_delay
+  82:../hd44780_driver/hd44780_driver.c **** 
+  83:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
+ 16656              		.loc 1 83 0
+ 16657 0240 144B     		ldr	r3, .L26
+ 16658 0242 4FF07C42 		mov	r2, #-67108864
+ 16659 0246 1A61     		str	r2, [r3, #16]
+  84:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB5_BS);
+ 16660              		.loc 1 84 0
+ 16661 0248 124B     		ldr	r3, .L26
+ 16662 024a 4FF40052 		mov	r2, #8192
+ 16663 024e 1A61     		str	r2, [r3, #16]
+  85:../hd44780_driver/hd44780_driver.c **** 
+  86:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
+ 16664              		.loc 1 86 0
+ 16665 0250 104B     		ldr	r3, .L26
+ 16666 0252 4FF40062 		mov	r2, #2048
+ 16667 0256 1A61     		str	r2, [r3, #16]
+  87:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16668              		.loc 1 87 0
+ 16669 0258 FFF7FEFF 		bl	lcd_delay
+  88:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
+ 16670              		.loc 1 88 0
+ 16671 025c 0D4B     		ldr	r3, .L26
+ 16672 025e 4FF00062 		mov	r2, #134217728
+ 16673 0262 1A61     		str	r2, [r3, #16]
+  89:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16674              		.loc 1 89 0
+ 16675 0264 FFF7FEFF 		bl	lcd_delay
+  90:../hd44780_driver/hd44780_driver.c **** 
+  91:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
+ 16676              		.loc 1 91 0
+ 16677 0268 0A4B     		ldr	r3, .L26
+ 16678 026a 4FF07C42 		mov	r2, #-67108864
+ 16679 026e 1A61     		str	r2, [r3, #16]
+  92:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BS);
+ 16680              		.loc 1 92 0
+ 16681 0270 084B     		ldr	r3, .L26
+ 16682 0272 4FF40042 		mov	r2, #32768
+ 16683 0276 1A61     		str	r2, [r3, #16]
+  93:../hd44780_driver/hd44780_driver.c **** 
+  94:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
+ 16684              		.loc 1 94 0
+ 16685 0278 064B     		ldr	r3, .L26
+ 16686 027a 4FF40062 		mov	r2, #2048
+ 16687 027e 1A61     		str	r2, [r3, #16]
+  95:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16688              		.loc 1 95 0
+ 16689 0280 FFF7FEFF 		bl	lcd_delay
+  96:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
+ 16690              		.loc 1 96 0
+ 16691 0284 034B     		ldr	r3, .L26
+ 16692 0286 4FF00062 		mov	r2, #134217728
+ 16693 028a 1A61     		str	r2, [r3, #16]
+  97:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16694              		.loc 1 97 0
+ 16695 028c FFF7FEFF 		bl	lcd_delay
   98:../hd44780_driver/hd44780_driver.c **** 
-  99:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
- 16711              		.loc 1 99 0
- 16712 0292 394B     		ldr	r3, .L36
- 16713 0294 4FF07C42 		mov	r2, #-67108864
- 16714 0298 1A61     		str	r2, [r3, #16]
+  99:../hd44780_driver/hd44780_driver.c **** }
+ 16696              		.loc 1 99 0
+ 16697 0290 80BD     		pop	{r7, pc}
+ 16698              	.L27:
+ 16699 0292 00BF     		.align	2
+ 16700              	.L26:
+ 16701 0294 000C0140 		.word	1073810432
+ 16702              		.cfi_endproc
+ 16703              	.LFE36:
+ 16705              		.align	2
+ 16706              		.global	lcd_send
+ 16707              		.thumb
+ 16708              		.thumb_func
+ 16710              	lcd_send:
+ 16711              	.LFB37:
  100:../hd44780_driver/hd44780_driver.c **** 
- 101:../hd44780_driver/hd44780_driver.c **** 	if (dc) {
- 16715              		.loc 1 101 0
- 16716 029a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
- 16717 029c 002B     		cmp	r3, #0
- 16718 029e 03D0     		beq	.L27
- 102:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_CD_BS;
- 16719              		.loc 1 102 0
- 16720 02a0 354B     		ldr	r3, .L36
- 16721 02a2 4FF48062 		mov	r2, #1024
- 16722 02a6 1A61     		str	r2, [r3, #16]
- 16723              	.L27:
- 103:../hd44780_driver/hd44780_driver.c **** 	}
- 104:../hd44780_driver/hd44780_driver.c **** 
- 105:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x10) {
- 16724              		.loc 1 105 0
- 16725 02a8 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16726 02aa 03F01003 		and	r3, r3, #16
- 16727 02ae 002B     		cmp	r3, #0
- 16728 02b0 03D0     		beq	.L28
- 106:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB4_BS;
- 16729              		.loc 1 106 0
- 16730 02b2 314B     		ldr	r3, .L36
- 16731 02b4 4FF48052 		mov	r2, #4096
- 16732 02b8 1A61     		str	r2, [r3, #16]
- 16733              	.L28:
- 107:../hd44780_driver/hd44780_driver.c **** 	}
- 108:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x20) {
- 16734              		.loc 1 108 0
- 16735 02ba FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16736 02bc 03F02003 		and	r3, r3, #32
- 16737 02c0 002B     		cmp	r3, #0
- 16738 02c2 03D0     		beq	.L29
- 109:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB5_BS;
- 16739              		.loc 1 109 0
- 16740 02c4 2C4B     		ldr	r3, .L36
- 16741 02c6 4FF40052 		mov	r2, #8192
- 16742 02ca 1A61     		str	r2, [r3, #16]
+ 101:../hd44780_driver/hd44780_driver.c **** void lcd_send(uint8_t byte, dat_or_comm dc)  {
+ 16712              		.loc 1 101 0
+ 16713              		.cfi_startproc
+ 16714              		@ args = 0, pretend = 0, frame = 8
+ 16715              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16716 0298 80B5     		push	{r7, lr}
+ 16717              	.LCFI21:
+ 16718              		.cfi_def_cfa_offset 8
+ 16719 029a 82B0     		sub	sp, sp, #8
+ 16720              	.LCFI22:
+ 16721              		.cfi_def_cfa_offset 16
+ 16722 029c 00AF     		add	r7, sp, #0
+ 16723              		.cfi_offset 14, -4
+ 16724              		.cfi_offset 7, -8
+ 16725              	.LCFI23:
+ 16726              		.cfi_def_cfa_register 7
+ 16727 029e 0246     		mov	r2, r0
+ 16728 02a0 0B46     		mov	r3, r1
+ 16729 02a2 FA71     		strb	r2, [r7, #7]
+ 16730 02a4 BB71     		strb	r3, [r7, #6]
+ 102:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
+ 16731              		.loc 1 102 0
+ 16732 02a6 394B     		ldr	r3, .L38
+ 16733 02a8 4FF07C42 		mov	r2, #-67108864
+ 16734 02ac 1A61     		str	r2, [r3, #16]
+ 103:../hd44780_driver/hd44780_driver.c **** 
+ 104:../hd44780_driver/hd44780_driver.c **** 	if (dc) {
+ 16735              		.loc 1 104 0
+ 16736 02ae BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 16737 02b0 002B     		cmp	r3, #0
+ 16738 02b2 03D0     		beq	.L29
+ 105:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_CD_BS;
+ 16739              		.loc 1 105 0
+ 16740 02b4 354B     		ldr	r3, .L38
+ 16741 02b6 4FF48062 		mov	r2, #1024
+ 16742 02ba 1A61     		str	r2, [r3, #16]
  16743              	.L29:
- 110:../hd44780_driver/hd44780_driver.c **** 	}
- 111:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x40) {
- 16744              		.loc 1 111 0
- 16745 02cc FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16746 02ce 03F04003 		and	r3, r3, #64
- 16747 02d2 002B     		cmp	r3, #0
- 16748 02d4 03D0     		beq	.L30
- 112:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB6_BS;
- 16749              		.loc 1 112 0
- 16750 02d6 284B     		ldr	r3, .L36
- 16751 02d8 4FF48042 		mov	r2, #16384
- 16752 02dc 1A61     		str	r2, [r3, #16]
+ 106:../hd44780_driver/hd44780_driver.c **** 	}
+ 107:../hd44780_driver/hd44780_driver.c **** 
+ 108:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x10) {
+ 16744              		.loc 1 108 0
+ 16745 02bc FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16746 02be 03F01003 		and	r3, r3, #16
+ 16747 02c2 002B     		cmp	r3, #0
+ 16748 02c4 03D0     		beq	.L30
+ 109:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB4_BS;
+ 16749              		.loc 1 109 0
+ 16750 02c6 314B     		ldr	r3, .L38
+ 16751 02c8 4FF48052 		mov	r2, #4096
+ 16752 02cc 1A61     		str	r2, [r3, #16]
  16753              	.L30:
- 113:../hd44780_driver/hd44780_driver.c **** 	}
- 114:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x80) {
- 16754              		.loc 1 114 0
- 16755 02de FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16756 02e0 5BB2     		sxtb	r3, r3
- 16757 02e2 002B     		cmp	r3, #0
- 16758 02e4 03DA     		bge	.L31
- 115:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB7_BS;
- 16759              		.loc 1 115 0
- 16760 02e6 244B     		ldr	r3, .L36
- 16761 02e8 4FF40042 		mov	r2, #32768
- 16762 02ec 1A61     		str	r2, [r3, #16]
+ 110:../hd44780_driver/hd44780_driver.c **** 	}
+ 111:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x20) {
+ 16754              		.loc 1 111 0
+ 16755 02ce FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16756 02d0 03F02003 		and	r3, r3, #32
+ 16757 02d4 002B     		cmp	r3, #0
+ 16758 02d6 03D0     		beq	.L31
+ 112:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB5_BS;
+ 16759              		.loc 1 112 0
+ 16760 02d8 2C4B     		ldr	r3, .L38
+ 16761 02da 4FF40052 		mov	r2, #8192
+ 16762 02de 1A61     		str	r2, [r3, #16]
  16763              	.L31:
+ 113:../hd44780_driver/hd44780_driver.c **** 	}
+ 114:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x40) {
+ 16764              		.loc 1 114 0
+ 16765 02e0 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16766 02e2 03F04003 		and	r3, r3, #64
+ 16767 02e6 002B     		cmp	r3, #0
+ 16768 02e8 03D0     		beq	.L32
+ 115:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB6_BS;
+ 16769              		.loc 1 115 0
+ 16770 02ea 284B     		ldr	r3, .L38
+ 16771 02ec 4FF48042 		mov	r2, #16384
+ 16772 02f0 1A61     		str	r2, [r3, #16]
+ 16773              	.L32:
  116:../hd44780_driver/hd44780_driver.c **** 	}
- 117:../hd44780_driver/hd44780_driver.c **** 
- 118:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
- 16764              		.loc 1 118 0
- 16765 02ee 224B     		ldr	r3, .L36
- 16766 02f0 4FF40062 		mov	r2, #2048
- 16767 02f4 1A61     		str	r2, [r3, #16]
- 119:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16768              		.loc 1 119 0
- 16769 02f6 FFF7FEFF 		bl	lcd_delay
- 120:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
- 16770              		.loc 1 120 0
- 16771 02fa 1F4B     		ldr	r3, .L36
- 16772 02fc 4FF00062 		mov	r2, #134217728
- 16773 0300 1A61     		str	r2, [r3, #16]
- 121:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16774              		.loc 1 121 0
- 16775 0302 FFF7FEFF 		bl	lcd_delay
- 122:../hd44780_driver/hd44780_driver.c **** 
- 123:../hd44780_driver/hd44780_driver.c **** 
- 124:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC );
- 16776              		.loc 1 124 0
- 16777 0306 1C4B     		ldr	r3, .L36
- 16778 0308 4FF07042 		mov	r2, #-268435456
- 16779 030c 1A61     		str	r2, [r3, #16]
+ 117:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x80) {
+ 16774              		.loc 1 117 0
+ 16775 02f2 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16776 02f4 5BB2     		sxtb	r3, r3
+ 16777 02f6 002B     		cmp	r3, #0
+ 16778 02f8 03DA     		bge	.L33
+ 118:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB7_BS;
+ 16779              		.loc 1 118 0
+ 16780 02fa 244B     		ldr	r3, .L38
+ 16781 02fc 4FF40042 		mov	r2, #32768
+ 16782 0300 1A61     		str	r2, [r3, #16]
+ 16783              	.L33:
+ 119:../hd44780_driver/hd44780_driver.c **** 	}
+ 120:../hd44780_driver/hd44780_driver.c **** 
+ 121:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
+ 16784              		.loc 1 121 0
+ 16785 0302 224B     		ldr	r3, .L38
+ 16786 0304 4FF40062 		mov	r2, #2048
+ 16787 0308 1A61     		str	r2, [r3, #16]
+ 122:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16788              		.loc 1 122 0
+ 16789 030a FFF7FEFF 		bl	lcd_delay
+ 123:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
+ 16790              		.loc 1 123 0
+ 16791 030e 1F4B     		ldr	r3, .L38
+ 16792 0310 4FF00062 		mov	r2, #134217728
+ 16793 0314 1A61     		str	r2, [r3, #16]
+ 124:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16794              		.loc 1 124 0
+ 16795 0316 FFF7FEFF 		bl	lcd_delay
  125:../hd44780_driver/hd44780_driver.c **** 
- 126:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x01) {
- 16780              		.loc 1 126 0
- 16781 030e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16782 0310 03F00103 		and	r3, r3, #1
- 16783 0314 DBB2     		uxtb	r3, r3
- 16784 0316 002B     		cmp	r3, #0
- 16785 0318 03D0     		beq	.L32
- 127:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB4_BS;
- 16786              		.loc 1 127 0
- 16787 031a 174B     		ldr	r3, .L36
- 16788 031c 4FF48052 		mov	r2, #4096
- 16789 0320 1A61     		str	r2, [r3, #16]
- 16790              	.L32:
- 128:../hd44780_driver/hd44780_driver.c **** 	}
- 129:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x02) {
- 16791              		.loc 1 129 0
- 16792 0322 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16793 0324 03F00203 		and	r3, r3, #2
- 16794 0328 002B     		cmp	r3, #0
- 16795 032a 03D0     		beq	.L33
- 130:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB5_BS;
- 16796              		.loc 1 130 0
- 16797 032c 124B     		ldr	r3, .L36
- 16798 032e 4FF40052 		mov	r2, #8192
- 16799 0332 1A61     		str	r2, [r3, #16]
- 16800              	.L33:
- 131:../hd44780_driver/hd44780_driver.c **** 	}
- 132:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x04) {
- 16801              		.loc 1 132 0
- 16802 0334 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16803 0336 03F00403 		and	r3, r3, #4
- 16804 033a 002B     		cmp	r3, #0
- 16805 033c 03D0     		beq	.L34
- 133:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB6_BS;
- 16806              		.loc 1 133 0
- 16807 033e 0E4B     		ldr	r3, .L36
- 16808 0340 4FF48042 		mov	r2, #16384
- 16809 0344 1A61     		str	r2, [r3, #16]
+ 126:../hd44780_driver/hd44780_driver.c **** 
+ 127:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC );
+ 16796              		.loc 1 127 0
+ 16797 031a 1C4B     		ldr	r3, .L38
+ 16798 031c 4FF07042 		mov	r2, #-268435456
+ 16799 0320 1A61     		str	r2, [r3, #16]
+ 128:../hd44780_driver/hd44780_driver.c **** 
+ 129:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x01) {
+ 16800              		.loc 1 129 0
+ 16801 0322 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16802 0324 03F00103 		and	r3, r3, #1
+ 16803 0328 DBB2     		uxtb	r3, r3
+ 16804 032a 002B     		cmp	r3, #0
+ 16805 032c 03D0     		beq	.L34
+ 130:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB4_BS;
+ 16806              		.loc 1 130 0
+ 16807 032e 174B     		ldr	r3, .L38
+ 16808 0330 4FF48052 		mov	r2, #4096
+ 16809 0334 1A61     		str	r2, [r3, #16]
  16810              	.L34:
- 134:../hd44780_driver/hd44780_driver.c **** 	}
- 135:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x08) {
- 16811              		.loc 1 135 0
- 16812 0346 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 16813 0348 03F00803 		and	r3, r3, #8
- 16814 034c 002B     		cmp	r3, #0
- 16815 034e 03D0     		beq	.L35
- 136:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB7_BS;
- 16816              		.loc 1 136 0
- 16817 0350 094B     		ldr	r3, .L36
- 16818 0352 4FF40042 		mov	r2, #32768
- 16819 0356 1A61     		str	r2, [r3, #16]
+ 131:../hd44780_driver/hd44780_driver.c **** 	}
+ 132:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x02) {
+ 16811              		.loc 1 132 0
+ 16812 0336 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16813 0338 03F00203 		and	r3, r3, #2
+ 16814 033c 002B     		cmp	r3, #0
+ 16815 033e 03D0     		beq	.L35
+ 133:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB5_BS;
+ 16816              		.loc 1 133 0
+ 16817 0340 124B     		ldr	r3, .L38
+ 16818 0342 4FF40052 		mov	r2, #8192
+ 16819 0346 1A61     		str	r2, [r3, #16]
  16820              	.L35:
+ 134:../hd44780_driver/hd44780_driver.c **** 	}
+ 135:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x04) {
+ 16821              		.loc 1 135 0
+ 16822 0348 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16823 034a 03F00403 		and	r3, r3, #4
+ 16824 034e 002B     		cmp	r3, #0
+ 16825 0350 03D0     		beq	.L36
+ 136:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB6_BS;
+ 16826              		.loc 1 136 0
+ 16827 0352 0E4B     		ldr	r3, .L38
+ 16828 0354 4FF48042 		mov	r2, #16384
+ 16829 0358 1A61     		str	r2, [r3, #16]
+ 16830              	.L36:
  137:../hd44780_driver/hd44780_driver.c **** 	}
- 138:../hd44780_driver/hd44780_driver.c **** 
- 139:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
- 16821              		.loc 1 139 0
- 16822 0358 074B     		ldr	r3, .L36
- 16823 035a 4FF40062 		mov	r2, #2048
- 16824 035e 1A61     		str	r2, [r3, #16]
- 140:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16825              		.loc 1 140 0
- 16826 0360 FFF7FEFF 		bl	lcd_delay
- 141:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
- 16827              		.loc 1 141 0
- 16828 0364 044B     		ldr	r3, .L36
- 16829 0366 4FF00062 		mov	r2, #134217728
- 16830 036a 1A61     		str	r2, [r3, #16]
- 142:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
- 16831              		.loc 1 142 0
- 16832 036c FFF7FEFF 		bl	lcd_delay
- 143:../hd44780_driver/hd44780_driver.c **** 
- 144:../hd44780_driver/hd44780_driver.c **** 
- 145:../hd44780_driver/hd44780_driver.c **** }
- 16833              		.loc 1 145 0
- 16834 0370 07F10807 		add	r7, r7, #8
- 16835 0374 BD46     		mov	sp, r7
- 16836 0376 80BD     		pop	{r7, pc}
- 16837              	.L37:
- 16838              		.align	2
- 16839              	.L36:
- 16840 0378 000C0140 		.word	1073810432
- 16841              		.cfi_endproc
- 16842              	.LFE37:
- 16844              	.Letext0:
+ 138:../hd44780_driver/hd44780_driver.c **** 	if (byte & 0x08) {
+ 16831              		.loc 1 138 0
+ 16832 035a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16833 035c 03F00803 		and	r3, r3, #8
+ 16834 0360 002B     		cmp	r3, #0
+ 16835 0362 03D0     		beq	.L37
+ 139:../hd44780_driver/hd44780_driver.c **** 		LCD_PORT->BSRR=LCD_DB7_BS;
+ 16836              		.loc 1 139 0
+ 16837 0364 094B     		ldr	r3, .L38
+ 16838 0366 4FF40042 		mov	r2, #32768
+ 16839 036a 1A61     		str	r2, [r3, #16]
+ 16840              	.L37:
+ 140:../hd44780_driver/hd44780_driver.c **** 	}
+ 141:../hd44780_driver/hd44780_driver.c **** 
+ 142:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BS;
+ 16841              		.loc 1 142 0
+ 16842 036c 074B     		ldr	r3, .L38
+ 16843 036e 4FF40062 		mov	r2, #2048
+ 16844 0372 1A61     		str	r2, [r3, #16]
+ 143:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16845              		.loc 1 143 0
+ 16846 0374 FFF7FEFF 		bl	lcd_delay
+ 144:../hd44780_driver/hd44780_driver.c **** 	LCD_PORT->BSRR=LCD_EN_BC;
+ 16847              		.loc 1 144 0
+ 16848 0378 044B     		ldr	r3, .L38
+ 16849 037a 4FF00062 		mov	r2, #134217728
+ 16850 037e 1A61     		str	r2, [r3, #16]
+ 145:../hd44780_driver/hd44780_driver.c **** 	lcd_delay();
+ 16851              		.loc 1 145 0
+ 16852 0380 FFF7FEFF 		bl	lcd_delay
+ 146:../hd44780_driver/hd44780_driver.c **** }
+ 16853              		.loc 1 146 0
+ 16854 0384 07F10807 		add	r7, r7, #8
+ 16855 0388 BD46     		mov	sp, r7
+ 16856 038a 80BD     		pop	{r7, pc}
+ 16857              	.L39:
+ 16858              		.align	2
+ 16859              	.L38:
+ 16860 038c 000C0140 		.word	1073810432
+ 16861              		.cfi_endproc
+ 16862              	.LFE37:
+ 16864              		.align	2
+ 16865              		.global	lcd_send_byte
+ 16866              		.thumb
+ 16867              		.thumb_func
+ 16869              	lcd_send_byte:
+ 16870              	.LFB38:
+ 147:../hd44780_driver/hd44780_driver.c **** 
+ 148:../hd44780_driver/hd44780_driver.c **** void lcd_send_byte(uint8_t byte)  {
+ 16871              		.loc 1 148 0
+ 16872              		.cfi_startproc
+ 16873              		@ args = 0, pretend = 0, frame = 8
+ 16874              		@ frame_needed = 1, uses_anonymous_args = 0
+ 16875 0390 80B5     		push	{r7, lr}
+ 16876              	.LCFI24:
+ 16877              		.cfi_def_cfa_offset 8
+ 16878 0392 82B0     		sub	sp, sp, #8
+ 16879              	.LCFI25:
+ 16880              		.cfi_def_cfa_offset 16
+ 16881 0394 00AF     		add	r7, sp, #0
+ 16882              		.cfi_offset 14, -4
+ 16883              		.cfi_offset 7, -8
+ 16884              	.LCFI26:
+ 16885              		.cfi_def_cfa_register 7
+ 16886 0396 0346     		mov	r3, r0
+ 16887 0398 FB71     		strb	r3, [r7, #7]
+ 149:../hd44780_driver/hd44780_driver.c **** 	if (lcd_cnt == 15){
+ 16888              		.loc 1 149 0
+ 16889 039a 104B     		ldr	r3, .L43
+ 16890 039c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16891 039e 0F2B     		cmp	r3, #15
+ 16892 03a0 05D1     		bne	.L41
+ 150:../hd44780_driver/hd44780_driver.c **** 		lcd_set_xy(0, 1);
+ 16893              		.loc 1 150 0
+ 16894 03a2 4FF00000 		mov	r0, #0
+ 16895 03a6 4FF00101 		mov	r1, #1
+ 16896 03aa FFF7FEFF 		bl	lcd_set_xy
+ 16897              	.L41:
+ 151:../hd44780_driver/hd44780_driver.c **** 	}
+ 152:../hd44780_driver/hd44780_driver.c **** 	if(lcd_cnt > 31){
+ 16898              		.loc 1 152 0
+ 16899 03ae 0B4B     		ldr	r3, .L43
+ 16900 03b0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16901 03b2 1F2B     		cmp	r3, #31
+ 16902 03b4 01D9     		bls	.L42
+ 153:../hd44780_driver/hd44780_driver.c **** 		lcd_clear();
+ 16903              		.loc 1 153 0
+ 16904 03b6 FFF7FEFF 		bl	lcd_clear
+ 16905              	.L42:
+ 154:../hd44780_driver/hd44780_driver.c **** 	}
+ 155:../hd44780_driver/hd44780_driver.c **** 
+ 156:../hd44780_driver/hd44780_driver.c **** 	lcd_send(byte, 1);
+ 16906              		.loc 1 156 0
+ 16907 03ba FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 16908 03bc 1846     		mov	r0, r3
+ 16909 03be 4FF00101 		mov	r1, #1
+ 16910 03c2 FFF7FEFF 		bl	lcd_send
+ 157:../hd44780_driver/hd44780_driver.c **** 
+ 158:../hd44780_driver/hd44780_driver.c **** 	lcd_cnt++;
+ 16911              		.loc 1 158 0
+ 16912 03c6 054B     		ldr	r3, .L43
+ 16913 03c8 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 16914 03ca 03F10103 		add	r3, r3, #1
+ 16915 03ce DAB2     		uxtb	r2, r3
+ 16916 03d0 024B     		ldr	r3, .L43
+ 16917 03d2 1A70     		strb	r2, [r3, #0]
+ 159:../hd44780_driver/hd44780_driver.c **** }
+ 16918              		.loc 1 159 0
+ 16919 03d4 07F10807 		add	r7, r7, #8
+ 16920 03d8 BD46     		mov	sp, r7
+ 16921 03da 80BD     		pop	{r7, pc}
+ 16922              	.L44:
+ 16923              		.align	2
+ 16924              	.L43:
+ 16925 03dc 00000000 		.word	lcd_cnt
+ 16926              		.cfi_endproc
+ 16927              	.LFE38:
+ 16929              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 hd44780_driver.c
-     /tmp/ccIICYcS.s:16199  .text:00000000 $t
-     /tmp/ccIICYcS.s:16204  .text:00000000 lcd_delay
-     /tmp/ccIICYcS.s:16248  .text:00000028 lcd_init
-     /tmp/ccIICYcS.s:16602  .text:00000200 lcd_set_4bit_mode
-     /tmp/ccIICYcS.s:16522  .text:00000188 lcd_set_state
-     /tmp/ccIICYcS.s:16494  .text:00000174 lcd_clear
-     /tmp/ccIICYcS.s:16690  .text:00000284 lcd_send
-     /tmp/ccIICYcS.s:16310  .text:0000008c $d
-     /tmp/ccIICYcS.s:16317  .text:0000009c $t
-     /tmp/ccIICYcS.s:16322  .text:0000009c lcd_set_user_char
-     /tmp/ccIICYcS.s:16391  .text:00000100 lcd_set_xy
-     /tmp/ccIICYcS.s:16445  .text:00000144 lcd_out
-     /tmp/ccIICYcS.s:16681  .text:00000280 $d
-     /tmp/ccIICYcS.s:16685  .text:00000284 $t
-     /tmp/ccIICYcS.s:16840  .text:00000378 $d
+     /tmp/ccRdbFbY.s:16205  .bss:00000000 lcd_cnt
+     /tmp/ccRdbFbY.s:16206  .bss:00000000 $d
+     /tmp/ccRdbFbY.s:16208  .text:00000000 $t
+     /tmp/ccRdbFbY.s:16213  .text:00000000 lcd_delay
+     /tmp/ccRdbFbY.s:16257  .text:00000028 lcd_init
+     /tmp/ccRdbFbY.s:16622  .text:00000214 lcd_set_4bit_mode
+     /tmp/ccRdbFbY.s:16542  .text:0000019c lcd_set_state
+     /tmp/ccRdbFbY.s:16502  .text:00000170 lcd_clear
+     /tmp/ccRdbFbY.s:16710  .text:00000298 lcd_send
+     /tmp/ccRdbFbY.s:16319  .text:0000008c $d
+     /tmp/ccRdbFbY.s:16326  .text:0000009c $t
+     /tmp/ccRdbFbY.s:16331  .text:0000009c lcd_set_user_char
+     /tmp/ccRdbFbY.s:16400  .text:00000100 lcd_set_xy
+     /tmp/ccRdbFbY.s:16454  .text:00000144 lcd_out
+     /tmp/ccRdbFbY.s:16869  .text:00000390 lcd_send_byte
+     /tmp/ccRdbFbY.s:16533  .text:00000198 $d
+     /tmp/ccRdbFbY.s:16537  .text:0000019c $t
+     /tmp/ccRdbFbY.s:16701  .text:00000294 $d
+     /tmp/ccRdbFbY.s:16705  .text:00000298 $t
+     /tmp/ccRdbFbY.s:16860  .text:0000038c $d
+     /tmp/ccRdbFbY.s:16864  .text:00000390 $t
+     /tmp/ccRdbFbY.s:16925  .text:000003dc $d
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

@@ -223,12 +223,12 @@
  16292              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 sim900.c
-     /tmp/ccuRMmzo.s:16119  .text:00000000 $t
-     /tmp/ccuRMmzo.s:16124  .text:00000000 InitSim900
-     /tmp/ccuRMmzo.s:16187  .text:00000060 $d
-     /tmp/ccuRMmzo.s:16192  .text:00000068 $t
-     /tmp/ccuRMmzo.s:16197  .text:00000068 SwitchSim900
-     /tmp/ccuRMmzo.s:16288  .text:000000f0 $d
+     /tmp/ccLCJIzm.s:16119  .text:00000000 $t
+     /tmp/ccLCJIzm.s:16124  .text:00000000 InitSim900
+     /tmp/ccLCJIzm.s:16187  .text:00000060 $d
+     /tmp/ccLCJIzm.s:16192  .text:00000068 $t
+     /tmp/ccLCJIzm.s:16197  .text:00000068 SwitchSim900
+     /tmp/ccLCJIzm.s:16288  .text:000000f0 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
