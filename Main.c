@@ -22,8 +22,8 @@ int main(void)
 
         while(1)
         {
-            delay_timer_ms(1000);
             GPIOB->ODR ^= GPIO_ODR_ODR0;
+            delay_timer_ms(1000);
             //itoa(buttons[0][0], 10, buf);
             //lcd_clear();
             //lcd_out(buf);
@@ -45,9 +45,9 @@ void TIM2_IRQHandler(void)
 	kb_strobe();
 	my_btn = get_btn();
 	if (my_btn != 0){
-		//lcd_send(my_btn, 1);
-		//lcd_send('-',1);
-		//lcd_send((my_btn & 0xff00)>>8, 1);
+		//lcd_send_byte(my_btn, 1);
+		//lcd_send_byte('-',1);
+		//lcd_send_byte((my_btn & 0xff00)>>8, 1);
 
 		tmp = my_btn;
 		if(tmp == '*')lcd_clear();
@@ -85,6 +85,7 @@ void InitAll(void)
     init_keyboard();
 
     timer2_init(10);
+    delay_timer_ms_init();
 
     InitUSART(9600);
     usart_interrupt_init();
