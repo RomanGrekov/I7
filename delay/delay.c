@@ -1,5 +1,13 @@
 #include "delay.h"
 
+void delay_timer_ms_init(void){
+	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN; //Enable timer4 clock
+	TIM4->PSC = F_CPU/1000 - 1; //Presceler
+	TIM4->CNT = 65535;//Загружаем число миллисекунд в счетный регистр
+	TIM4->CR1 = TIM_CR1_CEN;//Запускаем счет
+	TIM4->SR &= ~TIM_SR_UIF;//Теперь флаг события надо сбросить вручную
+}
+
 void delay_timer_ms(uint16_t ms)
 {
 	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN; //Enable timer4 clock

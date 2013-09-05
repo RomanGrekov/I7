@@ -1,5 +1,7 @@
 #include "hd44780_driver.h"
 
+uint8_t lcd_cnt = 0;
+
 void lcd_delay(void) {
 	volatile uint32_t tmpvar;
 	for (tmpvar=3000;tmpvar!=0;tmpvar--);
@@ -37,13 +39,15 @@ void lcd_set_xy(uint8_t x, uint8_t y)  {
 
 void lcd_out(char * txt) {
 	while(*txt) {
-		lcd_send(*txt,DATA);
+		lcd_send_byte(*txt);
 		txt++;
 	}
 }
 
 void lcd_clear(void) {
 	lcd_send(0x01,COMMAND);
+	lcd_set_xy(0, 0);
+	lcd_cnt = 0;
 }
 
 void lcd_set_state(lcd_state state, cursor_state cur_state, cursor_mode cur_mode)  {
@@ -95,7 +99,6 @@ void lcd_set_4bit_mode(void) {
 }
 
 void lcd_send(uint8_t byte, dat_or_comm dc)  {
-
 	LCD_PORT->BSRR=(LCD_DB7_BC | LCD_DB6_BC | LCD_DB5_BC | LCD_DB4_BC | LCD_CD_BC | LCD_EN_BC);
 
 	if (dc) {
@@ -140,6 +143,17 @@ void lcd_send(uint8_t byte, dat_or_comm dc)  {
 	lcd_delay();
 	LCD_PORT->BSRR=LCD_EN_BC;
 	lcd_delay();
+}
 
+void lcd_send_byte(uint8_t byte)  {
+	if (lcd_cnt == 15){
+		lcd_set_xy(0, 1);
+	}
+	if(lcd_cnt > 31){
+		lcd_clear();
+	}
 
+	lcd_send(byte, 1);
+
+	lcd_cnt++;
 }

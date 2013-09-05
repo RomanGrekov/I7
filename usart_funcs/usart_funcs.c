@@ -29,7 +29,10 @@ void PutChar(unsigned char sym)
       RXBuf[RXtail] = sym;    //помещаем в него символ
       RXcount++;                    //инкрементируем счетчик символов
       RXtail++;                           //и индекс хвоста буфера
-      if (TXtail == SIZE_BUF)TXtail = 0;
+      if (RXtail == SIZE_BUF){
+    	  RXtail = 0;
+    	  RXcount = 0;
+      }
     }
 }
 
@@ -42,6 +45,9 @@ unsigned char GetChar(void)
       RXcount--;                                   //уменьшаем счетчик символов
       RXhead++;                                  //инкрементируем индекс головы буфера
       if (RXhead == SIZE_BUF) RXhead = 0;
+   }
+   else{
+	   RXhead = 0;
    }
    return sym;
 }

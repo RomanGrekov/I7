@@ -11,6 +11,8 @@
 #define LCD_DB5 13
 #define LCD_DB6 14
 #define LCD_DB7 15
+
+#define LCD_SIZE 16
 ///////////////////////////////////
 
 typedef enum { // Перечисление для выставления команда/данные
@@ -214,3 +216,4 @@ void lcd_out(char * txt);
 void lcd_set_xy(uint8_t x, uint8_t y);
 void lcd_set_user_char(uint8_t char_num, uint8_t * char_data);
 void lcd_delay(void);
+void lcd_send_byte(uint8_t byte);
