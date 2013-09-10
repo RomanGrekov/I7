@@ -1,7 +1,6 @@
 #include "usart_funcs.h"
 
 void USART_PutChar(unsigned char sym);
-void USART_SendStr(unsigned char * data);
 
 //кольцевой (циклический) буфер
 unsigned char RXBuf[SIZE_BUF];
@@ -31,7 +30,6 @@ void PutChar(unsigned char sym)
       RXtail++;                           //и индекс хвоста буфера
       if (RXtail == SIZE_BUF){
     	  RXtail = 0;
-    	  RXcount = 0;
       }
     }
 }
@@ -45,9 +43,6 @@ unsigned char GetChar(void)
       RXcount--;                                   //уменьшаем счетчик символов
       RXhead++;                                  //инкрементируем индекс головы буфера
       if (RXhead == SIZE_BUF) RXhead = 0;
-   }
-   else{
-	   RXhead = 0;
    }
    return sym;
 }

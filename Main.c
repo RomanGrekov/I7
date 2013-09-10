@@ -1,5 +1,4 @@
 #include "libs/stm32f10x.h"
-#include "hd44780_driver/hd44780_driver.h"
 #include "clock/clock.h"
 #include "delay/delay.h"
 #include "common/common_funcs.h"
@@ -7,23 +6,25 @@
 #include "USART/usart.h"
 #include "usart_funcs/usart_funcs.h"
 #include "sim900/sim900.h"
+#include "hd44780/hd44780.h"
 
 void InitAll(void);
-
 
 int main(void)
 {
         InitAll();
 
-        lcd_out("LCD test OK");
-        //SendStr("USART test OK");
-		delay_timer_ms(1000);
-		lcd_clear();
+        lcd_prints("==LCD test OK!==");
+        lcd_goto(2, 0);
+        lcd_prints("*==============*");
+        SendStr("USART test OK");
+		delay_timer_ms(5000);
+		lcd_clrscr();
 
         while(1)
         {
             GPIOB->ODR ^= GPIO_ODR_ODR0;
-            delay_timer_ms(1000);
+            delay_timer_ms(500);
             //itoa(buttons[0][0], 10, buf);
             //lcd_clear();
             //lcd_out(buf);
@@ -48,9 +49,9 @@ void TIM2_IRQHandler(void)
 		//lcd_send_byte(my_btn, 1);
 		//lcd_send_byte('-',1);
 		//lcd_send_byte((my_btn & 0xff00)>>8, 1);
-
+		lcd_putc(my_btn);
 		tmp = my_btn;
-		if(tmp == '*')lcd_clear();
+		if(tmp == '*')lcd_clrscr();
 		if(tmp == '1')SendStr("at\r");
 		if(tmp == '2')SendStr("atd0506073568;\r");
 		if(tmp == '3')SendStr("ata\r");
@@ -63,7 +64,8 @@ void TIM2_IRQHandler(void)
 	tmp = GetChar();
 	if (tmp != 0){
 		//lcd_clear();
-		lcd_send(tmp, 1);
+		//if (char_cnt == 16)
+		lcd_putc(tmp);
 	}
 
 }
@@ -79,13 +81,13 @@ void InitAll(void)
 	//Разрешаем прерывание если кварц плохо
 	init_bad_clock_inter();
 
+    delay_timer_ms_init();
+
     lcd_init();
-    lcd_set_state(1, 0, 0);
 
     init_keyboard();
 
     timer2_init(10);
-    delay_timer_ms_init();
 
     InitUSART(9600);
     usart_interrupt_init();
