@@ -14,21 +14,27 @@ void InitSim900(void){
 
 }
 
-void SwitchSim900(uint8_t state){
+uint8_t SwitchSim900(uint8_t state, uint8_t timeout){
+	uint8_t count=0;
 	if (state){
 		while ((MANAGE_PORT->CHECK_REG & STATUS_STATE) == 0){ //while status != 1
+			if (count > timeout)return 1;
 			MANAGE_PORT->SET_REG |= PWR_KEY; //turn on pwr key
 			delay_timer_ms(1000);
 			MANAGE_PORT->SET_REG &= ~PWR_KEY; //turn off pwr key
 			delay_timer_ms(2000);
+			count++;
 		}
 	}
 	else{
-		while ((MANAGE_PORT->CHECK_REG & STATUS_STATE) != 0){ //while status != 1
+		while ((MANAGE_PORT->CHECK_REG & STATUS_STATE) != 0){ //while status != 0
+			if (count > timeout)return 1;
 			MANAGE_PORT->SET_REG |= PWR_KEY; //turn on pwr key
 			delay_timer_ms(1000);
 			MANAGE_PORT->SET_REG &= ~PWR_KEY; //turn off pwr key
 			delay_timer_ms(2000);
+			count++;
 		}
 	}
+	return 0;
 }

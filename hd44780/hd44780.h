@@ -55,7 +55,7 @@ extern "C" {
 //-------------------------------
 // SELECT MCU FREQUENCE
 //-------------------------------
-#define MCU_CLK_VALUE				  12 /* in MHz. Minimal value - 1 MHz */
+#define MCU_CLK_VALUE				  12000000 /* in MHz. Minimal value - 1 MHz */
 #define MCU_CLK						  ((MCU_CLK_VALUE - 1)/4)
 #define MCU_WAIT_CYCLES				  180
 //-------------------------------
@@ -109,7 +109,7 @@ extern "C" {
 //-------------------------------
 // LCDlib API
 //-------------------------------
-void lcd_cmd(int8u_t data, int16u_t loop);
+void lcd_cmd(int8u_t data);
 void lcd_clrscr(void);
 void lcd_return(void);
 void lcd_goto(int8u_t line, int8u_t address);
@@ -125,6 +125,8 @@ void lcd_numTOstr(int16u_t value, int8u_t nDigit);
 void lcd_config(int8u_t param);
 void lcd_init(void);
 void gpio_init(void);
+
+void lcd_putcc(uint8_t sym);
 //-------------------------------
 // PROGRESS BAR API
 //-------------------------------

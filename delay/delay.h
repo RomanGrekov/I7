@@ -7,3 +7,4 @@ void delay_timer_ms_init(void);
 void delay_ms(uint32_t val);
 
 void timer2_init(uint16_t ms);
+void delay_us(uint16_t us);

@@ -27,4 +27,16 @@ void timer2_init(uint16_t ms)
 	TIM2->DIER|= TIM_DIER_UIE;//Enable interruption by overcount
 	
 	NVIC_EnableIRQ(TIM2_IRQn);//Allow timer3 unterruption
+	NVIC_SetPriority(TIM2_IRQn, 15);
+}
+
+void delay_us(uint16_t us)
+{
+	 uint32_t n, alfa, i;
+	 n = us * (F_CPU / 1000000);
+	 i=0;
+	 for(alfa=0;alfa<n;alfa++)
+	 {
+		 i++;
+	 }
 }

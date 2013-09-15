@@ -3,6 +3,8 @@
 #define SIZE_BUF 32
 
 void FlushBuf(void);
-void PutChar(unsigned char sym);
-unsigned char GetChar(void);
+void USART_PutChar(unsigned char sym);
+unsigned char USART_GetChar(void);
 void SendStr(unsigned char * data);
+uint8_t find_str(uint8_t *pattern);
+

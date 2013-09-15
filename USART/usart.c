@@ -31,6 +31,7 @@ void usart_interrupt_init(void){
 	USART1->CR1 |= USART_CR1_RXNEIE;/*!<RXNE Interrupt Enable */
 	USART1->CR1 |= USART_CR1_TCIE;/*!<Transmission Complete Interrupt Enable */
 	NVIC_EnableIRQ(USART1_IRQn);//Allow usart receive unterruption
+	NVIC_SetPriority(USART1_IRQn, 14);
 }
 
 uint8_t read_byte(void){

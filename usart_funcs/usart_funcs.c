@@ -25,23 +25,21 @@ void FlushBuf(void)
 void PutChar(unsigned char sym)
 {
   if (RXcount < SIZE_BUF){   //если в буфере еще есть место
-      RXBuf[RXtail] = sym;    //помещаем в него символ
-      RXcount++;                    //инкрементируем счетчик символов
-      RXtail++;                           //и индекс хвоста буфера
-      if (RXtail == SIZE_BUF){
-    	  RXtail = 0;
-      }
+      RXBuf[RXtail] = sym;   //помещаем в него символ
+      RXcount++;             //инкрементируем счетчик символов
+      RXtail++;              //и индекс хвоста буфера
+      if (RXtail == SIZE_BUF) RXtail = 0;
     }
 }
 
 //взять символ из буфера
-unsigned char GetChar(void)
+unsigned char USART_GetChar(void)
 {
    unsigned char sym = 0;
-   if (RXcount > 0){                            //если буфер не пустой
-      sym = RXBuf[RXhead];              //считываем символ из буфера
-      RXcount--;                                   //уменьшаем счетчик символов
-      RXhead++;                                  //инкрементируем индекс головы буфера
+   if (RXcount > 0){         //если буфер не пустой
+      sym = RXBuf[RXhead];   //считываем символ из буфера
+      RXcount--;             //уменьшаем счетчик символов
+      RXhead++;              //инкрементируем индекс головы буфера
       if (RXhead == SIZE_BUF) RXhead = 0;
    }
    return sym;
@@ -73,11 +71,9 @@ void SendStr(unsigned char * data)
 }
 
 void USART1_IRQHandler(void){
-
 	if(USART1->SR & USART_SR_RXNE){/*!<Read Data Register Not Empty */
 		PutChar(USART1->DR);
 	}
-
 	if((USART1->SR & USART_SR_TXE)!=0){// If Transmit Data Register Empty
 		 if (TXcount > 0){                       //если буфер не пустой
 		    USART1->DR = TXBuf[TXhead];  //записываем в DR символ из буфера
@@ -86,10 +82,24 @@ void USART1_IRQHandler(void){
 		    if (TXhead == SIZE_BUF) TXhead = 0;
 		  }
 		 else{
-			 USART1->CR1 &= ~USART_CR1_TXEIE;/*!<PE Interrupt Disable */
+			 USART1->CR1 &= ~USART_CR1_TXEIE;//!<PE Interrupt Disable
 		 }
 	}
-	if((USART1->SR & USART_SR_TC) != 0){/*!<Transmission Complete */
+	if((USART1->SR & USART_SR_TC) != 0){//!<Transmission Complete
 		USART1->SR &= ~USART_SR_TC; //Clear flag --^
 	}
+}
+
+uint8_t find_str(uint8_t *pattern)
+{
+	uint16_t i=0, ii=0;
+		while (i < sizeof(RXBuf))
+		{
+			if (RXBuf[i] == pattern[ii]) ii++;
+			else ii=0;
+			i++;
+			if (ii == sizeof(pattern))return 1;
+			if (i > (sizeof(RXBuf) - sizeof(pattern))) return 0;
+		}
+	return 0;
 }

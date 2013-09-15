@@ -34,6 +34,8 @@ Contact information :
 
 #include "hd44780.h"
 
+volatile uint8_t lcd_cnt=0;
+
 #if ( USE_PROGRESS_BAR )
 static int8u_t progress_bar[NUMBER_OF_CELL_ELEMENTS] = {0x00,0x10,0x18,0x1C,0x1E,0x1F};
 static int8u_t current_bar_load;
@@ -59,31 +61,34 @@ gpio_init(void){
 //-------------------------------
 // LOW LEVEL FUNCTIONS
 //-------------------------------
-static void DELAY(int16u_t ms);
-static void LCD_STROBE(int16u_t loop);
+static void DELAY(int32u_t us);
+static void LCD_STROBE(int32u_t u);
 static void HIGHBITS(int8u_t data);
 static void LOWBITS(int8u_t data);
 
 //-------------------------------
 /* DELAY FUNCTION */
 //-------------------------------
-static void DELAY(volatile int16u_t ms)
+static void DELAY(volatile int32u_t us)
 {
- volatile int16u_t alfa,beta;
- for(alfa=0;alfa<ms;alfa++)
-  for(beta=0;beta<MCU_WAIT_CYCLES;beta++)
-  ;
+ volatile int32u_t n, alfa, i;
+ n = us * (MCU_CLK_VALUE / 1000000);
+ i=0;
+ for(alfa=0;alfa<n;alfa++)
+ {
+	 i++;
+ }
 }
 
 //-------------------------------
 /* INITIATE TRANSFER OF DATA/COMMAND TO LCD */
 //-------------------------------
-static void LCD_STROBE(int16u_t loop)
+static void LCD_STROBE(uint32_t us)
 {
  ENABLE(LCD_WIRE,E);
- DELAY(MCU_CLK);
+ DELAY(us);
  DISABLE(LCD_WIRE,E); // Enter
- DELAY(loop);
+ DELAY(us);
 }
 
 //-------------------------------
@@ -111,24 +116,22 @@ static void LOWBITS(int8u_t data)
 //-------------------------------
 /* PUT DATA/COMMAND TO LCD */
 //-------------------------------
-void lcd_cmd(int8u_t data, int16u_t loop)
+void lcd_cmd(int8u_t data)
 {/* LCD ELEMENTARY COMMAND */
  HIGHBITS(data);
- LCD_STROBE(0);
+ LCD_STROBE(20);
  LOWBITS(data);
- LCD_STROBE(loop); // busy delay
+ LCD_STROBE(20); // busy delay
 }
 
- 				   	  	   	   //-------------------------------
-							   /*         LCDlib API          */
-							   //-------------------------------
 
 //-------------------------------
 /* LCD CLEAR SCREEN */
 //-------------------------------
 void lcd_clrscr(void)
 {
- lcd_cmd(0x01,2); // clear screen
+ lcd_cmd(0x01); // clear screen
+ lcd_cnt=0;
 }
 
 //-------------------------------
@@ -136,7 +139,7 @@ void lcd_clrscr(void)
 //-------------------------------
 void lcd_return(void)
 {
- lcd_cmd(0x02,2); // return cursor
+ lcd_cmd(0x02); // return cursor
 }
 
 //-------------------------------
@@ -146,9 +149,9 @@ void lcd_goto(int8u_t line, int8u_t address)
 {/* GO TO SPECIFIED ADDRESS */
  switch(line)
  {
-  case     1: lcd_cmd(0x80|address,0); break;
-  case     2: lcd_cmd(0xC0|address,0); break;
-  case CGRAM: lcd_cmd(0x40|address,0); break; // CGRAM address
+  case     1: lcd_cmd(0x80|address); break;
+  case     2: lcd_cmd(0xC0|address); break;
+  case CGRAM: lcd_cmd(0x40|address); break; // CGRAM address
  }
 }
 
@@ -207,7 +210,7 @@ void lcd_prints(const int8u_t *p)
 //-------------------------------
    else
 #endif
-    lcd_cmd(*p++,0);
+    lcd_cmd(*p++);
  }
  DISABLE(LCD_WIRE,RS);
 }
@@ -219,7 +222,7 @@ void lcd_prints(const int8u_t *p)
 void lcd_putc(int8u_t data)
 {/* WRITE A CHARACTER TO LCD */
  ENABLE(LCD_WIRE,RS);
- lcd_cmd(data,0);
+ lcd_cmd(data);
  DISABLE(LCD_WIRE,RS);
 }
 
@@ -253,9 +256,9 @@ void lcd_drawchar( int8u_t* vector,
 //-------------------------------
 void lcd_backspace(void)
 {/* ERASE LEFT CHAR */
- lcd_cmd(0x10,0); // �������� ������ �� ���� ������� �����
+ lcd_cmd(0x10); // �������� ������ �� ���� ������� �����
  lcd_putc(' '); // �������, ����� ���� ���������� ������������� ������
- lcd_cmd(0x10,0); // �������� ������ �� ���� ������� �����
+ lcd_cmd(0x10); // �������� ������ �� ���� ������� �����
 }
 
 //-------------------------------
@@ -266,8 +269,8 @@ void lcd_scroll(int8u_t direction)
 {
  switch(direction)
  {
-  case RIGHT : lcd_cmd(0x1C,0); break; // scroll display to right
-  case LEFT  : lcd_cmd(0x18,0); break; // scroll display to left
+  case RIGHT : lcd_cmd(0x1C); break; // scroll display to right
+  case LEFT  : lcd_cmd(0x18); break; // scroll display to left
  }
 }
 
@@ -279,8 +282,8 @@ void cursor_shift(int8u_t direction)
 {
  switch(direction)
  {
-  case RIGHT : lcd_cmd(0x14,0); break; // shift cursor to right
-  case LEFT  : lcd_cmd(0x10,0); break; // shift cursor to left
+  case RIGHT : lcd_cmd(0x14); break; // shift cursor to right
+  case LEFT  : lcd_cmd(0x10); break; // shift cursor to left
  }
 }
 
@@ -400,8 +403,8 @@ void lcd_clearbar(void)
 void lcd_config(int8u_t param)
 {/* CONFIGURE THE DISPLAY */
  HIGHBITS(param); // 4-bit, two lines, 5x8 pixel
-  LCD_STROBE(2); // change 8-bit interface to 4-bit interface
-  LCD_STROBE(2); // init 4-bit interface
+  LCD_STROBE(9); // change 8-bit interface to 4-bit interface
+  LCD_STROBE(9); // init 4-bit interface
  LOWBITS(param);
   LCD_STROBE(40);
 }
@@ -411,22 +414,34 @@ void lcd_config(int8u_t param)
 //-------------------------------
 void lcd_init(void)
 {
- DELAY(100);
+ DELAY(15000);
  gpio_init();
- lcd_cmd(0x30,2); // 1, return home cursor
- lcd_cmd(0x30,2); // 1, return home cursor
- lcd_cmd(0x30,2); // 1, return home cursor
- lcd_cmd(0x30,20); // 1, return home cursor
- lcd_cmd(0x30,200); // 1, return home cursor
+ lcd_cmd(0x30); // 1, return home cursor
+ lcd_cmd(0x30); // 1, return home cursor
+ lcd_cmd(0x30); // 1, return home cursor
+ lcd_cmd(0x30); // 1, return home cursor
+ lcd_cmd(0x30); // 1, return home cursor
 
  lcd_config(DEFAULT_DISPLAY_CONFIG); // 1, Data Lenght, Number of lines, character font
- lcd_cmd(DEFAULT_DISPLAY_CONTROL,2); // 1, lcd, cursor, blink
- lcd_cmd(DEFAULT_ENTRY_MODE,2); // 1,increment/decrement,display shift on/off
- lcd_cmd(0x01,2); // clear display
- lcd_cmd(0x02,2); // 1, return home cursor
+ lcd_cmd(DEFAULT_DISPLAY_CONTROL); // 1, lcd, cursor, blink
+ lcd_cmd(DEFAULT_ENTRY_MODE); // 1,increment/decrement,display shift on/off
+ lcd_cmd(0x01); // clear display
+ lcd_cmd(0x02); // 1, return home cursor
 #if (USE_PROGRESS_BAR)
  lcd_readybar();
 #endif
+}
+
+void lcd_putcc(uint8_t sym){
+	if (lcd_cnt == 16)lcd_goto(2, 0);
+	if (lcd_cnt == 32)
+	{
+		lcd_clrscr();
+		lcd_cnt = 0;
+		lcd_goto(1, 0);
+	}
+	lcd_putc(sym);
+	lcd_cnt++;
 }
 //-------------------------------
 /* END OF FILE */

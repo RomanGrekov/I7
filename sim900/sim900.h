@@ -27,4 +27,4 @@
 #define CLOCK_REG RCC_APB2ENR_IOPAEN
 
 void InitSim900(void);
-void SwitchSim900(uint8_t state);
+uint8_t SwitchSim900(uint8_t state, uint8_t timeout);
