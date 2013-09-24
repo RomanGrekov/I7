@@ -1,6 +1,6 @@
 #include "sim900.h"
 
-void InitSim900(void){
+void InitSim900Port(void){
     RCC->APB2ENR |= CLOCK_REG; //Clock port
 
     MANAGE_PORT->SET_PWR_REG &= ~(PWR_CNF_REG); //Init PWR_KEY
@@ -10,8 +10,6 @@ void InitSim900(void){
     MANAGE_PORT->SET_STATUS_REG |= STATUS_CNF_REG0;// Init STATUS. Input
     MANAGE_PORT->SET_STATUS_REG &= ~STATUS_CNF_REG1;// Init STATUS. Input
     MANAGE_PORT->SET_STATUS_REG &= ~(STATUS_MODE_REG0 | STATUS_MODE_REG1);
-
-
 }
 
 uint8_t SwitchSim900(uint8_t state, uint8_t timeout){

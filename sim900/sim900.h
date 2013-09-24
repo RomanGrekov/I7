@@ -26,5 +26,7 @@
 #define MANAGE_PORT GPIOA
 #define CLOCK_REG RCC_APB2ENR_IOPAEN
 
-void InitSim900(void);
+void InitSim900Port(void);
 uint8_t SwitchSim900(uint8_t state, uint8_t timeout);
+
+//uint8_t cfun_cmd[]="AT+CFUN=?";

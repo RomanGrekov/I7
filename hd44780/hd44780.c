@@ -443,6 +443,14 @@ void lcd_putcc(uint8_t sym){
 	lcd_putc(sym);
 	lcd_cnt++;
 }
+
+void LCDPrintS(const uint8_t *p)
+{
+	while(*p)
+	{
+		lcd_putcc(*p++);
+	}
+}
 //-------------------------------
 /* END OF FILE */
 //-------------------------------

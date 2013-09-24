@@ -61,7 +61,7 @@ void USART_PutChar(unsigned char sym)
   }
 }
 
-void SendStr(unsigned char * data)
+void USARTSendStr(unsigned char * data)
 {
   unsigned char sym;
   while(*data){
@@ -103,3 +103,45 @@ uint8_t find_str(uint8_t *pattern)
 		}
 	return 0;
 }
+/*
+usart_resp* find_response(struct usart_resp *res)
+{
+	uint8_t cr_cl[2]={0x0d, 0x0a};
+	uint8_t cr_cl_flag1 = 0;
+	uint16_t i=0, ii=0;
+
+	while (cr_cl_flag1 != 1 && i < SIZE_BUF-3)//while start of the string isn't found
+	{
+		if (RXBuf[i] == cr_cl[0] && RXBuf[i+1] == cr_cl[1] &&
+				RXBuf[i+2] != cr_cl[0] && RXBuf[i+2] != cr_cl[1])// if start found
+			{
+				cr_cl_flag1 = 1;
+			}
+		i++;
+	}
+	if (cr_cl_flag1 == 1) //If start found
+	{
+		i++; // we don't want store 0x0a byte
+		while (i < SIZE_BUF-1)//while end of the string isn't found
+		{
+			if (RXBuf[i] == cr_cl[0] && RXBuf[i+1] == cr_cl[1])
+				{
+					res->result = 0;
+					return res;
+				}
+			res->data[ii] = RXBuf[i];
+			ii++;
+			i++;
+		}
+	}
+	res->result = 1;
+	return res;
+}
+
+USARTSendCmd(task *resp_task, uint8_t *cmd, uint8_t timeout)
+{
+	resp_task->in_progress = 1;
+	resp_task->timer = timeout;
+	USARTSendStr(cmd);
+}
+*/

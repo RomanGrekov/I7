@@ -127,6 +127,7 @@ void lcd_init(void);
 void gpio_init(void);
 
 void lcd_putcc(uint8_t sym);
+void LCDPrintS(const uint8_t *p);
 //-------------------------------
 // PROGRESS BAR API
 //-------------------------------

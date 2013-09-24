@@ -8,24 +8,30 @@
 #include "sim900/sim900.h"
 #include "hd44780/hd44780.h"
 #include "buzzer/buz.h"
+#include "globs.h"
 
 void InitAll(void);
+task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
 int main(void)
 {
+		usart_resp response;
+		response.result=1;
+		task Task1, *task1;
+
+
         InitAll();
-        lcd_prints("==LCD test OK!==");
-        lcd_goto(2, 0);
-        lcd_prints("*==============*");
-        //SendStr("USART test OK");
+        task1 = InitTasks(&Task1);
+        LCDPrintS("==LCD test OK!==*==============*");
+        //USARTSendStr("USART test OK");
 		delay_timer_ms(2000);
 		lcd_clrscr();
 
         while(1)
         {
             GPIOB->ODR ^= GPIO_ODR_ODR0;
-            delay_timer_ms(2000);
+            delay_timer_ms(1000);
             //itoa(buttons[0][0], 10, buf);
             //lcd_clear();
             //lcd_out(buf);
@@ -34,8 +40,28 @@ int main(void)
             //GPIOA->BSRR = GPIO_BSRR_BS0;
             //GPIOA->BSRR = GPIO_BSRR_BR0;
             //SendStr(" hello");
+/*
+            if (Task_get_response.to_run)
+            {
+				USARTSendStr("at\r");
+				Task_get_response.to_run = 0;
+				Task_get_response.in_progress = 1;
+            }
 
-    }
+            if (Task_get_response.in_progress)
+            {
+            	response = find_response(response);
+            	if(! response->result)
+            	{
+            		LCDPrintS(response->data);
+            		Task_get_response.to_run=1;
+            		Task_get_response.in_progress=0;
+            	}
+            }
+*/
+            lcd_putcc(task1->done);
+            lcd_putcc(task1->to_run);
+        }
 
 }
 
@@ -61,13 +87,13 @@ void TIM2_IRQHandler(void)
 				lcd_clrscr();
 			break;
 			case '1':
-				SendStr("at\r");
+				USARTSendStr("at\r");
 			break;
 			case '2':
-				SendStr("atd0506073568;\r");
+				USARTSendStr("atd0506073568;\r");
 			break;
 			case '3':
-				SendStr("ata\r");
+				USARTSendStr("ata\r");
 			break;
 			case '4':
 				sim_status = SwitchSim900(1, 5);
@@ -81,11 +107,10 @@ void TIM2_IRQHandler(void)
 			break;
 		}
 	}
-	symbol = USART_GetChar();
+	//symbol = USART_GetChar();
 	if (symbol != 0)
 	{
-		lcd_putcc(symbol);
-		if (find_str("Ready"))Bzz(0);
+		//lcd_putcc(symbol);
 		//USART_PutChar(symbol);
 	}
 }
@@ -113,7 +138,7 @@ void InitAll(void)
     usart_interrupt_init();
     FlushBuf();
 
-    InitSim900();
+    InitSim900Port();
 
     InitBuz();
    }
@@ -132,4 +157,11 @@ void analize_status(uint8_t retcode)
 		Bzz(0);
 	}
 	else GPIOB->BSRR |= GPIO_BSRR_BR1; // 0 means success
+}
+
+task* InitTasks(task *my_task)
+{
+	my_task->done='0';
+	my_task->to_run='1';
+	return &my_task;
 }
