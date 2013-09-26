@@ -9,56 +9,55 @@
 #include "hd44780/hd44780.h"
 #include "buzzer/buz.h"
 #include "globs.h"
-
+/*add to globs:*/
+	struct {
+		uint8_t resp_data[];
+		uint8_t resp_res;
+		uint8_t resp_expect;
+	} usart_resp;
+/*****************************/
 void InitAll(void);
 task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
 int main(void)
 {
-		usart_resp response;
-		response.result=1;
-		task Task1, *task1;
+		usart_resp cmd_resp;
 
+		static uint8_t state=0;
 
         InitAll();
-        task1 = InitTasks(&Task1);
         LCDPrintS("==LCD test OK!==*==============*");
-        //USARTSendStr("USART test OK");
+        USARTSendStr("USART test OK");
 		delay_timer_ms(2000);
 		lcd_clrscr();
 
         while(1)
         {
-            GPIOB->ODR ^= GPIO_ODR_ODR0;
-            delay_timer_ms(1000);
-            //itoa(buttons[0][0], 10, buf);
-            //lcd_clear();
-            //lcd_out(buf);
+        	switch(state)
+        	{
+        		case 0:
+		            GPIOB->ODR ^= GPIO_ODR_ODR0;
+		            delay_timer_ms(1000);
+        		break;
 
-            //kb_strobe();
-            //GPIOA->BSRR = GPIO_BSRR_BS0;
-            //GPIOA->BSRR = GPIO_BSRR_BR0;
-            //SendStr(" hello");
-/*
-            if (Task_get_response.to_run)
-            {
-				USARTSendStr("at\r");
-				Task_get_response.to_run = 0;
-				Task_get_response.in_progress = 1;
-            }
+        		case 1:
+        			USARTSendStr("at\r\n");
+        			state = 2;
+        		break;
 
-            if (Task_get_response.in_progress)
-            {
-            	response = find_response(response);
-            	if(! response->result)
-            	{
-            		LCDPrintS(response->data);
-            		Task_get_response.to_run=1;
-            		Task_get_response.in_progress=0;
-            	}
-            }
-*/
+        		case 2:
+        			cmd_resp->resp_expect = 0;
+        			cmd_resp->resp_res = 0;
+        			USARTFindResponse(&cmd_resp);
+        			if (cmd_resp->resp_res == 1)
+        			{
+        				LCDPrintS(cmd_resp->resp_data);
+        				state = 0;
+        			}
+        		break;
+        	}
+
             lcd_putcc(task1->done);
             lcd_putcc(task1->to_run);
         }

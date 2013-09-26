@@ -9,6 +9,6 @@ void USART_PutChar(unsigned char sym);
 unsigned char USART_GetChar(void);
 void USARTSendStr(unsigned char * data);
 uint8_t find_str(uint8_t *pattern);
-//usart_resp* find_response(struct usart_resp *res);
+USARTFindResponse(response *res);
 //USARTSendCmd(task * resp_task, uint8_t *cmd, uint8_t timeout);
 
