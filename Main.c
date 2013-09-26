@@ -9,26 +9,22 @@
 #include "hd44780/hd44780.h"
 #include "buzzer/buz.h"
 #include "globs.h"
-/*add to globs:*/
-	struct {
-		uint8_t resp_data[];
-		uint8_t resp_res;
-		uint8_t resp_expect;
-	} usart_resp;
-/*****************************/
+
+
 void InitAll(void);
 task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
+uint8_t state=0;
+
 int main(void)
 {
 		usart_resp cmd_resp;
-
-		static uint8_t state=0;
+		uint32_t trials = 0;
 
         InitAll();
         LCDPrintS("==LCD test OK!==*==============*");
-        USARTSendStr("USART test OK");
+        USARTSendStr("USART test OK\r\n");
 		delay_timer_ms(2000);
 		lcd_clrscr();
 
@@ -39,27 +35,29 @@ int main(void)
         		case 0:
 		            GPIOB->ODR ^= GPIO_ODR_ODR0;
 		            delay_timer_ms(1000);
+		            trials = 0;
         		break;
 
         		case 1:
         			USARTSendStr("at\r\n");
+        			delay_timer_ms(1000);
         			state = 2;
+        			trials = 20000;
         		break;
 
         		case 2:
-        			cmd_resp->resp_expect = 0;
-        			cmd_resp->resp_res = 0;
+        			cmd_resp.resp_expect = 0;
+        			cmd_resp.resp_res = 0;
         			USARTFindResponse(&cmd_resp);
-        			if (cmd_resp->resp_res == 1)
+        			if (cmd_resp.resp_res == 1)
         			{
-        				LCDPrintS(cmd_resp->resp_data);
+        				LCDPrintS(cmd_resp.resp_data);
         				state = 0;
         			}
+        			if (trials == 0) state = 0;
+        			trials--;
         		break;
         	}
-
-            lcd_putcc(task1->done);
-            lcd_putcc(task1->to_run);
         }
 
 }
@@ -89,7 +87,8 @@ void TIM2_IRQHandler(void)
 				USARTSendStr("at\r");
 			break;
 			case '2':
-				USARTSendStr("atd0506073568;\r");
+				USARTSendStr("at+cfun?\r\n");
+				state = 2;
 			break;
 			case '3':
 				USARTSendStr("ata\r");
@@ -103,6 +102,7 @@ void TIM2_IRQHandler(void)
 				analize_status(sim_status);
 			break;
 			case '6':
+				state = 1;
 			break;
 		}
 	}

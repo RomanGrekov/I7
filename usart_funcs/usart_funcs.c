@@ -15,10 +15,11 @@ unsigned char TXcount = 0;
 
 //"очищает" буфер
 void FlushBuf(void)
-{
+{ uint16_t i=0;
   RXtail = 0;
   RXhead = 0;
   RXcount = 0;
+  for (i=0; i < SIZE_BUF; i++) RXBuf[i] = 0;
 }
 
 //положить символ в буфер
@@ -64,6 +65,7 @@ void USART_PutChar(unsigned char sym)
 void USARTSendStr(unsigned char * data)
 {
   unsigned char sym;
+  FlushBuf(); ///////////Clean bufer
   while(*data){
     sym = *data++;
     USART_PutChar(sym);
@@ -103,41 +105,79 @@ uint8_t find_str(uint8_t *pattern)
 		}
 	return 0;
 }
-/*
-usart_resp* find_response(struct usart_resp *res)
-{
-	uint8_t cr_cl[2]={0x0d, 0x0a};
-	uint8_t cr_cl_flag1 = 0;
-	uint16_t i=0, ii=0;
 
-	while (cr_cl_flag1 != 1 && i < SIZE_BUF-3)//while start of the string isn't found
+void USARTFindResponse(usart_resp *res)
+{
+	uint32_t rx_cnt, rx_hd;
+	uint8_t symb, state = 0;
+	uint8_t i=0;
+
+	rx_cnt = RXcount;
+	rx_hd = RXhead;
+
+	while (state != 3)//while start of the string isn't found
 	{
-		if (RXBuf[i] == cr_cl[0] && RXBuf[i+1] == cr_cl[1] &&
-				RXBuf[i+2] != cr_cl[0] && RXBuf[i+2] != cr_cl[1])// if start found
-			{
-				cr_cl_flag1 = 1;
-			}
-		i++;
-	}
-	if (cr_cl_flag1 == 1) //If start found
-	{
-		i++; // we don't want store 0x0a byte
-		while (i < SIZE_BUF-1)//while end of the string isn't found
-		{
-			if (RXBuf[i] == cr_cl[0] && RXBuf[i+1] == cr_cl[1])
-				{
-					res->result = 0;
-					return res;
-				}
-			res->data[ii] = RXBuf[i];
-			ii++;
-			i++;
+		symb = USART_GetChar();
+		switch (symb){
+			case 0:
+				RXcount = rx_cnt;
+				RXhead = rx_hd;
+				return;
+			break;
+			case 0x0d:
+				state = 1;
+			break;
+			case 0x0a:
+				if (state == 1)state = 2;
+				else state = 0;
+			break;
+			default:
+				if (state != 2) state = 0;
+				else state = 3;
+			break;
 		}
 	}
-	res->result = 1;
-	return res;
-}
+	if (state == 3) //If start found
+	{
+		res->resp_data[i] = symb;
+		i++;
 
+		while (state != 5)//while end of the string isn't found
+		{
+			symb = USART_GetChar();
+			switch (symb){
+				case 0:
+					RXcount = rx_cnt;
+					RXhead = rx_hd;
+					return;
+				break;
+				case 0x0d:
+					state = 4;
+				break;
+				case 0x0a:
+					if(state == 4)
+						{
+							state = 5;
+							res->resp_res = 1;
+							res->resp_data[i] = '\0';
+							return;
+						}
+					else state = 3;
+				break;
+				default:
+					state = 3;
+					res->resp_data[i] = symb;
+					i++;
+				break;
+			}
+		}
+	}
+	RXcount = rx_cnt;
+	RXhead = rx_hd;
+	res->resp_res = 0;
+	return;
+}
+/*
 USARTSendCmd(task *resp_task, uint8_t *cmd, uint8_t timeout)
 {
 	resp_task->in_progress = 1;
