@@ -8,7 +8,8 @@ void FlushBuf(void);
 void USART_PutChar(unsigned char sym);
 unsigned char USART_GetChar(void);
 void USARTSendStr(unsigned char * data);
-uint8_t find_str(uint8_t *pattern);
-void USARTFindResponse(usart_resp *res);
-//USARTSendCmd(task * resp_task, uint8_t *cmd, uint8_t timeout);
-
+uint8_t USARTFindResponse();
+void USARTSendCmd(uint8_t *cmd, usart_resp *res, uint32_t timeout);
+void copy_buf(uint8_t *rxbuf, uint8_t *rxbuf1);
+uint8_t get_char(uint8_t *buf);
+uint8_t find_template(uint8_t *resp, uint8_t *template);

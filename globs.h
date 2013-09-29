@@ -12,6 +12,7 @@ typedef	struct {
 		uint8_t resp_data[32];
 		uint8_t resp_res;
 		uint8_t resp_expect;
+		uint32_t timeout;
 } usart_resp;
 
 #endif  /* GLOBS_H */

@@ -16,11 +16,11 @@ task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
 uint8_t state=0;
+uint32_t trials = 0;
+usart_resp cmd_resp;
 
 int main(void)
 {
-		usart_resp cmd_resp;
-		uint32_t trials = 0;
 
         InitAll();
         LCDPrintS("==LCD test OK!==*==============*");
@@ -39,23 +39,28 @@ int main(void)
         		break;
 
         		case 1:
-        			USARTSendStr("at\r\n");
-        			delay_timer_ms(1000);
+        			USARTSendCmd("at\r\n", &cmd_resp, 100000);
         			state = 2;
-        			trials = 20000;
         		break;
 
         		case 2:
-        			cmd_resp.resp_expect = 0;
-        			cmd_resp.resp_res = 0;
-        			USARTFindResponse(&cmd_resp);
-        			if (cmd_resp.resp_res == 1)
+        			if (USARTFindResponse())
         			{
         				LCDPrintS(cmd_resp.resp_data);
         				state = 0;
+        				if (find_template(cmd_resp.resp_data, "OK"))
+        					{
+        						if (USARTFindResponse())
+        						{
+        							LCDPrintS(cmd_resp.resp_data);
+        						}
+        					}
+        				if (find_template(cmd_resp.resp_data, "+CFUN: 1"))
+        					{
+        						lcd_putcc(cmd_resp.resp_data[7]);
+        					}
         			}
-        			if (trials == 0) state = 0;
-        			trials--;
+        			if (cmd_resp.timeout == 0) state = 0;
         		break;
         	}
         }
@@ -84,14 +89,16 @@ void TIM2_IRQHandler(void)
 				lcd_clrscr();
 			break;
 			case '1':
-				USARTSendStr("at\r");
+				USARTSendCmd("at\r\n", &cmd_resp, 100000);
+				state = 2;
 			break;
 			case '2':
-				USARTSendStr("at+cfun?\r\n");
+				USARTSendCmd("at+cfun?\r\n", &cmd_resp, 100000);
 				state = 2;
 			break;
 			case '3':
-				USARTSendStr("ata\r");
+				USARTSendCmd("at+cusd=1,\"*101#\"\r\n", &cmd_resp, 900000);
+				state = 2;
 			break;
 			case '4':
 				sim_status = SwitchSim900(1, 5);
@@ -103,6 +110,10 @@ void TIM2_IRQHandler(void)
 			break;
 			case '6':
 				state = 1;
+			break;
+			case '7':
+				USARTSendCmd("ATD0506073568;\r\n", &cmd_resp, 100000);
+				state = 2;
 			break;
 		}
 	}
