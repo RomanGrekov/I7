@@ -57,16 +57,15 @@ void add_button(uint8_t col, uint8_t row, uint8_t duration){
 	btn_cnt--;
 }
 
-uint16_t get_btn(void){
-	uint16_t resp;
+button* get_btn(void){
+	cur_btn.button = 0;
+	cur_btn.duration = 0;
 	if(btn_cnt < buttons_em){
-		resp = 0;
-		resp = buttons[btn_cnt];
-		resp |= durations[btn_cnt]<<8;
+		cur_btn.button = buttons[btn_cnt];
+		cur_btn.duration = durations[btn_cnt];
 		btn_cnt++;
-		return resp;
 	}
-	else return 0;
+	return &cur_btn;
 }
 
 uint8_t get_btn_simple(void){

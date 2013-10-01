@@ -131,6 +131,7 @@ void lcd_cmd(int8u_t data)
 void lcd_clrscr(void)
 {
  lcd_cmd(0x01); // clear screen
+ DELAY(200);
  lcd_cnt=0;
 }
 
@@ -444,7 +445,7 @@ void lcd_putcc(uint8_t sym){
 	lcd_cnt++;
 }
 
-void LCDPrintS(const uint8_t *p)
+void LCDPrintS(uint8_t *p)
 {
 	while(*p)
 	{

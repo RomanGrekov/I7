@@ -9,6 +9,7 @@
 #include "hd44780/hd44780.h"
 #include "buzzer/buz.h"
 #include "globs.h"
+#include "menu/menu.h"
 
 
 void InitAll(void);
@@ -25,7 +26,7 @@ int main(void)
         InitAll();
         LCDPrintS("==LCD test OK!==*==============*");
         USARTSendStr("USART test OK\r\n");
-		delay_timer_ms(2000);
+		delay_timer_ms(1000);
 		lcd_clrscr();
 
         while(1)
@@ -34,8 +35,14 @@ int main(void)
         	{
         		case 0:
 		            GPIOB->ODR ^= GPIO_ODR_ODR0;
-		            delay_timer_ms(1000);
+		            //delay_timer_ms(1000);
 		            trials = 0;
+		            if (MenuChanged())
+		            {
+		            	lcd_clrscr();
+		            	LCDPrintS(GetCurMenuName());
+		            }
+		            //delay_timer_ms(1000);
         		break;
 
         		case 1:
@@ -48,17 +55,6 @@ int main(void)
         			{
         				LCDPrintS(cmd_resp.resp_data);
         				state = 0;
-        				if (find_template(cmd_resp.resp_data, "OK"))
-        					{
-        						if (USARTFindResponse())
-        						{
-        							LCDPrintS(cmd_resp.resp_data);
-        						}
-        					}
-        				if (find_template(cmd_resp.resp_data, "+CFUN: 1"))
-        					{
-        						lcd_putcc(cmd_resp.resp_data[7]);
-        					}
         			}
         			if (cmd_resp.timeout == 0) state = 0;
         		break;
@@ -69,7 +65,7 @@ int main(void)
 
 void TIM2_IRQHandler(void)
 {
-	uint16_t my_btn;
+	button *my_btn;
 	uint8_t pressed, sim_status;
 	uint8_t symbol, test[32];
 
@@ -78,12 +74,12 @@ void TIM2_IRQHandler(void)
 	kb_strobe();
 
 	my_btn = get_btn();
-	if (my_btn != 0){
+	if (my_btn->button != 0){
 		//lcd_send_byte(my_btn, 1);
 		//lcd_send_byte('-',1);
 		//lcd_send_byte((my_btn & 0xff00)>>8, 1);
 
-		pressed = my_btn;
+		pressed = my_btn->button;
 		switch (pressed){
 			case '*':
 				lcd_clrscr();
@@ -112,8 +108,13 @@ void TIM2_IRQHandler(void)
 				state = 1;
 			break;
 			case '7':
-				USARTSendCmd("ATD0506073568;\r\n", &cmd_resp, 100000);
-				state = 2;
+				NextItem();
+			break;
+			case '8':
+				DownItem();
+			break;
+			case '9':
+				PrevItem();
 			break;
 		}
 	}
@@ -151,6 +152,8 @@ void InitAll(void)
     InitSim900Port();
 
     InitBuz();
+
+    InitMenu();
    }
 
 // где-то в main.c

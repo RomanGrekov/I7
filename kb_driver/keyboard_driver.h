@@ -1,4 +1,13 @@
+#ifndef KEYBOARD_DRIVER_H
+#define KEYBOARD_DRIVER_H
 #include "../libs/stm32f10x.h"
+
+typedef struct {
+	uint8_t button;
+	uint8_t duration;
+} button;
+
+button cur_btn;
 
 #define KB_PORT GPIOA
 
@@ -18,5 +27,7 @@ uint8_t btn_cnt;
 void init_keyboard(void);
 void kb_strobe(void);
 void add_button(uint8_t col, uint8_t row, uint8_t duration);
-uint16_t get_btn(void);
+button* get_btn(void);
 uint8_t get_btn_simple(void);
+
+#endif
