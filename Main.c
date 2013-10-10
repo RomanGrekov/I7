@@ -29,20 +29,15 @@ int main(void)
 		delay_timer_ms(1000);
 		lcd_clrscr();
 
+		InitMenu();
         while(1)
         {
         	switch(state)
         	{
         		case 0:
 		            GPIOB->ODR ^= GPIO_ODR_ODR0;
-		            //delay_timer_ms(1000);
-		            trials = 0;
-		            if (MenuChanged())
-		            {
-		            	lcd_clrscr();
-		            	LCDPrintS(GetCurMenuName());
-		            }
-		            //delay_timer_ms(1000);
+		            delay_timer_ms(1000);
+		            LCDPrintS(GetCurMenuName());
         		break;
 
         		case 1:
@@ -67,7 +62,7 @@ void TIM2_IRQHandler(void)
 {
 	button *my_btn;
 	uint8_t pressed, sim_status;
-	uint8_t symbol, test[32];
+	uint8_t symbol;
 
 	TIM2->SR &= ~TIM_SR_UIF;
 
@@ -75,10 +70,6 @@ void TIM2_IRQHandler(void)
 
 	my_btn = get_btn();
 	if (my_btn->button != 0){
-		//lcd_send_byte(my_btn, 1);
-		//lcd_send_byte('-',1);
-		//lcd_send_byte((my_btn & 0xff00)>>8, 1);
-
 		pressed = my_btn->button;
 		switch (pressed){
 			case '*':
@@ -108,21 +99,9 @@ void TIM2_IRQHandler(void)
 				state = 1;
 			break;
 			case '7':
-				NextItem();
-			break;
-			case '8':
-				DownItem();
-			break;
-			case '9':
-				PrevItem();
+				menuChange(NEXT);
 			break;
 		}
-	}
-	//symbol = USART_GetChar();
-	if (symbol != 0)
-	{
-		//lcd_putcc(symbol);
-		//USART_PutChar(symbol);
 	}
 }
 
@@ -153,7 +132,6 @@ void InitAll(void)
 
     InitBuz();
 
-    InitMenu();
    }
 
 // где-то в main.c

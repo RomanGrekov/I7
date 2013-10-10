@@ -1,5 +1,27 @@
 #include "menu.h"
 
+menuItem	NULL_ENTRY = {(void*)0, (void*)0, (void*)0, (void*)0, 0, {0x00}};
+void menuChange(menuItem* NewMenu)
+{
+	if ((void*)NewMenu == (void*)&NULL_ENTRY)
+	  return;
+
+	selectedMenuItem = NewMenu;
+}
+
+	MAKE_MENU(m_s1i1,  m_s1i2, m_s1i3,  NULL_ENTRY, NULL_ENTRY, 0, "Start");
+	MAKE_MENU(m_s1i2,  m_s1i3, m_s1i1,  NULL_ENTRY, NULL_ENTRY, 0, "Setup");
+	MAKE_MENU(m_s1i3,  m_s1i1, m_s1i2,  NULL_ENTRY, NULL_ENTRY, MENU_RESET, "Reset");
+
+void InitMenu(void){
+
+	selectedMenuItem = (menuItem*)&m_s1i1;
+}
+
+uint8_t* GetCurMenuName(void){
+	return selectedMenuItem->Text;
+}
+/*
 menu my_menu;
 	menu_item item_main;
 	menu_item item_1;
@@ -107,3 +129,4 @@ void set_child(menu_item *item, menu_item *child)
 {
 	item->child = child;
 }
+*/
