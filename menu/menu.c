@@ -1,132 +1,50 @@
 #include "menu.h"
 
+menuItem* selectedMenuItem;
 menuItem	NULL_ENTRY = {(void*)0, (void*)0, (void*)0, (void*)0, 0, {0x00}};
-void menuChange(menuItem* NewMenu)
-{
-	if ((void*)NewMenu == (void*)&NULL_ENTRY)
-	  return;
+uint8_t menu_changed;
 
-	selectedMenuItem = NewMenu;
-}
-
-	MAKE_MENU(m_s1i1,  m_s1i2, m_s1i3,  NULL_ENTRY, NULL_ENTRY, 0, "Start");
-	MAKE_MENU(m_s1i2,  m_s1i3, m_s1i1,  NULL_ENTRY, NULL_ENTRY, 0, "Setup");
-	MAKE_MENU(m_s1i3,  m_s1i1, m_s1i2,  NULL_ENTRY, NULL_ENTRY, MENU_RESET, "Reset");
+	MAKE_MENU(m_11,  m_12, m_13,  NULL_ENTRY, NULL_ENTRY, 0, "Start");
+	MAKE_MENU(m_12,  m_13, m_11,  NULL_ENTRY, NULL_ENTRY, 0, "Setup");
+	MAKE_MENU(m_13,  m_11, m_12,  NULL_ENTRY, NULL_ENTRY, 1, "Reset");
 
 void InitMenu(void){
 
-	selectedMenuItem = (menuItem*)&m_s1i1;
+	menu_changed = 1;
+	selectedMenuItem = (menuItem*)&m_11;
 }
 
 uint8_t* GetCurMenuName(void){
+	menu_changed = 0;
 	return selectedMenuItem->Text;
 }
-/*
-menu my_menu;
-	menu_item item_main;
-	menu_item item_1;
-	menu_item item_2;
-	menu_item item1_1;
 
-void InitMenu(void)
-{
-	set_name(&item_main, "Main menu\0");
-	set_parent(&item_main, &item_main);
-	set_next(&item_main, &item_1);
-	set_prev(&item_main, &item_2);
-	set_child(&item_main, &item1_1);
-
-	set_name(&item_1,"Second menu\0");
-	set_parent(&item_1, &item_1);
-	set_next(&item_1, &item_2);
-	set_prev(&item_1, &item_main);
-
-	set_name(&item_2,"Third menu\0");
-	set_parent(&item_2, &item_2);
-	set_next(&item_2, &item_main);
-	set_prev(&item_2, &item_1);
-
-
-	set_name(&item1_1, "2nd floar menu\0");
-	set_parent(&item1_1, &item_main);
-	set_next(&item1_1, &item1_1);
-	set_prev(&item1_1, &item1_1);
-
-	my_menu.cur_item = &item_main;
-	my_menu.changed = 1;
+uint8_t MenuChanged(void){
+	return menu_changed;
 }
 
-uint8_t* GetCurMenuName(void)
+void changeMenu(uint8_t el_num)
 {
-	menu_item *m;
-	m = my_menu.cur_item;
-	my_menu.changed = 0;
-	return m->name;
-}
+	menuItem *new_menu;
 
-uint8_t MenuChanged(void)
-{
-	return my_menu.changed;
-}
+	menu_changed = 1;
 
-void NextItem(void)
-{
-	menu_item *m;
-	m = my_menu.cur_item;
-	my_menu.cur_item = m->next;
-	my_menu.changed = 1;
-}
-
-void PrevItem(void)
-{
-	menu_item *m;
-	m = my_menu.cur_item;
-	my_menu.cur_item = m->prev;
-	my_menu.changed = 1;
-}
-
-void UpItem(void)
-{
-	menu_item *m;
-	m = my_menu.cur_item;
-	my_menu.cur_item = m->parent;
-	my_menu.changed = 1;
-}
-
-void DownItem(void)
-{
-	menu_item *m;
-	m = my_menu.cur_item;
-	my_menu.cur_item = m->child;
-	my_menu.changed = 1;
-}
-
-void set_name(menu_item *item, uint8_t *name)
-{
-	uint8_t i=0;
-	while(*name && i < sizeof(item->name))
-	{
-		item->name[i] = name[i];
-		i++;
+	switch (el_num){
+	case 1:
+		new_menu = selectedMenuItem->Next;
+	break;
+	case 2:
+		new_menu = selectedMenuItem->Previous;
+	break;
+	case 3:
+		new_menu = selectedMenuItem->Child;
+	break;
+	case 4:
+		new_menu = selectedMenuItem->Parent;
+	break;
 	}
-}
-void set_parent(menu_item *item, menu_item *parent)
-{
-	item->parent = parent;
-}
+	if ((void*)new_menu == (void*)&NULL_ENTRY)
+	  return;
 
-void set_next(menu_item *item, menu_item *next)
-{
-	item->next = next;
+	selectedMenuItem = new_menu;
 }
-
-void set_prev(menu_item *item, menu_item *prev)
-{
-	item->prev = prev;
-}
-
-void set_child(menu_item *item, menu_item *child)
-{
-	item->child = child;
-}
-*/

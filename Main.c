@@ -17,11 +17,13 @@ task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
 uint8_t state=0;
-uint32_t trials = 0;
 usart_resp cmd_resp;
+button *my_btn;
 
 int main(void)
 {
+
+	uint8_t sim_status;
 
         InitAll();
         LCDPrintS("==LCD test OK!==*==============*");
@@ -34,15 +36,65 @@ int main(void)
         {
         	switch(state)
         	{
-        		case 0:
-		            GPIOB->ODR ^= GPIO_ODR_ODR0;
-		            delay_timer_ms(1000);
-		            LCDPrintS(GetCurMenuName());
+        		case 0: //simple kb checking
+					my_btn = get_btn();
+					if (my_btn->button != 0){
+						switch (my_btn->button){
+							case '6':
+								changeMenu(MENU_NEXT);
+							break;
+							case '4':
+								changeMenu(MENU_PREVIOUS);
+							break;
+							case '2':
+								changeMenu(MENU_PARENT);
+							break;
+							case '8':
+								changeMenu(MENU_CHILD);
+							break;
+
+						}
+					}
+		            if(MenuChanged()){
+		            	lcd_clrscr();
+		            	LCDPrintS(GetCurMenuName());
+		            }
         		break;
 
         		case 1:
-        			USARTSendCmd("at\r\n", &cmd_resp, 100000);
-        			state = 2;
+					my_btn = get_btn();
+					if (my_btn->button != 0){
+						switch (my_btn->button){
+							case '*':
+								lcd_clrscr();
+							break;
+							case '1':
+								USARTSendCmd("at\r\n", &cmd_resp, 100000);
+								state = 2;
+							break;
+							case '2':
+								USARTSendCmd("at+cfun?\r\n", &cmd_resp, 100000);
+								state = 2;
+							break;
+							case '3':
+								USARTSendCmd("at+cusd=1,\"*101#\"\r\n", &cmd_resp, 900000);
+								state = 2;
+							break;
+							case '4':
+								sim_status = SwitchSim900(1, 5);
+								analize_status(sim_status);
+							break;
+							case '5':
+								sim_status = SwitchSim900(0, 5);
+								analize_status(sim_status);
+							break;
+							case '6':
+								state = 1;
+							break;
+							case '7':
+							break;
+						}
+					}
         		break;
 
         		case 2:
@@ -60,49 +112,18 @@ int main(void)
 
 void TIM2_IRQHandler(void)
 {
-	button *my_btn;
-	uint8_t pressed, sim_status;
-	uint8_t symbol;
-
+	static uint16_t i=0;
 	TIM2->SR &= ~TIM_SR_UIF;
 
 	kb_strobe();
 
-	my_btn = get_btn();
-	if (my_btn->button != 0){
-		pressed = my_btn->button;
-		switch (pressed){
-			case '*':
-				lcd_clrscr();
-			break;
-			case '1':
-				USARTSendCmd("at\r\n", &cmd_resp, 100000);
-				state = 2;
-			break;
-			case '2':
-				USARTSendCmd("at+cfun?\r\n", &cmd_resp, 100000);
-				state = 2;
-			break;
-			case '3':
-				USARTSendCmd("at+cusd=1,\"*101#\"\r\n", &cmd_resp, 900000);
-				state = 2;
-			break;
-			case '4':
-				sim_status = SwitchSim900(1, 5);
-				analize_status(sim_status);
-			break;
-			case '5':
-				sim_status = SwitchSim900(0, 5);
-				analize_status(sim_status);
-			break;
-			case '6':
-				state = 1;
-			break;
-			case '7':
-				menuChange(NEXT);
-			break;
-		}
+	if (i == 100)
+	{
+		GPIOB->ODR ^= GPIO_ODR_ODR0;
+		i=0;
 	}
+	i++;
+
 }
 
 void InitAll(void)
