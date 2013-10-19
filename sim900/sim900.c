@@ -36,3 +36,8 @@ uint8_t SwitchSim900(uint8_t state, uint8_t timeout){
 	}
 	return 0;
 }
+
+uint8_t SimGetStatus(void){
+	if ((MANAGE_PORT->CHECK_REG & STATUS_STATE) == 0) return 0;
+	else return 1;
+}

@@ -28,5 +28,6 @@
 
 void InitSim900Port(void);
 uint8_t SwitchSim900(uint8_t state, uint8_t timeout);
+uint8_t SimGetStatus(void);
 
 //uint8_t cfun_cmd[]="AT+CFUN=?";

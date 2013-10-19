@@ -27,7 +27,6 @@ int main(void)
 
         InitAll();
         LCDPrintS("==LCD test OK!==*==============*");
-        USARTSendStr("USART test OK\r\n");
 		delay_timer_ms(1000);
 		lcd_clrscr();
 
@@ -38,72 +37,13 @@ int main(void)
         	{
         		case 0: //simple kb checking
 					my_btn = get_btn();
-					if (my_btn->button != 0){
-						switch (my_btn->button){
-							case '6':
-								changeMenu(MENU_NEXT);
-							break;
-							case '4':
-								changeMenu(MENU_PREVIOUS);
-							break;
-							case '2':
-								changeMenu(MENU_PARENT);
-							break;
-							case '8':
-								changeMenu(MENU_CHILD);
-							break;
-
-						}
-					}
-		            if(MenuChanged()){
-		            	lcd_clrscr();
-		            	LCDPrintS(GetCurMenuName());
-		            }
+        			ProcessMenu(my_btn->button, my_btn->duration);
         		break;
 
         		case 1:
-					my_btn = get_btn();
-					if (my_btn->button != 0){
-						switch (my_btn->button){
-							case '*':
-								lcd_clrscr();
-							break;
-							case '1':
-								USARTSendCmd("at\r\n", &cmd_resp, 100000);
-								state = 2;
-							break;
-							case '2':
-								USARTSendCmd("at+cfun?\r\n", &cmd_resp, 100000);
-								state = 2;
-							break;
-							case '3':
-								USARTSendCmd("at+cusd=1,\"*101#\"\r\n", &cmd_resp, 900000);
-								state = 2;
-							break;
-							case '4':
-								sim_status = SwitchSim900(1, 5);
-								analize_status(sim_status);
-							break;
-							case '5':
-								sim_status = SwitchSim900(0, 5);
-								analize_status(sim_status);
-							break;
-							case '6':
-								state = 1;
-							break;
-							case '7':
-							break;
-						}
-					}
         		break;
 
         		case 2:
-        			if (USARTFindResponse())
-        			{
-        				LCDPrintS(cmd_resp.resp_data);
-        				state = 0;
-        			}
-        			if (cmd_resp.timeout == 0) state = 0;
         		break;
         	}
         }

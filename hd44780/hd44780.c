@@ -452,6 +452,16 @@ void LCDPrintS(uint8_t *p)
 		lcd_putcc(*p++);
 	}
 }
+void LCDLine(uint8_t line){
+	switch(line){
+	case 0:
+		lcd_cnt = 32;
+		break;
+	case 1:
+		lcd_cnt = 16;
+		break;
+	}
+}
 //-------------------------------
 /* END OF FILE */
 //-------------------------------
