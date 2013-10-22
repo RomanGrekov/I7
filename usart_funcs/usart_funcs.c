@@ -8,15 +8,10 @@ volatile uint8_t RXtail = 0;      //"указатель" хвоста буфер
 volatile uint8_t RXhead = 0;   //"указатель" головы буфера
 volatile uint8_t RXcount = 0;  //счетчик символов
 
-volatile uint8_t RXhead1 = 0;   //"указатель" головы буфера
-volatile uint8_t RXcount1 = 0;  //счетчик символов
-
 volatile uint8_t TXBuf[SIZE_BUF];
 volatile uint8_t TXtail = 0;
 volatile uint8_t TXhead = 0;
 volatile uint8_t TXcount = 0;
-
-usart_resp *response;
 
 //"очищает" буфер
 void FlushBuf(void)
@@ -47,30 +42,6 @@ unsigned char USART_GetChar(void)
       RXcount--;             //уменьшаем счетчик символов
       RXhead++;              //инкрементируем индекс головы буфера
       if (RXhead == SIZE_BUF) RXhead = 0;
-   }
-   return sym;
-}
-
-void copy_buf(uint8_t *rxbuf, uint8_t *rxbuf1)
-{
-	RXcount1 = 0;
-	RXhead1 = 0;
-	uint8_t i=0;
-	while (rxbuf[i]){
-		rxbuf1[i] = rxbuf[i];
-		i++;
-		RXcount1++;
-	}
-}
-//взять символ из буфера
-uint8_t get_char(uint8_t *buf)
-{
-   uint8_t sym = 0;
-   if (RXcount1 > 0){         //если буфер не пустой
-      sym = buf[RXhead1];   //считываем символ из буфера
-      RXcount1--;             //уменьшаем счетчик символов
-      RXhead1++;              //инкрементируем индекс головы буфера
-      if (RXhead1 == SIZE_BUF) RXhead1 = 0;
    }
    return sym;
 }
@@ -120,75 +91,86 @@ void USART1_IRQHandler(void){
 	}
 }
 
-uint8_t USARTFindResponse(void)
+uint8_t USARTFindResponseAdv(usart_resp *res)
 {
-	uint8_t symb, state = 0;
-	uint8_t i=0;
-	uint8_t buf[SIZE_BUF];//find command buffer
+	uint8_t local_res=0;
 
-	copy_buf(RXBuf, buf);
-
-	response->timeout--;
-
-	while (state != 3)//while start of the string isn't found
-	{
-		symb = get_char(buf);
-		switch (symb){
-			case 0:
-				return 0;
-			break;
-			case 0x0d:
-				state = 1;
-			break;
-			case 0x0a:
-				if (state == 1)state = 2;
-				else state = 0;
-			break;
-			default:
-				if (state != 2) state = 0;
-				else state = 3;
-			break;
-		}
-	}
-	response->resp_data[i] = symb;
-	i++;
-	while (1)//while end of the string isn't found
-	{
-		symb = get_char(buf);
-		switch (symb){
-			case 0:
-				return 0;
-			break;
-			case 0x0d:
-				state = 4;
-			break;
-			case 0x0a:
-				if(state == 4)
-					{
-						response->resp_res = 1;
-						response->resp_data[i] = '\0';
-						return 1;
-					}
-				else state = 3;
-			break;
-			default:
-				state = 3;
-				response->resp_data[i] = symb;
-				i++;
-			break;
-		}
+	while(res->resp_expect != res->resp_res){
+		local_res = USARTFindResponse(res);
+		if (local_res != 0)return local_res;
 	}
 	return 0;
 }
 
-void USARTSendCmd(uint8_t *cmd, usart_resp *res, uint32_t timeout)
+uint8_t USARTFindResponse(usart_resp *res){
+	uint8_t symb, state, i;
+	enum{
+		clear = 0,
+		d_found,
+		d_a_found,
+		symb_found,
+		sec_d_found,
+		sec_d_a_found
+	};
+
+	state = clear;
+	i=res->length; //write answer from the last char (if resp already was)
+	if(i != 0){ // if this is second response search
+		res->resp_data[i] = '\r'; // need to insert delimeter
+		i++;
+	}
+
+	while(state != sec_d_a_found){
+		symb = USART_GetChar();
+		switch (symb){
+			case 0:
+				break;
+			case 0x0d:
+				if(state == clear) state = d_found;
+				if(state == symb_found) state = sec_d_found;
+				break;
+			case 0x0a:
+				if(state == d_found) state = d_a_found;
+				if(state == sec_d_found)
+					{
+						res->resp_res++;
+						res->resp_data[i] = 0;
+						res->length = i;
+						state = sec_d_a_found;
+					}
+				if(state != d_a_found && state != sec_d_a_found) state = clear;
+				break;
+			default:
+				if (state == d_a_found) state = symb_found;
+				if (state == symb_found){
+					res->resp_data[i] = symb;
+					if(i < USART_RESP-1)i++;
+				}
+				if(state != symb_found) state = clear;
+				break;
+		}
+		res->timeout--;
+		if (!res->timeout)return 1;
+	}
+	return 0; //needed responses amount found
+}
+
+void USARTSendCmd(uint8_t *cmd, usart_resp *res, uint32_t timeout, uint8_t res_amount)
 {
-	response = res;
+	FlushResponse(res);
     FlushBuf(); ///////////Clean buffer
-	response->resp_expect = 0;
-	response->resp_res = 0;
-	response->timeout=timeout;
+	res->resp_res = 0;
+	res->timeout=timeout;
+	res->resp_expect=res_amount;
 	USARTSendStr(cmd);
+}
+
+void FlushResponse(usart_resp *res){
+	res->resp_expect = 0;
+	res->resp_res = 0;
+	res->timeout = 0;
+	res->length = 0;
+	for(uint8_t i=0; i< USART_RESP; i++)res->resp_data[i]=0;
 }
 
 uint8_t find_template(uint8_t *resp, uint8_t *template)

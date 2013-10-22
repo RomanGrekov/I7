@@ -11,7 +11,6 @@
 #include "globs.h"
 #include "menu/menu.h"
 
-
 void InitAll(void);
 task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);

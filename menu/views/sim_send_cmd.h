@@ -8,5 +8,13 @@
 #include "../menu.h"
 #include "../../globs.h"
 
+struct command{
+	uint8_t cmd[20];
+	uint8_t response_amount;
+};
+
+#define MAKE_COMMAND(name, cmd, amount) \
+	command name = {(uint8_t)amount, { cmd }}\
+
 void send_test_cmds(void);
 #endif

@@ -7,7 +7,7 @@
 #include "views/sim_on_off.h"
 #include "views/sim_send_cmd.h"
 
-typedef struct PROGMEM{
+typedef struct{
 	void       *Next;
 	void       *Previous;
 	void       *Parent;
