@@ -91,6 +91,16 @@ void USART1_IRQHandler(void){
 	}
 }
 
+uint8_t USARTFindCmdResponse(usart_resp*res, uint8_t *template){
+	uint8_t retcode;
+
+	retcode = USARTFindResponseAdv(res);
+	if (retcode != 0) return retcode; // timed out
+	retcode = find_template(res->resp_data, template);
+	if(retcode != 0)return 2; //pattern not found
+	return 0; //pattern found
+}
+
 uint8_t USARTFindResponseAdv(usart_resp *res)
 {
 	uint8_t local_res=0;
@@ -175,9 +185,30 @@ void FlushResponse(usart_resp *res){
 
 uint8_t find_template(uint8_t *resp, uint8_t *template)
 {
-	uint8_t t_size, i=0;
-	t_size = sizeof(template);
-	for (i=0; i < t_size; i++)
-		if (resp[i] != template[i]) return 0;
-	return 1;
+	uint8_t t_size, r_size;
+	uint8_t shift=0, cnt=0, found=0;
+	uint8_t a[5];
+	r_size = getSize(resp);
+	t_size = getSize(template);
+
+	while((r_size - shift) >= t_size && t_size <= r_size){
+		found = 1;
+		for (uint32_t i=0; i < t_size; i++)
+			if (resp[i+shift] != template[i]){
+				found = 0;
+				break;
+			}
+		if(found == 1)return 0;
+		shift++;
+	}
+	return 1;// not found
 }
+
+uint8_t getSize(uint8_t *my_array){
+	uint8_t i=0;
+	while(*my_array++){
+		i++;
+	}
+	return i;
+}
+

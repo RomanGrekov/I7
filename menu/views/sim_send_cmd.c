@@ -10,7 +10,7 @@ struct command commands[3]={
 void send_test_cmds(void){
 	usart_resp cmd_resp;
 	button *btn_obj;
-	uint8_t btn, cmd_flag=0;
+	uint8_t btn;
 	uint8_t cur_cmd_id=0, old_cmd_id=1, cmd_sent=0;
 
 	do{
@@ -61,7 +61,6 @@ void send_test_cmds(void){
 			USARTSendCmd(commands[cur_cmd_id].cmd, &cmd_resp, 1000000,
 					     commands[cur_cmd_id].response_amount);
 			cmd_sent = 1;
-			cmd_flag = 1;
 			break;
 		}
 

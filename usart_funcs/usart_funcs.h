@@ -14,3 +14,6 @@ uint8_t USARTFindResponseAdv(usart_resp *res);//Find response in rx buffer
 void USARTSendCmd(uint8_t *cmd, usart_resp *res, uint32_t timeout, uint8_t res_amount);
 
 uint8_t find_template(uint8_t *resp, uint8_t *template);
+
+uint8_t USARTFindCmdResponse(usart_resp*res, uint8_t *template);
+uint8_t getSize(uint8_t *my_array);
