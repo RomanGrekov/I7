@@ -2,16 +2,18 @@
 
 uint8_t cmd_amount = 3;
 struct command commands[3]={
-		{"at\r\n", 1},
-		{"at+cfun?\r\n", 2},
-		{"at+cusd=1,\"*101#\"\r\n", 2}
+		{"at\r\n", 500},
+		{"at+cfun?\r\n", 1000},
+		{"at+cusd=1,\"*101#\"\r\n", 7000}
 };
 
 void send_test_cmds(void){
-	usart_resp cmd_resp;
 	button *btn_obj;
 	uint8_t btn;
 	uint8_t cur_cmd_id=0, old_cmd_id=1, cmd_sent=0;
+	struct usart_response *res;
+	uint8_t data[10]={1,1,1,1,1,1,1,1,1,1};
+	uint32_t timeout;
 
 	do{
 		if (cur_cmd_id != old_cmd_id){
@@ -25,22 +27,39 @@ void send_test_cmds(void){
 		if (cmd_sent){
 			lcd_clrscr();
 			LCDPrintS("Sent ...");
-			if (USARTFindResponseAdv(&cmd_resp) == 0)
-			{
+			delay_timer_ms(timeout);
+			if(USARTHasResp()){
 				lcd_clrscr();
-				LCDPrintS("Result");
-				LCDLine(1);
-				LCDPrintS(cmd_resp.resp_data);
-				cmd_sent = 0;
+				LCDPrintS("Result:");
+				if (cur_cmd_id != 2)// If sent command isn't money check
+				{
+					res = USARTGetResp();
+					LCDLine(1);
+					LCDPrintS(res->resp_data);
+					cmd_sent = 0;
+				}
+				else{
+					if (USARTFindCmdWithData("+CUSD: 0,\"", "UAH", data)){
+						LCDLine(1);
+						LCDPrintS(data);
+						cmd_sent = 0;
+					}
+					else{
+						LCDLine(1);
+						LCDPrintS("timed out");
+						cmd_sent = 0;
+
+					}
+
+				}
 			}
-			else {
+			else{
 				lcd_clrscr();
 				LCDPrintS("Result");
 				LCDLine(1);
 				LCDPrintS("timed out");
 				cmd_sent = 0;
 			}
-
 		}
 
 		btn_obj = get_btn();
@@ -58,9 +77,9 @@ void send_test_cmds(void){
 			else cur_cmd_id=(cmd_amount-1);
 			break;
 		case '*':
-			USARTSendCmd(commands[cur_cmd_id].cmd, &cmd_resp, 1000000,
-					     commands[cur_cmd_id].response_amount);
+			USARTSendCmd(commands[cur_cmd_id].cmd);
 			cmd_sent = 1;
+			timeout = commands[cur_cmd_id].timeout;
 			break;
 		}
 

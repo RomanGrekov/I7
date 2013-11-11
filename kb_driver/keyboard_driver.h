@@ -17,8 +17,8 @@ button cur_btn;
 #define trashhold1 10 //Нижний уровень стробирования
 #define trashhold2 70 //Верхний уровень стробирования
 #define templates "123456789*0#" //Знаки на клавиатуре
-#define cols {GPIO_ODR_ODR3,GPIO_ODR_ODR4,GPIO_ODR_ODR5,GPIO_ODR_ODR6}; //Пины строк
-#define rows {GPIO_IDR_IDR0,GPIO_IDR_IDR1,GPIO_IDR_IDR2}; //Пины колонок
+#define cols {GPIO_ODR_ODR4,GPIO_ODR_ODR5,GPIO_ODR_ODR6,GPIO_ODR_ODR7}; //Пины строк
+#define rows {GPIO_IDR_IDR8,GPIO_IDR_IDR11,GPIO_IDR_IDR12}; //Пины колонок
 
 uint8_t check_buttons[cols_num][rows_num];
 uint8_t buttons[buttons_em];

@@ -16,27 +16,27 @@ task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
 uint8_t state=0;
-usart_resp cmd_resp;
 button *my_btn;
 
 int main(void)
 {
-
-	uint8_t sim_status;
-
         InitAll();
         LCDPrintS("==LCD test OK!==*==============*");
 		delay_timer_ms(1000);
 		lcd_clrscr();
 
 		InitMenu();
+
         while(1)
         {
         	switch(state)
         	{
         		case 0: //simple kb checking
 					my_btn = get_btn();
+					if(my_btn->button)USART_PutChar(my_btn->button);
         			ProcessMenu(my_btn->button, my_btn->duration);
+
+					if(USARTFindCmd("0506073568")) USARTSendCmd("ata\r\n");
         		break;
 
         		case 1:
@@ -63,6 +63,7 @@ void TIM2_IRQHandler(void)
 	}
 	i++;
 
+	USARTCheckData();
 }
 
 void InitAll(void)
@@ -80,12 +81,13 @@ void InitAll(void)
 
     lcd_init();
 
+    InitUSART(9600);
+    usart_interrupt_init();
+
     init_keyboard();
 
     timer2_init(10);
 
-    InitUSART(9600);
-    usart_interrupt_init();
     FlushBuf();
 
     InitSim900Port();

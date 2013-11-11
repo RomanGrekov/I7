@@ -4,8 +4,8 @@ void InitBuz (void)
 {
     RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; //Clock port
 
-    GPIOA->CRH      &= ~GPIO_CRH_CNF11;
-    GPIOA->CRH      |= GPIO_CRH_MODE11_0;
+    GPIOA->CRL      &= ~GPIO_CRL_CNF0;
+    GPIOA->CRL      |= GPIO_CRL_MODE0_0;
 }
 
 void Bzz(uint8_t variant)
@@ -29,9 +29,9 @@ void Bzz(uint8_t variant)
 
 	for (i=0; i<lenght; i++)
 	{
-		GPIOA->BSRR |= GPIO_BSRR_BS11;
+		GPIOA->BSRR |= GPIO_BSRR_BS0;
 		delay_us(d1);
-		GPIOA->BSRR |= GPIO_BSRR_BR11;
+		GPIOA->BSRR |= GPIO_BSRR_BR0;
 		delay_us(d2);
 	}
 }

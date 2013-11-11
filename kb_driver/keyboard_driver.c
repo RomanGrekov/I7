@@ -5,15 +5,16 @@ void init_keyboard(void)
 	btn_cnt = buttons_em;
 
 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; //Clock port
-	GPIOA->CRL	&= ~(GPIO_CRL_CNF0_0 | GPIO_CRL_CNF1_0 | GPIO_CRL_CNF2_0); //Ножки 0,1,2 - входы, 
-	GPIOA->CRL |= (GPIO_CRL_CNF0_1 | GPIO_CRL_CNF1_1 | GPIO_CRL_CNF2_1);	 //подтяжка к
-	GPIOA->ODR |= (GPIO_ODR_ODR0 | GPIO_ODR_ODR1 | GPIO_ODR_ODR2);     		 //плюсу
-	//GPIOA->CRL 	&= ~(GPIO_CRL_MODE1_0 | GPIO_CRL_MODE1_1);//дефолтно
+	GPIOA->CRH 	&= ~(GPIO_CRH_MODE8_0 | GPIO_CRH_MODE11_0 | GPIO_CRH_MODE12_0);//Ножки 8,11,12 - входы,
+	GPIOA->CRH 	&= ~(GPIO_CRH_MODE8_1 | GPIO_CRH_MODE11_1 | GPIO_CRH_MODE12_1);//
+	GPIOA->CRH	&= ~(GPIO_CRH_CNF8_0  | GPIO_CRH_CNF11_0  | GPIO_CRH_CNF12_0); //подтяжка к +
+	GPIOA->CRH |=   (GPIO_CRH_CNF8_1  | GPIO_CRH_CNF11_1  | GPIO_CRH_CNF12_1); //
+	GPIOA->ODR |=   (GPIO_ODR_ODR8    | GPIO_ODR_ODR11    | GPIO_ODR_ODR12);   //подтяжка к +
 	
-	GPIOA->CRL	&= ~(GPIO_CRL_CNF3_0 | GPIO_CRL_CNF4_0 | GPIO_CRL_CNF5_0 | GPIO_CRL_CNF6_0);// Ножки 3,4,5,6 - выходы
-	GPIOA->CRL	&= ~(GPIO_CRL_CNF3_1 | GPIO_CRL_CNF4_1 | GPIO_CRL_CNF5_1 | GPIO_CRL_CNF6_1);//
-	GPIOA->CRL 	|= (GPIO_CRL_MODE3_0 | GPIO_CRL_MODE4_0 | GPIO_CRL_MODE5_0 | GPIO_CRL_MODE6_0);// 50MHz
-	GPIOA->CRL 	|= (GPIO_CRL_MODE3_1 | GPIO_CRL_MODE4_1 | GPIO_CRL_MODE5_1 | GPIO_CRL_MODE6_1);//
+	GPIOA->CRL 	|=  (GPIO_CRL_MODE4_0 | GPIO_CRL_MODE5_0 | GPIO_CRL_MODE6_0 | GPIO_CRL_MODE7_0);// 50MHz
+	GPIOA->CRL 	|=  (GPIO_CRL_MODE4_1 | GPIO_CRL_MODE5_1 | GPIO_CRL_MODE6_1 | GPIO_CRL_MODE7_1);//
+	GPIOA->CRL	&= ~(GPIO_CRL_CNF4_0  | GPIO_CRL_CNF5_0  | GPIO_CRL_CNF6_0  | GPIO_CRL_CNF7_0);// Ножки 3,4,5,6 - выходы
+	GPIOA->CRL	&= ~(GPIO_CRL_CNF4_1  | GPIO_CRL_CNF5_1  | GPIO_CRL_CNF6_1  | GPIO_CRL_CNF7_1);//
 }
 
 void kb_strobe(void)
@@ -21,7 +22,7 @@ void kb_strobe(void)
 	uint8_t cols_[] = cols;
 	uint8_t rows_[] = rows;
 
-	for (uint8_t col=0; col<cols_num; col++)//Перебираем все колонки
+	for (uint8_t col=0; col<cols_num; col++)//Перебираем все строки
 	{
 		for (uint8_t i=0; i<cols_num; i++)//Формируем маску
 		{

@@ -4,13 +4,12 @@
 #include <string.h>
 #include "../../hd44780/hd44780.h"
 #include "../../kb_driver/keyboard_driver.h"
-#include "../../sim900/sim900.h"
 #include "../menu.h"
-#include "../../globs.h"
+#include "../../delay/delay.h"
 
 struct command{
 	uint8_t cmd[20];
-	uint8_t response_amount;
+	uint16_t timeout;
 };
 
 #define MAKE_COMMAND(name, cmd, amount) \

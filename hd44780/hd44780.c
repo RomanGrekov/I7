@@ -41,6 +41,7 @@ static int8u_t progress_bar[NUMBER_OF_CELL_ELEMENTS] = {0x00,0x10,0x18,0x1C,0x1E
 static int8u_t current_bar_load;
 #endif
 
+const uint8_t symbols[] = {'0','1','2','3','4','5','6','7','8','9'};
 gpio_init(void){
 
     RCC->APB2ENR |= RCC_APB2ENR_IOPBEN; //Clock port
@@ -461,6 +462,10 @@ void LCDLine(uint8_t line){
 		lcd_cnt = 16;
 		break;
 	}
+}
+
+uint8_t GetSymb(uint8_t digit){
+	return symbols[digit];
 }
 //-------------------------------
 /* END OF FILE */

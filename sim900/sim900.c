@@ -43,13 +43,15 @@ uint8_t SimGetStatus(void){
 }
 
 uint8_t SimInit(void){
-	usart_resp cmd_resp;
 	uint8_t res=0;
 
-	USARTSendCmd("at\r\n", &cmd_resp, 100000, 1);
-	if(USARTFindCmdResponse(&cmd_resp, "OK") != 0) return 1;
+	USARTSendCmd("at\r\n");
+	delay_timer_ms(500);
+	if(!USARTFindCmd("OK")) return 1;
 
-	USARTSendCmd("at+cfun?\r\n", &cmd_resp, 100000, 2);
-	if(USARTFindCmdResponse(&cmd_resp, "+CFUN: 1\rOK") != 0) return 1;
+	USARTSendCmd("at+cfun?\r\n");
+	delay_timer_ms(500);
+	if(!USARTFindCmd("+CFUN: 1")) return 2;
+
 	return 0;
 }
