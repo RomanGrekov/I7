@@ -4,6 +4,7 @@
 #include "common/common_funcs.h"
 #include "kb_driver/keyboard_driver.h"
 #include "USART/usart.h"
+#include "USART/usart2.h"
 #include "usart_funcs/usart_funcs.h"
 #include "sim900/sim900.h"
 #include "hd44780/hd44780.h"
@@ -12,7 +13,6 @@
 #include "menu/menu.h"
 
 void InitAll(void);
-task* InitTasks(task *my_task);
 void analize_status(uint8_t retcode);
 
 uint8_t state=0;
@@ -25,15 +25,14 @@ int main(void)
 		delay_timer_ms(1000);
 		lcd_clrscr();
 
-		InitMenu();
-
+		USARTSendStr("USART 1 OK\r\n");
+		USART2SendStr("USART 2 OK\r\n");
         while(1)
         {
         	switch(state)
         	{
         		case 0: //simple kb checking
 					my_btn = get_btn();
-					if(my_btn->button)USART_PutChar(my_btn->button);
         			ProcessMenu(my_btn->button, my_btn->duration);
 
 					if(USARTFindCmd("0506073568")) USARTSendCmd("ata\r\n");
@@ -58,7 +57,7 @@ void TIM2_IRQHandler(void)
 
 	if (i == 100)
 	{
-		GPIOB->ODR ^= GPIO_ODR_ODR0;
+		GPIOB->ODR ^= GPIO_ODR_ODR1;
 		i=0;
 	}
 	i++;
@@ -82,7 +81,9 @@ void InitAll(void)
     lcd_init();
 
     InitUSART(9600);
+    InitUSART2(9600);
     usart_interrupt_init();
+    usart2_interrupt_init();
 
     init_keyboard();
 
@@ -94,6 +95,7 @@ void InitAll(void)
 
     InitBuz();
 
+	InitMenu();
    }
 
 // где-то в main.c
@@ -110,11 +112,4 @@ void analize_status(uint8_t retcode)
 		Bzz(0);
 	}
 	else GPIOB->BSRR |= GPIO_BSRR_BR1; // 0 means success
-}
-
-task* InitTasks(task *my_task)
-{
-	my_task->done='0';
-	my_task->to_run='1';
-	return &my_task;
 }

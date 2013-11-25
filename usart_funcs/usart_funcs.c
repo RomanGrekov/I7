@@ -1,6 +1,7 @@
 #include "usart_funcs.h"
 
 void USART_PutChar(unsigned char sym);
+void USART2_PutChar(unsigned char sym);
 
 //кольцевой (циклический) буфер
 volatile uint8_t RXBuf[SIZE_BUF]; //main buffer
@@ -12,6 +13,11 @@ volatile uint8_t TXBuf[TX_SIZE_BUF];
 volatile uint8_t TXtail = 0;
 volatile uint8_t TXhead = 0;
 volatile uint8_t TXcount = 0;
+
+volatile uint8_t TXBuf1[TX_SIZE_BUF];
+volatile uint8_t TXtail1 = 0;
+volatile uint8_t TXhead1 = 0;
+volatile uint8_t TXcount1 = 0;
 
 volatile struct usart_response usart_resp[USART_RESP_AMOUNT];
 volatile uint8_t RespTail = 0;
@@ -27,10 +33,14 @@ void USARTPutResp(struct usart_response res)
 	RespTail++;              		  // Increment tail
 	if(RespCount < USART_RESP_AMOUNT)RespCount++;// Increment counter
 
-	USARTSendStr("          \0");
+	/*
+	USART2SendStr("          \0");
 	uint8_t debug_msg[] = {'P','u','t',':',GetSymb(tail),' ',
-			               'C','n','t',':',GetSymb(RespCount),'\n',0};
-	USARTSendStr(debug_msg);
+			               'C','n','t',':',GetSymb(RespCount), ' ',0};
+	USART2SendStr(debug_msg);
+	USART2SendStr(res.resp_data);
+	USART2_PutChar('\n');
+	*/
 }
 
 struct usart_response* USARTGetResp(void)
@@ -44,10 +54,14 @@ struct usart_response* USARTGetResp(void)
 		RespHead++;              //инкрементируем индекс головы буфера
 		if (RespHead == USART_RESP_AMOUNT) RespHead = 0;
 	}
-	USARTSendStr("          \0");
+	/*
+	USART2SendStr("          \0");
 	uint8_t debug_msg[] = {'G','e','t',':',GetSymb(head),' ',
-						   'C','n','t',':',GetSymb(RespCount),' ','\n',0};
-	USARTSendStr(debug_msg);
+						   'C','n','t',':',GetSymb(RespCount),' ',0};
+	USART2SendStr(debug_msg);
+	USART2SendStr(res->resp_data);
+	USART2_PutChar('\n');
+	*/
 	return res;
 }
 
@@ -62,7 +76,7 @@ void FlushBuf(void)
   RXtail = 0;
   RXhead = 0;
   RXcount = 0;
-  for (i=0; i < SIZE_BUF; i++) RXBuf[i] = 0;
+  //for (i=0; i < SIZE_BUF; i++) RXBuf[i] = 0;
 }
 
 //положить символ в буфер
@@ -95,13 +109,37 @@ void USART_PutChar(unsigned char sym)
 	  USART1->DR = sym;
   }
   else {
-	USART1->CR1 |= USART_CR1_TXEIE;/*!<PE Interrupt enable */
+	USART1->CR1 &= ~USART_CR1_TXEIE;//!<PE Interrupt Disable
     if (TXcount < TX_SIZE_BUF){                    //если в буфере еще есть место
       TXBuf[TXtail] = sym;             //помещаем в него символ
       TXcount++;                                     //инкрементируем счетчик символов
       TXtail++;                                    //и индекс хвоста буфера
       if (TXtail == TX_SIZE_BUF) TXtail = 0;
     }
+	USART1->CR1 |= USART_CR1_TXEIE;/*!<PE Interrupt enable */
+	if((USART1->SR & USART_SR_TXE)!=0){// If Transmit Data Register Empty
+		USART1_IRQHandler(); //Call usart interruption to send data
+	}
+  }
+}
+
+void USART2_PutChar(unsigned char sym)
+{
+  if((USART2->SR & USART_SR_TC) && (TXcount1 == 0)){
+	  USART2->DR = sym;
+  }
+  else {
+	USART2->CR1 &= ~USART_CR1_TXEIE;//!<PE Interrupt Disable
+    if (TXcount1 < TX_SIZE_BUF){                    //если в буфере еще есть место
+      TXBuf1[TXtail1] = sym;             //помещаем в него символ
+      TXcount1++;                                     //инкрементируем счетчик символов
+      TXtail1++;                                    //и индекс хвоста буфера
+      if (TXtail1 == TX_SIZE_BUF) TXtail1 = 0;
+    }
+	USART2->CR1 |= USART_CR1_TXEIE;/*!<PE Interrupt enable */
+	if((USART2->SR & USART_SR_TXE)!=0){// If Transmit Data Register Empty
+		USART2_IRQHandler(); //Call usart interruption to send data
+	}
   }
 }
 
@@ -111,6 +149,15 @@ void USARTSendStr(unsigned char * data)
   while(*data){
     sym = *data++;
     USART_PutChar(sym);
+  }
+}
+
+void USART2SendStr(unsigned char * data)
+{
+  unsigned char sym;
+  while(*data){
+    sym = *data++;
+    USART2_PutChar(sym);
   }
 }
 
@@ -125,12 +172,27 @@ void USART1_IRQHandler(void){
 		    TXhead++;                         //инкрементируем индекс головы буфера
 		    if (TXhead == TX_SIZE_BUF) TXhead = 0;
 		  }
-		 else{
-			 USART1->CR1 &= ~USART_CR1_TXEIE;//!<PE Interrupt Disable
-		 }
+		 else USART1->CR1 &= ~USART_CR1_TXEIE;//!<PE Interrupt Disable
 	}
 	if((USART1->SR & USART_SR_TC) != 0){//!<Transmission Complete
 		USART1->SR &= ~USART_SR_TC; //Clear flag --^
+	}
+}
+
+void USART2_IRQHandler(void){
+	if((USART2->SR & USART_SR_TXE)!=0){// If Transmit Data Register Empty
+		 if (TXcount1 > 0){                       //если буфер не пустой
+		    USART2->DR = TXBuf1[TXhead1];  //записываем в DR символ из буфера
+		    TXcount1--;                           //уменьшаем счетчик символов
+		    TXhead1++;                         //инкрементируем индекс головы буфера
+		    if (TXhead1 == TX_SIZE_BUF) TXhead1 = 0;
+		  }
+		 else{
+			 USART2->CR1 &= ~USART_CR1_TXEIE;//!<PE Interrupt Disable
+		 }
+	}
+	if((USART2->SR & USART_SR_TC) != 0){//!<Transmission Complete
+		USART2->SR &= ~USART_SR_TC; //Clear flag --^
 	}
 }
 
@@ -148,6 +210,7 @@ void USARTCheckData(void){
 	static struct usart_response res;
 
 	symb = USART_GetChar();
+
 	switch (symb){
 		case 0:
 			break;
@@ -219,8 +282,8 @@ uint8_t getSize(uint8_t *my_array){
 }
 
 uint8_t USARTFindCmd(uint8_t *template){
-	uint8_t RespHead_ = RespHead; //Save buffer parameters in case if command not found
-	uint8_t RespCount_ = RespCount;
+	//uint8_t RespHead_ = RespHead; //Save buffer parameters in case if command not found
+	//uint8_t RespCount_ = RespCount;
 	uint8_t addr=0;
 	struct found_template t_found;
 	struct usart_response *res;
@@ -230,8 +293,8 @@ uint8_t USARTFindCmd(uint8_t *template){
 		t_found = find_template(res->resp_data , template);
 		if (t_found.found) return 1; //return shift of found template in response
 	}
-	RespHead = RespHead_;
-	RespCount = RespCount_;
+	//RespHead = RespHead_;
+	//RespCount = RespCount_;
 	return 0;
 }
 

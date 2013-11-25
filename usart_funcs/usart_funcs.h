@@ -4,6 +4,8 @@
 #include "../libs/stm32f10x.h"
 #include "../hd44780/hd44780.h"
 #include "../globs.h"
+#include "../delay/delay.h"
+#include <string.h>
 
 #define SIZE_BUF 200 //Rx buffer size
 #define TX_SIZE_BUF 64 //Rx buffer size
@@ -21,8 +23,10 @@ struct found_template{
 
 void FlushBuf(void); //Clear rx buf
 void USART_PutChar(unsigned char sym); //Put char to tx buffer
+void USART2_PutChar(unsigned char sym); //Put char to tx buffer
 unsigned char USART_GetChar(void); //Get char from rx buffer
 void USARTSendStr(unsigned char * data); //Send string
+void USART2SendStr(unsigned char * data); //Send string
 void USARTSendCmd(uint8_t *cmd);
 
 struct found_template find_template(uint8_t *resp, uint8_t *template);

@@ -40,3 +40,13 @@ void delay_us(uint16_t us)
 		 i++;
 	 }
 }
+
+void delay_ms(uint32_t ms){
+	 uint32_t n, alfa, i;
+	 n = ms * (F_CPU / 1000);
+	 i=0;
+	 for(alfa=0;alfa<n;alfa++)
+	 {
+		 i++;
+	 }
+}

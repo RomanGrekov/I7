@@ -28,7 +28,7 @@ uint8_t* GetCurMenuName(void){
 	return selectedMenuItem->Text;
 }
 uint8_t GetCurMenuView(void){
-	return selectedMenuItem->Select;
+	return selectedMenuItem->View;
 }
 
 uint8_t MenuChanged(void){
@@ -68,7 +68,7 @@ void ProcessMenu(uint8_t btn, uint8_t duaration){
 
 	uint8_t view;
 
-	view = GetCurMenuView();
+	view = GetCurMenuView();//Get view FLAG
 	if (btn != 0){
 		switch (btn){
 			case '6':
@@ -81,10 +81,10 @@ void ProcessMenu(uint8_t btn, uint8_t duaration){
 				changeMenu(MENU_PARENT);
 				break;
 			case '8':
-				if(!view){
+				if(!view){// If menu doesn't have view go to the child
 					changeMenu(MENU_CHILD);
 				}
-				else{
+				else{// If view exists, call it
 					selectedMenuItem->handler();
 				}
 				break;
@@ -94,6 +94,5 @@ void ProcessMenu(uint8_t btn, uint8_t duaration){
 		lcd_clrscr();
 		LCDPrintS(GetCurMenuName());
 	}
-
 }
 

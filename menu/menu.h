@@ -13,17 +13,17 @@ typedef struct{
 	void       *Parent;
 	void       *Child;
 	void	   (*handler)();
-	uint8_t     Select;
+	uint8_t     View;
 	const char  Text[16];
 	void       *This;
 } menuItem;
 
-#define MAKE_MENU(Name, Next, Previous, Parent, Child, handler, Select, Text) \
+#define MAKE_MENU(Name, Next, Previous, Parent, Child, handler, View, Text) \
     extern menuItem Next;     \
 	extern menuItem Previous; \
 	extern menuItem Parent;   \
 	extern menuItem Child;  \
-	menuItem Name = {(void*)&Next, (void*)&Previous, (void*)&Parent, (void*)&Child, (void*)&handler, (uint8_t)Select, { Text }, (void*)&Name}
+	menuItem Name = {(void*)&Next, (void*)&Previous, (void*)&Parent, (void*)&Child, (void*)&handler, (uint8_t)View, { Text }, (void*)&Name}
 
 enum {
     MENU_NEXT=1,

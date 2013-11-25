@@ -3,7 +3,7 @@
 uint8_t cmd_amount = 3;
 struct command commands[3]={
 		{"at\r\n", 500},
-		{"at+cfun?\r\n", 1000},
+		{"at+cfun?\r\n\0", 1000},
 		{"at+cusd=1,\"*101#\"\r\n", 7000}
 };
 
@@ -84,5 +84,4 @@ void send_test_cmds(void){
 		}
 
 	}while (btn != '2');
-
 }

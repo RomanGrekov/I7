@@ -47,5 +47,3 @@ void send_string(uint8_t *data){
 		data++;
 	}
 }
-
-//void USART1_IRQHandler(void)

@@ -19,8 +19,8 @@ void init_keyboard(void)
 
 void kb_strobe(void)
 {
-	uint8_t cols_[] = cols;
-	uint8_t rows_[] = rows;
+	uint16_t cols_[] = cols;
+	uint16_t rows_[] = rows;
 
 	for (uint8_t col=0; col<cols_num; col++)//Перебираем все строки
 	{
