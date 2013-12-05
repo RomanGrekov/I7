@@ -6,6 +6,8 @@
 #include "../kb_driver/keyboard_driver.h"
 #include "views/sim_on_off.h"
 #include "views/sim_send_cmd.h"
+#include "views/main_screen.h"
+#include "views/add_user_number.h"
 
 typedef struct{
 	void       *Next;
@@ -40,5 +42,7 @@ uint8_t* GetCurMenuName(void);
 void ProcessMenu(uint8_t btn, uint8_t duaration);
 uint8_t GetCurMenuView(void);
 void NULL_HANDLER(void);
+void callView(void);
+uint8_t is_in_menu(void);
 
 #endif

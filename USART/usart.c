@@ -20,6 +20,7 @@ void InitUSART(uint16_t boudrate){
     USART1->CR1 |=(USART_CR1_TE | USART_CR1_RE); // Enable transmit and receive
 
     USART1->CR2 &= ~(USART_CR2_STOP_0 | USART_CR2_STOP_1); // One stop bit
+
 }
 
 void send_to_usart(uint8_t data) {

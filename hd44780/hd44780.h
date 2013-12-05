@@ -125,6 +125,8 @@ void lcd_numTOstr(int16u_t value, int8u_t nDigit);
 void lcd_config(int8u_t param);
 void lcd_init(void);
 void gpio_init(void);
+void turn_on_cursor(void);
+void turn_off_cursor(void);
 
 void lcd_putcc(uint8_t sym);
 void LCDPrintS(uint8_t *p);

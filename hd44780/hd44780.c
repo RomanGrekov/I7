@@ -434,6 +434,13 @@ void lcd_init(void)
 #endif
 }
 
+void turn_on_cursor(void){
+ lcd_cmd(DISPLAY_CTRL_DispOn_BlkOn_CrsOn); // 1, lcd, cursor, blink
+}
+void turn_off_cursor(void){
+ lcd_cmd(DISPLAY_CTRL_DispOn_BlkOn_CrsOn); // 1, lcd, cursor, blink
+}
+
 void lcd_putcc(uint8_t sym){
 	if (lcd_cnt == 16)lcd_goto(2, 0);
 	if (lcd_cnt == 32)

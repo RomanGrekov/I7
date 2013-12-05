@@ -14,38 +14,48 @@
 
 void InitAll(void);
 void analize_status(uint8_t retcode);
+void FirstRun(void);
 
 uint8_t state=0;
 button *my_btn;
 
 int main(void)
 {
-        InitAll();
-        LCDPrintS("==LCD test OK!==*==============*");
-		delay_timer_ms(1000);
-		lcd_clrscr();
+	InitAll();
+	FirstRun();
+	while(1)
+	{
+		switch(state)
+		{
+			case 0: //simple kb checking
+				my_btn = get_btn();
+				ProcessMenu(my_btn->button, my_btn->duration);
 
-		USARTSendStr("USART 1 OK\r\n");
-		USART2SendStr("USART 2 OK\r\n");
-        while(1)
-        {
-        	switch(state)
-        	{
-        		case 0: //simple kb checking
-					my_btn = get_btn();
-        			ProcessMenu(my_btn->button, my_btn->duration);
+				if(USARTFindCmd("0506073568")) USARTSendCmd("ata\r\n");
 
-					if(USARTFindCmd("0506073568")) USARTSendCmd("ata\r\n");
-        		break;
+				if(is_in_menu()) break;
 
-        		case 1:
-        		break;
+	lcd_clrscr();
+	LCDPrintS("==Main screen!==*==============*");
 
-        		case 2:
-        		break;
-        	}
-        }
+			break;
 
+			case 1:
+			break;
+
+			case 2:
+			break;
+		}
+	}
+}
+
+void FirstRun(){
+	LCDPrintS("==LCD test OK!==*==============*");
+	delay_timer_ms(1000);
+	lcd_clrscr();
+
+	USARTSendStr("USART 1 OK\r\n");
+	USART2SendStr("USART 2 OK\r\n");
 }
 
 void TIM2_IRQHandler(void)
@@ -88,8 +98,6 @@ void InitAll(void)
     init_keyboard();
 
     timer2_init(10);
-
-    FlushBuf();
 
     InitSim900Port();
 
