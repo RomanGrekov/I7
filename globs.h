@@ -8,4 +8,6 @@ typedef struct {
 	uint32_t timer;
 } task;
 
+#define F_CPU 12000000
+
 #endif  /* GLOBS_H */

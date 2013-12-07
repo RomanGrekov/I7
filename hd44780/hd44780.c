@@ -435,10 +435,10 @@ void lcd_init(void)
 }
 
 void turn_on_cursor(void){
- lcd_cmd(DISPLAY_CTRL_DispOn_BlkOn_CrsOn); // 1, lcd, cursor, blink
+ lcd_cmd(DISPLAY_CTRL_DispOn_BlkOff_CrsOn); // 1, lcd, cursor, blink
 }
 void turn_off_cursor(void){
- lcd_cmd(DISPLAY_CTRL_DispOn_BlkOn_CrsOn); // 1, lcd, cursor, blink
+ lcd_cmd(DISPLAY_CTRL_DispOn_BlkOff_CrsOff); // 1, lcd, cursor, blink
 }
 
 void lcd_putcc(uint8_t sym){
