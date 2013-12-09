@@ -1,0 +1,25 @@
+#ifndef TEXT_EDITOR_H
+#define TEXT_EDITOR_H
+
+#include "../libs/stm32f10x.h"
+#include "../hd44780/hd44780.h"
+#include "../kb_driver/keyboard_driver.h"
+#include "../delay/delay.h"
+#include "../globs.h"
+#include "../menu/menu.h"
+
+#define TIME_AFTER_PRESS F_CPU/400
+
+//void editor_init(uint8_t const *alphabet);
+uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
+void temp_lcd_show(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
+uint8_t has_variants(uint8_t btn);
+uint8_t get_line(uint8_t btn);
+uint8_t get_vars_amount(uint8_t btn);
+uint8_t is_exit(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
+uint8_t typing(button *button_obj);
+uint8_t alphabet_pull(uint8_t line, uint8_t element);
+void editor_init(const uint8_t *alphabet_, uint8_t y, uint8_t x);
+void management_btns_init(const uint8_t *clean_char_, const uint8_t *space_symb_, const uint8_t *exit_symb_);
+
+#endif
