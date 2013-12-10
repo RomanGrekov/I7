@@ -127,6 +127,7 @@ void lcd_init(void);
 void gpio_init(void);
 void turn_on_cursor(void);
 void turn_off_cursor(void);
+void shift_display(uint8_t direction);
 
 void lcd_putcc(uint8_t sym);
 void LCDPrintS(uint8_t *p);

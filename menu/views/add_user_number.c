@@ -23,12 +23,14 @@ const uint8_t alphabet_[y_size][x_size]={
 
 void add_user_number(void){
 	button *btn_obj;
+	uint8_t resp[20];
 
 		lcd_clrscr();
 		LCDPrintS("Enter caller #1");
 		lcd_goto(2, 0);
 		turn_on_cursor();
 
+		response_init(resp, 20);
 		alphabet_init(alphabet_, y_size, x_size);
 		management_btns_init(clean_char_symb, space_symb, exit_symb);
 	do{
@@ -36,5 +38,6 @@ void add_user_number(void){
 		btn_obj = get_btn();
 
 	}while (typing(btn_obj));
+	USART2SendStr(resp);
 }
 

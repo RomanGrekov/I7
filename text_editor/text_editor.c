@@ -19,6 +19,9 @@ const uint8_t alphabet_full[12][char_per_btn]={
 */
 const uint8_t *alphabet;
 uint8_t x_size, y_size;
+uint8_t editor_resp_size;
+uint8_t *editor_resp;
+uint8_t resp_ptr;
 const uint8_t *clean_char_symb;
 const uint8_t *space_symb;
 const uint8_t *exit_symb;
@@ -31,6 +34,27 @@ void alphabet_init(const uint8_t *alphabet_, uint8_t y, uint8_t x){
 	alphabet = alphabet_;
 	x_size = x;
 	y_size = y;
+}
+
+void response_init(uint8_t *response, uint8_t size){
+	editor_resp = response;
+	editor_resp_size = size;
+	resp_ptr=0;
+}
+
+void response_push(uint8_t symbol){
+	if(resp_ptr < editor_resp_size){
+		editor_resp[resp_ptr] = symbol;
+		resp_ptr++;
+	}
+}
+
+void response_rm_char(void){
+	if(resp_ptr > 0){
+		editor_resp[resp_ptr] = 0;
+		resp_ptr--;
+		editor_resp[resp_ptr] = 0;
+	}
 }
 
 void management_btns_init(const uint8_t *clean_char_,
@@ -75,31 +99,38 @@ uint8_t typing(button *button_obj){
 			btn_old = 0;
 			if(final_char == exit_symb){
 				turn_off_cursor();
+				response_push('\0');
 				changeMenu(MENU_THIS);
 				mng_action_flag=1;
 				return 0;
 			}
 			if(final_char == space_symb){
-				if(c_position < 15){
-					cursor_shift(RIGHT);
-					c_position++;
+				if(c_position >= 15){
+					shift_display(LEFT);
 				}
+				cursor_shift(RIGHT);
+				c_position++;
+				response_push(' ');
 				mng_action_flag=1;
 			}
 			if(final_char == clean_char_symb){
+				if(c_position > 15)shift_display(RIGHT);
 				if(c_position > 0){
 					cursor_shift(LEFT);
 					lcd_putc(' ');
 					cursor_shift(LEFT);
 					c_position--;
+					response_rm_char();
 				}
 				mng_action_flag=1;
 			}
 			if(!mng_action_flag){
-				if(c_position < 15){
+				if(c_position >= 15){
+					shift_display(LEFT);
+				}
+					response_push(final_char);
 					lcd_putc(final_char);
 					c_position++;
-				}
 			}
 		}
 		time_after_press++;

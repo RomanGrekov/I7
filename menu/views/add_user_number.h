@@ -8,6 +8,7 @@
 #include "../../delay/delay.h"
 #include "../../globs.h"
 #include "../../text_editor/text_editor.h"
+#include "../../USART/usart2.h"
 
 void add_user_number(void);
 #endif

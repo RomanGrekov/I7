@@ -474,6 +474,16 @@ void LCDLine(uint8_t line){
 uint8_t GetSymb(uint8_t digit){
 	return symbols[digit];
 }
+
+void shift_display(uint8_t direction)
+{
+	if(direction == '>'){
+		lcd_cmd(0x1E);
+	};
+	if(direction == '<'){
+		lcd_cmd(0x18);
+	};
+}
 //-------------------------------
 /* END OF FILE */
 //-------------------------------
