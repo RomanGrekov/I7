@@ -30,6 +30,7 @@ uint8_t alphabet_pull(uint8_t line, uint8_t element){
 	if(line >= y_size || element >= x_size) return 0;
 	return *(alphabet + x_size * line + element);
 }
+
 void alphabet_init(const uint8_t *alphabet_, uint8_t y, uint8_t x){
 	alphabet = alphabet_;
 	x_size = x;
@@ -40,6 +41,14 @@ void response_init(uint8_t *response, uint8_t size){
 	editor_resp = response;
 	editor_resp_size = size;
 	resp_ptr=0;
+}
+
+void management_btns_init(const uint8_t *clean_char_,
+						  const uint8_t *space_symb_,
+						  const uint8_t *exit_symb_){
+	clean_char_symb = clean_char_;
+	space_symb = space_symb_;
+	exit_symb = exit_symb_;
 }
 
 void response_push(uint8_t symbol){
@@ -55,14 +64,6 @@ void response_rm_char(void){
 		resp_ptr--;
 		editor_resp[resp_ptr] = 0;
 	}
-}
-
-void management_btns_init(const uint8_t *clean_char_,
-						  const uint8_t *space_symb_,
-						  const uint8_t *exit_symb_){
-	clean_char_symb = clean_char_;
-	space_symb = space_symb_;
-	exit_symb = exit_symb_;
 }
 
 uint8_t typing(button *button_obj){
@@ -101,6 +102,10 @@ uint8_t typing(button *button_obj){
 				turn_off_cursor();
 				response_push('\0');
 				changeMenu(MENU_THIS);
+				btn_old=0;
+				press_counter=0;
+				c_position=0;
+				time_after_press=0;
 				mng_action_flag=1;
 				return 0;
 			}
