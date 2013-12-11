@@ -22,9 +22,11 @@ uint8_t x_size, y_size;
 uint8_t editor_resp_size;
 uint8_t *editor_resp;
 uint8_t resp_ptr;
+uint8_t c_position;
 const uint8_t *clean_char_symb;
 const uint8_t *space_symb;
-const uint8_t *exit_symb;
+const uint8_t *exit_symb_ok;
+const uint8_t *exit_symb_discard;
 
 uint8_t alphabet_pull(uint8_t line, uint8_t element){
 	if(line >= y_size || element >= x_size) return 0;
@@ -41,14 +43,26 @@ void response_init(uint8_t *response, uint8_t size){
 	editor_resp = response;
 	editor_resp_size = size;
 	resp_ptr=0;
+	c_position=0;
+	//Show already exist response
+	for(uint8_t i=0;i<size;i++){
+		if(response[i] != '\0'){
+			c_position++;
+			response_push(response[i]);
+			lcd_putc(response[i]);
+		}
+		else break;
+	}
 }
 
 void management_btns_init(const uint8_t *clean_char_,
 						  const uint8_t *space_symb_,
-						  const uint8_t *exit_symb_){
+						  const uint8_t *exit_symb_ok_,
+						  const uint8_t *exit_symb_discard_){
 	clean_char_symb = clean_char_;
 	space_symb = space_symb_;
-	exit_symb = exit_symb_;
+	exit_symb_ok = exit_symb_ok_;
+	exit_symb_discard = exit_symb_discard_;
 }
 
 void response_push(uint8_t symbol){
@@ -60,18 +74,16 @@ void response_push(uint8_t symbol){
 
 void response_rm_char(void){
 	if(resp_ptr > 0){
-		editor_resp[resp_ptr] = 0;
+		editor_resp[resp_ptr] = '\0';
 		resp_ptr--;
-		editor_resp[resp_ptr] = 0;
+		editor_resp[resp_ptr] = '\0';
 	}
 }
 
 uint8_t typing(button *button_obj){
-	uint8_t btn, duration=0, final_char, mng_action_flag=0;
+	uint8_t btn, duration=0, final_char, ACTION_FLAG=0;
 	static uint8_t btn_old=0, press_counter=0;
-	static uint8_t c_position=0;
 	static uint32_t time_after_press=0;
-
 
 	btn = button_obj->button;
 	if(btn){
@@ -98,7 +110,7 @@ uint8_t typing(button *button_obj){
 			time_after_press=0;
 			final_char = get_symbol(btn_old, duration, press_counter);
 			btn_old = 0;
-			if(final_char == exit_symb){
+			if(final_char == exit_symb_ok){
 				turn_off_cursor();
 				response_push('\0');
 				changeMenu(MENU_THIS);
@@ -106,20 +118,31 @@ uint8_t typing(button *button_obj){
 				press_counter=0;
 				c_position=0;
 				time_after_press=0;
-				mng_action_flag=1;
-				return 0;
+				ACTION_FLAG=1;
+				return 1;
+			}
+			if(final_char == exit_symb_discard){
+				turn_off_cursor();
+				response_push('\0');
+				changeMenu(MENU_THIS);
+				btn_old=0;
+				press_counter=0;
+				c_position=0;
+				time_after_press=0;
+				ACTION_FLAG=1;
+				return 2;
 			}
 			if(final_char == space_symb){
-				if(c_position >= 15){
+				if(c_position >= disp_line_length){
 					shift_display(LEFT);
 				}
 				cursor_shift(RIGHT);
 				c_position++;
 				response_push(' ');
-				mng_action_flag=1;
+				ACTION_FLAG=1;
 			}
 			if(final_char == clean_char_symb){
-				if(c_position > 15)shift_display(RIGHT);
+				if(c_position > disp_line_length)shift_display(RIGHT);
 				if(c_position > 0){
 					cursor_shift(LEFT);
 					lcd_putc(' ');
@@ -127,10 +150,10 @@ uint8_t typing(button *button_obj){
 					c_position--;
 					response_rm_char();
 				}
-				mng_action_flag=1;
+				ACTION_FLAG=1;
 			}
-			if(!mng_action_flag){
-				if(c_position >= 15){
+			if(!ACTION_FLAG){
+				if(c_position >= disp_line_length){
 					shift_display(LEFT);
 				}
 					response_push(final_char);
@@ -140,7 +163,7 @@ uint8_t typing(button *button_obj){
 		}
 		time_after_press++;
 	}
-	return 1;
+	return 0;
 }
 
 uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
@@ -162,7 +185,7 @@ void temp_lcd_show(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 	uint8_t symbol;
 
 	symbol = get_symbol(btn, duration, pressed_cnt);
-	if(symbol != exit_symb && symbol != clean_char_symb){
+	if(symbol != exit_symb_ok && symbol != clean_char_symb){
 		lcd_putc(get_symbol(btn, duration, pressed_cnt));
 		cursor_shift(LEFT);
 	}
@@ -211,7 +234,7 @@ uint8_t get_vars_amount(uint8_t btn){
 }
 
 uint8_t is_exit(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
-	if(get_symbol(btn, duration, pressed_cnt) == exit_symb) return 1;
+	if(get_symbol(btn, duration, pressed_cnt) == exit_symb_ok) return 1;
 	return 0;
 }
 

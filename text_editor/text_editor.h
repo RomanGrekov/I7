@@ -9,6 +9,7 @@
 #include "../menu/menu.h"
 
 #define TIME_AFTER_PRESS F_CPU/400
+#define disp_line_length 15 //symbols (count from 0)
 
 //void editor_init(uint8_t const *alphabet);
 uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
@@ -21,7 +22,10 @@ uint8_t typing(button *button_obj);
 uint8_t alphabet_pull(uint8_t line, uint8_t element);
 void editor_init(const uint8_t *alphabet_, uint8_t y, uint8_t x);
 void response_init(uint8_t *response, uint8_t size);
-void management_btns_init(const uint8_t *clean_char_, const uint8_t *space_symb_, const uint8_t *exit_symb_);
+void management_btns_init(const uint8_t *clean_char_,
+						  const uint8_t *space_symb_,
+						  const uint8_t *exit_symb_ok_,
+						  const uint8_t *exit_symb_discard_);
 void response_push(uint8_t symbol);
 void response_rm_char(void);
 
