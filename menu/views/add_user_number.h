@@ -9,6 +9,7 @@
 #include "../../globs.h"
 #include "../../text_editor/text_editor.h"
 #include "../../USART/usart2.h"
+#include "../../flash/flash.h"
 
 void add_user_number(void);
 #endif

@@ -11,6 +11,7 @@
 #include "buzzer/buz.h"
 #include "globs.h"
 #include "menu/menu.h"
+#include "flash/flash.h"
 
 void InitAll(void);
 void analize_status(uint8_t retcode);
@@ -50,12 +51,19 @@ int main(void)
 }
 
 void FirstRun(){
+	struct SavedDomain Conf;
+	flash_read_struct(&Conf);
+	if(Conf.first_run != 13){ //Wirte default config
+		WriteDefConf();
+	}
+
 	LCDPrintS("==LCD test OK!==*==============*");
 	delay_timer_ms(1000);
 	lcd_clrscr();
 
 	USARTSendStr("USART 1 OK\r\n");
 	USART2SendStr("USART 2 OK\r\n");
+
 }
 
 void TIM2_IRQHandler(void)

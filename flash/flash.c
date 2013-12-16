@@ -3,6 +3,15 @@
 #define FLASH_KEY1 ((uint32_t)0x45670123)
 #define FLASH_KEY2 ((uint32_t)0xCDEF89AB)
 
+struct SavedDomain Conf={ 13,
+						  0x34,
+						  0x5678,
+						  {'1','2','3','4','5','6',0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+
+void WriteDefConf(void){
+	flash_write_struct(0xfc00, &Conf);
+}
+
 void flash_unlock(void) {
     FLASH->KEYR = FLASH_KEY1;
     FLASH->KEYR = FLASH_KEY2;
@@ -40,7 +49,7 @@ void flash_erase_page(uint32_t address) {
 }
 
 uint8_t flash_read(uint32_t address){
-    return *(__IO uint16_t*)addressa;
+    return *(__IO uint16_t*)address;
 }
 
 void flash_write(uint32_t address,uint32_t data) {
@@ -57,6 +66,50 @@ void flash_write(uint32_t address,uint32_t data) {
     while(!flash_ready())
         ;
     FLASH->CR &= ~(FLASH_CR_PG); //Запрещаем программирование флеша
+    FLASH->CR&= ~FLASH_CR_PER; //Сбрасываем бит обратно
     flash_lock();
+}
+
+void flash_write_struct(uint32_t address, uint8_t *struct_p){
+	uint32_t size;
+	uint16_t data=0;
+
+	size = sizeof(Conf);
+	flash_erase_page(params_addr);
+
+	for(uint32_t i=0; i<size; i+=2){
+		if(i == (size-1) && (size % 2) != 0){
+			data = 0xff;
+			data = data << 8;
+			data |= struct_p[i];
+		}
+		else{
+			data = struct_p[i+1];
+			data = data << 8;
+			data |= struct_p[i];
+		}
+
+		flash_unlock();
+		FLASH->CR |= FLASH_CR_PG; //Разрешаем программирование флеша
+		while(!flash_ready()) //Ожидаем готовности флеша к записи
+			;
+		*(__IO uint16_t*)address = data; //Пишем младшие 2 бата
+		while(!flash_ready())
+			;
+		FLASH->CR &= ~(FLASH_CR_PG); //Запрещаем программирование флеша
+		FLASH->CR &= ~FLASH_CR_PER; //Сбрасываем бит обратно
+		flash_lock();
+
+		address+=2;
+	}
+}
+
+void flash_read_struct(uint8_t *struct_p){
+	uint32_t size;
+
+	size = sizeof(Conf);
+	for(uint32_t i=0; i<size; i++){
+		struct_p[i]=*(__IO uint32_t*)(params_addr+i);
+	}
 }
 
