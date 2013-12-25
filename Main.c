@@ -12,13 +12,17 @@
 #include "globs.h"
 #include "menu/menu.h"
 #include "flash/flash.h"
+#include "slow_timer/slow_timer.h"
 
 void InitAll(void);
 void analize_status(uint8_t retcode);
 void FirstRun(void);
+void HardFault_Handler(void);
+void LED(void);
 
 uint8_t state=0;
 button *my_btn;
+struct SavedDomain SysConf;
 
 int main(void)
 {
@@ -32,7 +36,7 @@ int main(void)
 				my_btn = get_btn();
 				ProcessMenu(my_btn->button, my_btn->duration);
 
-				if(USARTFindCmd("0506073568")) USARTSendCmd("ata\r\n");
+				if(USARTFindCmd(SysConf.privat_tel_num_1)) USARTSendCmd("ata\r\n");
 
 				if(is_in_menu()) break;
 
@@ -51,9 +55,9 @@ int main(void)
 }
 
 void FirstRun(){
-	struct SavedDomain Conf;
-	flash_read_struct(&Conf);
-	if(Conf.first_run != 13){ //Wirte default config
+	//struct SavedDomain Conf;
+	flash_read_struct(&SysConf, sizeof(SysConf));
+	if(SysConf.first_run != 13){ //Wirte default config
 		WriteDefConf();
 	}
 
@@ -64,23 +68,10 @@ void FirstRun(){
 	USARTSendStr("USART 1 OK\r\n");
 	USART2SendStr("USART 2 OK\r\n");
 
-}
+	Slow_Timer_Add(tm_Repeat, 1000, LED);
+	Slow_Timer_Add(tm_Repeat, 10, kb_strobe);
+	Slow_Timer_Add(tm_Repeat, 10, USARTCheckData);
 
-void TIM2_IRQHandler(void)
-{
-	static uint16_t i=0;
-	TIM2->SR &= ~TIM_SR_UIF;
-
-	kb_strobe();
-
-	if (i == 100)
-	{
-		GPIOB->ODR ^= GPIO_ODR_ODR1;
-		i=0;
-	}
-	i++;
-
-	USARTCheckData();
 }
 
 void InitAll(void)
@@ -105,13 +96,15 @@ void InitAll(void)
 
     init_keyboard();
 
-    timer2_init(10);
+    //timer2_init(10);
 
     InitSim900Port();
 
     InitBuz();
 
 	InitMenu();
+
+	Init_Slow_Timer();
    }
 
 // где-то в main.c
@@ -128,4 +121,8 @@ void analize_status(uint8_t retcode)
 		Bzz(0);
 	}
 	else GPIOB->BSRR |= GPIO_BSRR_BR1; // 0 means success
+}
+
+void LED(void){
+	GPIOB->ODR ^= GPIO_ODR_ODR1;
 }

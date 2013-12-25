@@ -25,15 +25,14 @@ const uint8_t alphabet_[y_size][x_size]={
 void add_user_number(void){
 	button *btn_obj;
 	uint8_t status=0;
-	struct SavedDomain Conf;
-	flash_read_struct(&Conf);
+	flash_read_struct(&SysConf, sizeof(SysConf));
 
 		lcd_clrscr();
 		LCDPrintS("Enter caller #1");
 		lcd_goto(2, 0);
 		turn_on_cursor();
 
-		response_init(Conf.priv_num1, 20);
+		response_init(SysConf.privat_tel_num_1, 20);
 		alphabet_init(alphabet_, y_size, x_size);
 		management_btns_init(clean_char_symb, space_symb, exit_symb_ok, exit_symb_discard);
 	do{
@@ -44,7 +43,7 @@ void add_user_number(void){
 	}while (status == 0);
 	if(status == 1){
 		//USART2SendStr(resp);
-		flash_write_struct(params_addr, &Conf);
+		flash_write_struct(params_addr, &SysConf, sizeof(SysConf));
 
 	}
 }

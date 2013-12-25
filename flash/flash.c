@@ -3,13 +3,11 @@
 #define FLASH_KEY1 ((uint32_t)0x45670123)
 #define FLASH_KEY2 ((uint32_t)0xCDEF89AB)
 
-struct SavedDomain Conf={ 13,
-						  0x34,
-						  0x5678,
-						  {'1','2','3','4','5','6',0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
-
 void WriteDefConf(void){
-	flash_write_struct(0xfc00, &Conf);
+	uint8_t privat_num1[]={'1','2','3','4','5','6',0};
+	SysConf.first_run=13;
+	strncpy(SysConf.privat_tel_num_1, privat_num1, 20);
+	flash_write_struct(params_addr, &SysConf, sizeof(SysConf));
 }
 
 void flash_unlock(void) {
@@ -70,11 +68,9 @@ void flash_write(uint32_t address,uint32_t data) {
     flash_lock();
 }
 
-void flash_write_struct(uint32_t address, uint8_t *struct_p){
-	uint32_t size;
+void flash_write_struct(uint32_t address, uint8_t *struct_p, uint32_t size){
 	uint16_t data=0;
 
-	size = sizeof(Conf);
 	flash_erase_page(params_addr);
 
 	for(uint32_t i=0; i<size; i+=2){
@@ -104,10 +100,7 @@ void flash_write_struct(uint32_t address, uint8_t *struct_p){
 	}
 }
 
-void flash_read_struct(uint8_t *struct_p){
-	uint32_t size;
-
-	size = sizeof(Conf);
+void flash_read_struct(uint8_t *struct_p, uint32_t size){
 	for(uint32_t i=0; i<size; i++){
 		struct_p[i]=*(__IO uint32_t*)(params_addr+i);
 	}
