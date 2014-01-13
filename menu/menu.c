@@ -2,7 +2,7 @@
 
 menuItem* selectedMenuItem;
 menuItem	NULL_ENTRY = {(void*)0, (void*)0, (void*)0, (void*)0, NULL_HANDLER, 0, {0x00}};
-uint8_t menu_changed;
+uint8_t menu_changed=0;
 //		  name    next	prev	parent		child	handler   view
 MAKE_MENU(main_menu,  modem, modem,  NULL_ENTRY, modem, NULL_HANDLER, 0, "   Main screen");
 MAKE_MENU(modem,  user_settings, test1,  main_menu, modem_on, NULL_HANDLER, 0, "Modem menu");
@@ -26,7 +26,6 @@ uint8_t is_in_menu(void){
 	return 1;
 }
 void InitMenu(void){
-	menu_changed = 1;
 	selectedMenuItem = (menuItem*)&main_menu;
 }
 
@@ -66,7 +65,7 @@ void changeMenu(uint8_t el_num)
 	break;
 	}
 	if ((void*)new_menu == (void*)&NULL_ENTRY)
-	  return;
+		return;
 
 	selectedMenuItem = new_menu;
 }
@@ -98,8 +97,10 @@ void ProcessMenu(uint8_t btn, uint8_t duaration){
 		}
 	}
 	if(MenuChanged()){
-		lcd_clrscr();
-		LCDPrintS(GetCurMenuName());
+		if(is_in_menu()){
+			lcd_clrscr();
+			LCDPrintS(GetCurMenuName());
+		}
 	}
 }
 

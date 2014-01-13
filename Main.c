@@ -19,13 +19,16 @@ void analize_status(uint8_t retcode);
 void FirstRun(void);
 void HardFault_Handler(void);
 void LED(void);
+void search_for_cmd(void);
 
-uint8_t state=0;
+
+uint8_t state=1;
 button *my_btn;
 struct SavedDomain SysConf;
 
 int main(void)
 {
+	uint8_t lcd_show = 1, was_in_menu=0;
 	InitAll();
 	FirstRun();
 	while(1)
@@ -36,16 +39,19 @@ int main(void)
 				my_btn = get_btn();
 				ProcessMenu(my_btn->button, my_btn->duration);
 
-				if(USARTFindCmd(SysConf.privat_tel_num_1)) USARTSendCmd("ata\r\n");
 
-				if(is_in_menu()) break;
-
-	lcd_clrscr();
-	LCDPrintS("==Main screen!==*==============*");
-
+				if(is_in_menu()) was_in_menu=1;
+				if(!is_in_menu() && was_in_menu){
+					state=1;
+					was_in_menu=0;
+				}
+				search_for_cmd();
 			break;
 
 			case 1:
+				lcd_clrscr();
+				LCDPrintS("=====DISARM=====");
+				state=0;
 			break;
 
 			case 2:
@@ -61,16 +67,13 @@ void FirstRun(){
 		WriteDefConf();
 	}
 
-	LCDPrintS("==LCD test OK!==*==============*");
-	delay_timer_ms(1000);
-	lcd_clrscr();
-
 	USARTSendStr("USART 1 OK\r\n");
 	USART2SendStr("USART 2 OK\r\n");
 
 	Slow_Timer_Add(tm_Repeat, 1000, LED);
 	Slow_Timer_Add(tm_Repeat, 10, kb_strobe);
 	Slow_Timer_Add(tm_Repeat, 10, USARTCheckData);
+	//Slow_Timer_Add(tm_Repeat, 10, search_for_cmd);
 
 }
 
@@ -125,4 +128,8 @@ void analize_status(uint8_t retcode)
 
 void LED(void){
 	GPIOB->ODR ^= GPIO_ODR_ODR1;
+}
+
+void search_for_cmd(void){
+		if(USARTFindCmd(SysConf.privat_tel_num_1)) USARTSendCmd("ata\r\n");
 }
