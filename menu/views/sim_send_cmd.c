@@ -7,15 +7,37 @@ struct command commands[3]={
 		{"at+cusd=1,\"*101#\"\r\n", 7000}
 };
 
+void cmd_timed_out(void);
+void next_cmd(void);
+void prev_cmd(void);
+uint8_t cmd_sent=0;
+uint8_t cur_cmd_id=0;
+uint8_t timed_out_flag=0;
+
 void send_test_cmds(void){
 	button *btn_obj;
 	uint8_t btn;
-	uint8_t cur_cmd_id=0, old_cmd_id=1, cmd_sent=0;
-	struct usart_response *res;
-	uint8_t data[10]={1,1,1,1,1,1,1,1,1,1};
-	uint32_t timeout;
+	uint8_t old_cmd_id=1;
 
 	do{
+		btn_obj = get_btn();
+		btn = btn_obj->button;
+		switch (btn){
+		case '2':
+			changeMenu(MENU_THIS);
+			break;
+		case '6':
+			next_cmd();
+			break;
+		case '4':
+			prev_cmd();
+			break;
+		case '*':
+			USARTSendCmd(commands[cur_cmd_id].cmd);
+			wait_for_resp();
+			break;
+		}
+
 		if (cur_cmd_id != old_cmd_id){
 			lcd_clrscr();
 			LCDPrintS(commands[cur_cmd_id].cmd);
@@ -24,19 +46,48 @@ void send_test_cmds(void){
 		}
 		old_cmd_id = cur_cmd_id;
 
-		if (cmd_sent){
+
+
+	}while (btn != '2');
+}
+
+void cmd_timed_out(void){
+	lcd_clrscr();
+	LCDPrintS("Result");
+	LCDLine(1);
+	LCDPrintS("timed out");
+	timed_out_flag=1;
+}
+
+void next_cmd(void){
+	if(cur_cmd_id < (cmd_amount-1))cur_cmd_id++;
+	else cur_cmd_id=0;
+}
+void prev_cmd(void){
+	if(cur_cmd_id > 0)cur_cmd_id--;
+	else cur_cmd_id=(cmd_amount-1);
+}
+
+void wait_for_resp(void){
+	struct usart_response *res;
+	uint8_t data[10];
+	uint8_t timer_id;
+	timed_out_flag=0;
+
+	lcd_clrscr();
+	LCDPrintS("Sent ...");
+	timer_id = Slow_Timer_Add(tm_Once, commands[cur_cmd_id].timeout, cmd_timed_out);
+
+	while(!timed_out_flag){
+		if(USARTHasResp()){
+			Slow_Timer_Delete(timer_id);
 			lcd_clrscr();
-			LCDPrintS("Sent ...");
-			delay_timer_ms(timeout);
-			if(USARTHasResp()){
-				lcd_clrscr();
-				LCDPrintS("Result:");
+			LCDPrintS("Result:");
 				if (cur_cmd_id != 2)// If sent command isn't money check
 				{
 					res = USARTGetResp();
 					LCDLine(1);
 					LCDPrintS(res->resp_data);
-					cmd_sent = 0;
 				}
 				else{
 					if (USARTFindCmdWithData("+CUSD: 0,\"", "UAH", data)){
@@ -45,43 +96,12 @@ void send_test_cmds(void){
 						cmd_sent = 0;
 					}
 					else{
-						LCDLine(1);
-						LCDPrintS("timed out");
-						cmd_sent = 0;
-
+						cmd_timed_out();
 					}
 
 				}
-			}
-			else{
-				lcd_clrscr();
-				LCDPrintS("Result");
-				LCDLine(1);
-				LCDPrintS("timed out");
-				cmd_sent = 0;
-			}
+			timed_out_flag=1;
 		}
+	}
 
-		btn_obj = get_btn();
-		btn = btn_obj->button;
-		switch (btn){
-		case '2':
-			changeMenu(MENU_THIS);
-			break;
-		case '6':
-			if(cur_cmd_id < (cmd_amount-1))cur_cmd_id++;
-			else cur_cmd_id=0;
-			break;
-		case '4':
-			if(cur_cmd_id > 0)cur_cmd_id--;
-			else cur_cmd_id=(cmd_amount-1);
-			break;
-		case '*':
-			USARTSendCmd(commands[cur_cmd_id].cmd);
-			cmd_sent = 1;
-			timeout = commands[cur_cmd_id].timeout;
-			break;
-		}
-
-	}while (btn != '2');
 }

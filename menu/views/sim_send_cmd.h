@@ -6,6 +6,8 @@
 #include "../../kb_driver/keyboard_driver.h"
 #include "../menu.h"
 #include "../../delay/delay.h"
+#include "../../slow_timer/slow_timer.h"
+#include "../../USART/usart2.h"
 
 struct command{
 	uint8_t cmd[20];
