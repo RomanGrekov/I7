@@ -1,28 +1,28 @@
-#include "add_user_number.h"
+#include "add_user1_number.h"
 
-#define clean_char_symb '<'
-#define space_symb ' '
-#define exit_symb_ok '^'
-#define exit_symb_discard '~'
-#define x_size 2
-#define y_size 12
-const uint8_t alphabet_[y_size][x_size]={
-	   ///0   L
-		{'0', 0 },
-		{'1', 0 },
-		{'2', 0 },
-		{'3', 0 },
-		{'4', 0 },
-		{'5', 0 },
-		{'6', 0 },
-		{'7', 0 },
-		{'8', 0 },
-		{'9', 0 },
-		{clean_char_symb, exit_symb_discard},
-		{'+',exit_symb_ok},
-};
+void add_user1_number(void){
+	#define clean_char_symb '<'
+	#define space_symb ' '
+	#define exit_symb_ok '^'
+	#define exit_symb_discard '~'
+	#define x_size 2
+	#define y_size 12
+	const uint8_t alphabet_[y_size][x_size]={
+		   ///0   L
+			{'0', 0 },
+			{'1', 0 },
+			{'2', 0 },
+			{'3', 0 },
+			{'4', 0 },
+			{'5', 0 },
+			{'6', 0 },
+			{'7', 0 },
+			{'8', 0 },
+			{'9', 0 },
+			{clean_char_symb, exit_symb_discard},
+			{'+',exit_symb_ok},
+	};
 
-void add_user_number(void){
 	button *btn_obj;
 	uint8_t status=0;
 	flash_read_struct(&SysConf, sizeof(SysConf));

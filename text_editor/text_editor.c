@@ -92,7 +92,7 @@ uint8_t typing(button *button_obj){
 			if(press_counter == get_vars_amount(btn)-1)press_counter=0;
 			else press_counter++; //If button pressed not first time, increment counter
 		}
-		if(press_counter == x_size-1)press_counter=0; //get chars by circle
+		//if(press_counter == x_size-1)press_counter=0; //get chars by circle
 		if(btn_old != btn){
 			if(btn_old != 0)time_after_press = TIME_AFTER_PRESS; //if not first time
 			else{

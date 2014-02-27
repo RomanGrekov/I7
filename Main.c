@@ -13,6 +13,7 @@
 #include "menu/menu.h"
 #include "flash/flash.h"
 #include "slow_timer/slow_timer.h"
+#include "security/security.h"
 
 void InitAll(void);
 void analize_status(uint8_t retcode);
@@ -49,8 +50,7 @@ int main(void)
 			break;
 
 			case 1:
-				lcd_clrscr();
-				LCDPrintS("=====DISARM=====");
+				check_state();
 				state=0;
 			break;
 
@@ -131,5 +131,7 @@ void LED(void){
 }
 
 void search_for_cmd(void){
+	uint8_t call1[2][10]={"", "RING"};
+
 		if(USARTFindCmd(SysConf.privat_tel_num_1)) USARTSendCmd("ata\r\n");
 }

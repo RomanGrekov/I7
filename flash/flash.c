@@ -5,8 +5,13 @@
 
 void WriteDefConf(void){
 	uint8_t privat_num1[]={'1','2','3','4','5','6',0};
+	char usr_pwd[]={"1111"};
+
 	SysConf.first_run=13;
 	strncpy(SysConf.privat_tel_num_1, privat_num1, 20);
+	SysConf.state=DISARM;
+	strncpy(SysConf.usr_pwd, usr_pwd, 5);
+	SysConf.alarm_in_memory=0;
 	flash_write_struct(params_addr, &SysConf, sizeof(SysConf));
 }
 
