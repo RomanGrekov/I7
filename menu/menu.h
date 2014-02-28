@@ -7,9 +7,10 @@
 #include "views/sim_on_off.h"
 #include "views/sim_send_cmd.h"
 #include "views/main_screen.h"
-#include "views/add_user1_number.h"
-#include "views/add_user2_number.h"
+//#include "views/add_user1_number.h"
+//#include "views/add_user2_number.h"
 #include "views/set_state.h"
+#include "views/test_menu.h"
 
 typedef struct{
 	void       *Next;

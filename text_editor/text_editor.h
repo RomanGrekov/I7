@@ -11,6 +11,20 @@
 #define TIME_AFTER_PRESS F_CPU/400
 #define disp_line_length 15 //symbols (count from 0)
 
+typedef	struct
+	{
+        uint8_t clean_char_symb;
+        uint8_t space_symb;
+        uint8_t exit_symb_ok;
+        uint8_t exit_symb_discard;
+        uint8_t x_size;
+        uint8_t y_size;
+        uint8_t resp_size;
+        uint8_t * response;
+        uint8_t * alphabet;
+	}EditorConf;
+
+void init_editor(EditorConf config);
 //void editor_init(uint8_t const *alphabet);
 uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
 void temp_lcd_show(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);

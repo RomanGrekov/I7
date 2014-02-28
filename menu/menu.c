@@ -3,6 +3,7 @@
 menuItem* selectedMenuItem;
 menuItem	NULL_ENTRY = {(void*)0, (void*)0, (void*)0, (void*)0, NULL_HANDLER, 0, {0x00}};
 uint8_t menu_changed=0;
+/*
 //		  name    next	prev	parent		child	handler   view
 MAKE_MENU(main_menu,  modem, modem,  NULL_ENTRY, modem, NULL_HANDLER, 0, "   Main screen");
 MAKE_MENU(modem,  user_settings, test1,  main_menu, modem_on, NULL_HANDLER, 0, "Modem menu");
@@ -17,6 +18,9 @@ MAKE_MENU(at_cmd,  ata_cmd, ata_cmd,  modem_cmd, NULL_ENTRY, NULL_HANDLER, 1, "a
 MAKE_MENU(ata_cmd,  at_cmd, at_cmd,  modem_cmd, NULL_ENTRY, NULL_HANDLER, 1, "ata command");
 MAKE_MENU(user_phone1,  user_phone2, user_phone2,  users_phones, NULL_ENTRY, add_user1_number, 1, "Number 1");
 MAKE_MENU(user_phone2,  user_phone1, user_phone1,  users_phones, NULL_ENTRY, add_user2_number, 1, "Number 2");
+*/
+MAKE_MENU(main_menu,  test1, test1,  NULL_ENTRY, test1, NULL_HANDLER, 0, "   Main screen");
+MAKE_MENU(test1,  test1, test1,  main_menu, NULL_ENTRY, test_menu, 1, "test1");
 
 void NULL_HANDLER(void){
 }

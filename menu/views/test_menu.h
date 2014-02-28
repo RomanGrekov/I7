@@ -1,5 +1,5 @@
-#ifndef ADD_USER1_NUMBER_H
-#define ADD_USER1_NUMBER_H
+#ifndef TEST_MENU_H
+#define TEST_MENU_H
 #include "../../libs/stm32f10x.h"
 #include <string.h>
 #include "../../hd44780/hd44780.h"
@@ -11,5 +11,5 @@
 #include "../../USART/usart2.h"
 #include "../../flash/flash.h"
 
-void add_user1_number(void);
+void test_menu(void);
 #endif
