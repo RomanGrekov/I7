@@ -34,8 +34,8 @@ uint8_t enter_usr_pwd(void){
 		turn_on_cursor();
 
 		response_init(pwd, 5);
-		alphabet_init(alphabet_, y_size, x_size);
-		management_btns_init(clean_char_symb, space_symb, exit_symb_ok, exit_symb_discard);
+		//alphabet_init(alphabet_, y_size, x_size);
+		//management_btns_init(clean_char_symb, space_symb, exit_symb_ok, exit_symb_discard);
 	do{
 
 		btn_obj = get_btn();

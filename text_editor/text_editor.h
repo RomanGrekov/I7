@@ -7,9 +7,13 @@
 #include "../delay/delay.h"
 #include "../globs.h"
 #include "../menu/menu.h"
+//#include "../slow_timer/slow_timer.h"
 
 #define TIME_AFTER_PRESS F_CPU/400
 #define disp_line_length 15 //symbols (count from 0)
+
+#define max_alph_x 10 //Max amount of variants for one button
+#define max_alph_y 12 //Max buttons amount
 
 typedef	struct
 	{
@@ -17,11 +21,9 @@ typedef	struct
         uint8_t space_symb;
         uint8_t exit_symb_ok;
         uint8_t exit_symb_discard;
-        uint8_t x_size;
-        uint8_t y_size;
         uint8_t resp_size;
         uint8_t * response;
-        uint8_t * alphabet;
+        uint8_t alphabet[max_alph_y][max_alph_x];
 	}EditorConf;
 
 void init_editor(EditorConf config);

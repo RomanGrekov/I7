@@ -1,5 +1,12 @@
 #include "text_editor.h"
 
+void handle_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter);
+uint8_t is_service_symbol(uint8_t btn);
+void acept_btn(uint8_t btn);
+void timer_ready(void);
+void make_service(uint8_t btn);
+void delete_timer(void);
+void reset_timer(void);
 /*
 const uint8_t alphabet_full[12][char_per_btn]={
 	   ///0   1   2	  3   4   L
@@ -17,80 +24,45 @@ const uint8_t alphabet_full[12][char_per_btn]={
 		{'*','+', 0 , 0 , 0 ,'^'},
 };
 */
-//const uint8_t *alphabet;
-uint8_t x_size, y_size;
-uint8_t c_position;
+uint8_t c_position, press_counter=0;
 
 uint8_t resp_ptr;
+uint8_t btn_old=0;
+uint8_t duration_old=0;
+uint8_t timer_id=0;
 
 EditorConf EdConf;
-void init_editor(EditorConf config){
-	EdConf = config;
-	response_init(EdConf.response, EdConf.resp_size);
-}
-
-uint8_t alphabet_pull(uint8_t line, uint8_t element){
-	if(line >= EdConf.y_size || element >= EdConf.x_size) return 0;
-	return *(EdConf.alphabet + EdConf.x_size * line + element);
-}
-
-void response_init(uint8_t *response, uint8_t size){
-	uint8_t *editor_resp;
-	uint8_t symb;
-	editor_resp = response;
-	resp_ptr=0;
-	c_position=0;
-	//Show already exist response
-	for(uint8_t i=0;i<size;i++){
-		symb = EdConf.response[i];
-		if(symb != '\0'){
-			c_position++;
-			resp_ptr++;
-			lcd_putc(symb);
-		}
-		else break;
-	}
-}
-
-void response_push(uint8_t symbol){
-	if(resp_ptr < EdConf.resp_size){
-		EdConf.response[resp_ptr] = symbol;
-		resp_ptr++;
-	}
-}
-
-void response_rm_char(void){
-	if(resp_ptr > 0){
-		EdConf.response[resp_ptr] = '\0';
-		resp_ptr--;
-		EdConf.response[resp_ptr] = '\0';
-	}
-}
 
 uint8_t typing(button *button_obj){
-	uint8_t btn, duration=0, final_char, ACTION_FLAG=0;
-	static uint8_t btn_old=0, press_counter=0;
+	uint8_t btn, symbol, duration=0, final_char, ACTION_FLAG=0;
 	static uint32_t time_after_press=0;
 
 	btn = button_obj->button;
-	if(btn){
-		time_after_press = 0; //Clean time counter after every button press
+	duration = button_obj->duration;
+
+	if(btn){ //if real button pressed
+		reset_timer();
 		if(btn_old == btn){
 			if(press_counter == get_vars_amount(btn)-1)press_counter=0;
 			else press_counter++; //If button pressed not first time, increment counter
 		}
-		//if(press_counter == EdConf.x_size-1)press_counter=0; //get chars by circle
 		else{
-			if(btn_old != 0)time_after_press = TIME_AFTER_PRESS; //if not first time, start timer
+			if(btn_old != 0){// If already was pressed button
+				symbol = get_symbol(btn_old, duration_old, press_counter);
+				acept_btn(symbol);
+				delete_timer();
+			}
 			else{
+				//USART2_PutChar('A');
 				press_counter = 0;
 				btn_old = btn;
-				duration = button_obj->duration;
+				duration_old = duration;
+				timer_id = Slow_Timer_Add(tm_Once, 700, timer_ready);
 			}
 		}
-		temp_lcd_show(btn_old, duration, press_counter);
+		handle_symbol(btn, duration, press_counter);
 	}
-
+/*
 	if(btn_old){ //If some button was pressed
 		//If time after button pressed has passed or if button doesn't have variants or if exit
 		if(time_after_press == TIME_AFTER_PRESS || !has_variants(btn_old) || is_exit(btn_old, duration, press_counter)){
@@ -150,34 +122,82 @@ uint8_t typing(button *button_obj){
 		}
 		time_after_press++;
 	}
+	*/
 	return 0;
+}
+
+void delete_timer(void){
+	if(timer_id != 0){
+		Slow_Timer_Delete(timer_id);
+		timer_id=0;
+	}
+}
+
+void reset_timer(void){
+	if(timer_id != 0){
+		Slow_Timer_Modify(timer_id, tm_Not_Change, 1, 0);
+	}
+}
+
+void timer_ready(void){
+
+	uint8_t symbol;
+	symbol = get_symbol(btn_old, duration_old, press_counter);
+	//acept_btn(symbol);
+	timer_id = 0;
+	return;
+
+}
+
+void handle_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter){
+	if(! is_service_symbol(btn))temp_lcd_show(btn, duration, press_counter); //if not service btn
+}
+
+void acept_btn(uint8_t btn){
+	if(is_service_symbol(btn)){
+		make_service(btn);
+		return;
+	}
+
+	response_push(btn);
+	cursor_shift(RIGHT);
+	btn_old = 0;
+	duration_old=0;
+	press_counter = 0;
+	timer_id = 0;
+}
+
+void make_service(uint8_t btn){
+
 }
 
 uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 	uint8_t line_num;
 	uint8_t el_num;
+	uint8_t symbol;
 
 	line_num = get_line(btn); //Get line from alphabet
 
 	el_num = pressed_cnt;
 	if(duration == '1'){ //If it was long button press than take last element
-		el_num = EdConf.x_size-1;
+		el_num = get_vars_amount(btn)-1;
 	}
 
-	if(alphabet_pull(line_num,el_num) == 0)el_num=0; //If there is no char for such pressed btn
-	send_to_usart2(line_num);
-	send_to_usart2(el_num);
-	return alphabet_pull(line_num,el_num);
+	symbol = alphabet_pull(line_num,el_num);
+	if(symbol == 0)el_num=0; //If there is no char for such pressed btn
+	return symbol;
 }
 
 void temp_lcd_show(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
-	uint8_t symbol;
+	lcd_putc(get_symbol(btn, duration, pressed_cnt));
+	cursor_shift(LEFT);
+}
 
-	symbol = get_symbol(btn, duration, pressed_cnt);
-	if(symbol != EdConf.exit_symb_ok && symbol != EdConf.clean_char_symb){
-		lcd_putc(symbol);
-		cursor_shift(LEFT);
-	}
+uint8_t is_service_symbol(uint8_t btn){
+	if(btn == EdConf.exit_symb_ok)return 1;
+	if(btn == EdConf.exit_symb_discard)return 1;
+	if(btn == EdConf.clean_char_symb)return 1;
+	return 0;
 }
 
 uint8_t has_variants(uint8_t btn){
@@ -185,7 +205,7 @@ uint8_t has_variants(uint8_t btn){
 	uint8_t chars_amount=0;
 
 	line_num = get_line(btn);
-	for(uint8_t i=1; i<EdConf.x_size-1; i++){
+	for(uint8_t i=1; i<max_alph_x-1; i++){
 		if(alphabet_pull(line_num,i) != 0){
 			return 1;
 		}
@@ -212,10 +232,10 @@ uint8_t get_line(uint8_t btn){
 
 uint8_t get_vars_amount(uint8_t btn){
 	uint8_t line;
-	uint8_t cnt=1;
+	uint8_t cnt=0;
 
 	line = get_line(btn);
-	for(uint8_t i=1; i< EdConf.x_size; i++){
+	for(uint8_t i=0; i< max_alph_x; i++){
 		if(alphabet_pull(line,i) != 0)cnt++;
 		else return cnt;
 	}
@@ -227,3 +247,44 @@ uint8_t is_exit(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 	return 0;
 }
 
+void init_editor(EditorConf config){
+	EdConf = config;
+	response_init(EdConf.response, EdConf.resp_size);
+}
+
+uint8_t alphabet_pull(uint8_t line, uint8_t element){
+	return (EdConf.alphabet[line][element]);
+}
+
+void response_init(uint8_t *response, uint8_t size){
+	uint8_t *editor_resp;
+	uint8_t symb;
+	editor_resp = response;
+	resp_ptr=0;
+	c_position=0;
+	//Show already exist response
+	for(uint8_t i=0;i<size;i++){
+		symb = EdConf.response[i];
+		if(symb != '\0'){
+			c_position++;
+			resp_ptr++;
+			lcd_putc(symb);
+		}
+		else break;
+	}
+}
+
+void response_push(uint8_t symbol){
+	if(resp_ptr < EdConf.resp_size){
+		EdConf.response[resp_ptr] = symbol;
+		resp_ptr++;
+	}
+}
+
+void response_rm_char(void){
+	if(resp_ptr > 0){
+		EdConf.response[resp_ptr] = '\0';
+		resp_ptr--;
+		EdConf.response[resp_ptr] = '\0';
+	}
+}

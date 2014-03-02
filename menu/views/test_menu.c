@@ -1,12 +1,11 @@
 #include "test_menu.h"
 
 void test_menu(void){
-EditorConf config = {.clean_char_symb = '<',
+EditorConf config = {
+.clean_char_symb = '<',
 .space_symb = ' ',
 .exit_symb_ok = '^',
 .exit_symb_discard  ='~',
-.x_size = 6,
-.y_size = 12,
 .alphabet={
         							   ///0   1   2	  3   4   L
                                         {'0', 0 , 0 , 0 , 0 ,' '},
@@ -20,10 +19,13 @@ EditorConf config = {.clean_char_symb = '<',
                                         {'8','t','u','v', 0 , 0 },
                                         {'9','w','x','y','z', 0 },
                                         {'<', 0 , 0 , 0 , 0 ,'#'},
-                                        {'*','+', 0 , 0 , 0 ,'^'},
+                                        {'*','+', 0 , 0 , 0 ,'^'}
         },
 .resp_size = 15,
 .response={"hello"}};
+
+
+USART2_PutChar(config.alphabet[10][4]);
 
 	button *btn_obj;
 	uint8_t status=0;
