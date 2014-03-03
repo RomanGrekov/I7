@@ -9,11 +9,12 @@
 #include "../menu/menu.h"
 //#include "../slow_timer/slow_timer.h"
 
-#define TIME_AFTER_PRESS F_CPU/400
+#define TIME_AFTER_PRESS 700 //in ms
 #define disp_line_length 15 //symbols (count from 0)
 
 #define max_alph_x 10 //Max amount of variants for one button
 #define max_alph_y 12 //Max buttons amount
+#define max_resp_size 50 //Max symbols amount in response
 
 typedef	struct
 	{
@@ -22,14 +23,23 @@ typedef	struct
         uint8_t exit_symb_ok;
         uint8_t exit_symb_discard;
         uint8_t resp_size;
-        uint8_t * response;
+        uint8_t response[max_resp_size];
         uint8_t alphabet[max_alph_y][max_alph_x];
 	}EditorConf;
+typedef	struct
+	{
+        uint8_t clean_char_symb;
+        uint8_t space_symb;
+        uint8_t exit_symb_ok;
+        uint8_t exit_symb_discard;
+        uint8_t resp_size;
+        uint8_t *response;
+        uint8_t **alphabet;
+	}EditorConf1;
 
 void init_editor(EditorConf config);
 //void editor_init(uint8_t const *alphabet);
 uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
-void temp_lcd_show(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
 uint8_t has_variants(uint8_t btn);
 uint8_t get_line(uint8_t btn);
 uint8_t get_vars_amount(uint8_t btn);
@@ -42,7 +52,5 @@ void management_btns_init(const uint8_t *clean_char_,
 						  const uint8_t *space_symb_,
 						  const uint8_t *exit_symb_ok_,
 						  const uint8_t *exit_symb_discard_);
-void response_push(uint8_t symbol);
-void response_rm_char(void);
 
 #endif

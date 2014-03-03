@@ -1,12 +1,17 @@
 #include "text_editor.h"
 
-void handle_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter);
+void display_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter);
 uint8_t is_service_symbol(uint8_t btn);
-void acept_btn(uint8_t btn);
+void acept_btn(uint8_t btn, uint8_t duration, uint8_t press_cnt);
 void timer_ready(void);
-void make_service(uint8_t btn);
+void make_service(uint8_t symbol);
 void delete_timer(void);
 void reset_timer(void);
+void lcd_show_btn(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
+void clean_flags(void);
+uint8_t is_max_response(void);
+void response_push(uint8_t symbol);
+void response_rm_char(void);
 /*
 const uint8_t alphabet_full[12][char_per_btn]={
 	   ///0   1   2	  3   4   L
@@ -34,8 +39,7 @@ uint8_t timer_id=0;
 EditorConf EdConf;
 
 uint8_t typing(button *button_obj){
-	uint8_t btn, symbol, duration=0, final_char, ACTION_FLAG=0;
-	static uint32_t time_after_press=0;
+	uint8_t btn, duration;
 
 	btn = button_obj->button;
 	duration = button_obj->duration;
@@ -48,20 +52,19 @@ uint8_t typing(button *button_obj){
 		}
 		else{
 			if(btn_old != 0){// If already was pressed button
-				symbol = get_symbol(btn_old, duration_old, press_counter);
-				acept_btn(symbol);
+				acept_btn(btn_old, duration_old, press_counter);
 				delete_timer();
 			}
-			else{
+			else{// Button was pressed first time. all before were committed
 				//USART2_PutChar('A');
-				press_counter = 0;
 				btn_old = btn;
 				duration_old = duration;
-				timer_id = Slow_Timer_Add(tm_Once, 700, timer_ready);
+				timer_id = Slow_Timer_Add(tm_Once, TIME_AFTER_PRESS, timer_ready);
 			}
 		}
-		handle_symbol(btn, duration, press_counter);
+		display_symbol(btn, duration, press_counter);
 	}
+	if(is_max_response())return 1;
 /*
 	if(btn_old){ //If some button was pressed
 		//If time after button pressed has passed or if button doesn't have variants or if exit
@@ -140,35 +143,50 @@ void reset_timer(void){
 }
 
 void timer_ready(void){
-
-	uint8_t symbol;
-	symbol = get_symbol(btn_old, duration_old, press_counter);
-	//acept_btn(symbol);
+	acept_btn(btn_old, duration_old, press_counter);
 	timer_id = 0;
 	return;
-
 }
 
-void handle_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter){
-	if(! is_service_symbol(btn))temp_lcd_show(btn, duration, press_counter); //if not service btn
+void display_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter){
+	uint8_t symbol;
+	symbol = get_symbol(btn_old, duration_old, press_counter);
+	if(! is_service_symbol(symbol))lcd_show_btn(btn, duration, press_counter); //if not service btn
 }
 
-void acept_btn(uint8_t btn){
-	if(is_service_symbol(btn)){
-		make_service(btn);
+void acept_btn(uint8_t btn, uint8_t duration, uint8_t press_cnt){
+	uint8_t symbol;
+	symbol = get_symbol(btn_old, duration_old, press_counter);
+
+	if(is_service_symbol(symbol)){
+		make_service(symbol);
+        clean_flags();
 		return;
 	}
 
-	response_push(btn);
+	response_push(symbol);
 	cursor_shift(RIGHT);
+	clean_flags();
+}
+
+void clean_flags(void){
 	btn_old = 0;
 	duration_old=0;
 	press_counter = 0;
 	timer_id = 0;
 }
 
-void make_service(uint8_t btn){
-
+void make_service(uint8_t symbol){
+	if(symbol == EdConf.clean_char_symb){
+		if(c_position > disp_line_length)shift_display(RIGHT);
+        if(c_position > 0){
+        	cursor_shift(LEFT);
+        	lcd_putc(' ');
+        	cursor_shift(LEFT);
+        	c_position--;
+        	response_rm_char();
+        }
+	}
 }
 
 uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
@@ -188,9 +206,10 @@ uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 	return symbol;
 }
 
-void temp_lcd_show(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
+void lcd_show_btn(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 	lcd_putc(get_symbol(btn, duration, pressed_cnt));
 	cursor_shift(LEFT);
+	c_position++;
 }
 
 uint8_t is_service_symbol(uint8_t btn){
@@ -287,4 +306,9 @@ void response_rm_char(void){
 		resp_ptr--;
 		EdConf.response[resp_ptr] = '\0';
 	}
+}
+
+uint8_t is_max_response(void){
+	if(resp_ptr == EdConf.resp_size)return 1;
+	return 0;
 }
