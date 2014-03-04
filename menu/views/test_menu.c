@@ -1,68 +1,42 @@
 #include "test_menu.h"
 
 void test_menu(void){
+uint8_t my_alphabet[]={
+              ///0   1   2   3   4   L
+                '0', 0 , 0 , 0 , 0 ,' ',
+                '1','_', 0 , 0 , 0 , 0,
+                '2','a','b','c', 0 , 0,
+                '3','d','e','f', 0 , 0,
+                '4','g','h','i', 0 , 0,
+                '5','j','k','l', 0 , 0,
+                '6','m','n','o', 0 , 0,
+                '7','p','q','r','s', 0,
+                '8','t','u','v', 0 , 0,
+                '9','w','x','y','z', 0,
+                '<', 0 , 0 , 0 , 0 ,'#',
+                '*','+', 0 , 0 , 0 ,'^'};
+
+uint8_t old_resp[15]={"hello"};
+
 EditorConf config = {
-.clean_char_symb = '<',
-.space_symb = ' ',
-.exit_symb_ok = '^',
-.exit_symb_discard  ='~',
-.alphabet={
-        							   ///0   1   2	  3   4   L
-                                        {'0', 0 , 0 , 0 , 0 ,' '},
-                                        {'1','_', 0 , 0 , 0 , 0 },
-                                        {'2','a','b','c', 0 , 0 },
-                                        {'3','d','e','f', 0 , 0 },
-                                        {'4','g','h','i', 0 , 0 },
-                                        {'5','j','k','l', 0 , 0 },
-                                        {'6','m','n','o', 0 , 0 },
-                                        {'7','p','q','r','s', 0 },
-                                        {'8','t','u','v', 0 , 0 },
-                                        {'9','w','x','y','z', 0 },
-                                        {'<', 0 , 0 , 0 , 0 ,'#'},
-                                        {'*','+', 0 , 0 , 0 ,'^'}
-        },
-.resp_size = 15,
-.response={"hello"}};
-
-uint8_t a={
-		   ///0   1   2	  3   4   L
-         {'0', 0 , 0 , 0 , 0 ,' '},
-         {'1','_', 0 , 0 , 0 , 0 },
-         {'2','a','b','c', 0 , 0 },
-         {'3','d','e','f', 0 , 0 },
-         {'4','g','h','i', 0 , 0 },
-         {'5','j','k','l', 0 , 0 },
-         {'6','m','n','o', 0 , 0 },
-         {'7','p','q','r','s', 0 },
-         {'8','t','u','v', 0 , 0 },
-         {'9','w','x','y','z', 0 },
-         {'<', 0 , 0 , 0 , 0 ,'#'},
-         {'*','+', 0 , 0 , 0 ,'^'}
-};
-uint8_t **p;
-
-EditorConf1 config1 = {
-.clean_char_symb = '<',
-.space_symb = ' ',
-.exit_symb_ok = '^',
-.exit_symb_discard  ='~',
-.alphabet=a,
-.resp_size = 15,
-.response={"hello"}};
-
-p = a;
-for(uint8_t i=0; i<6; i++){
-	USART2_PutChar(p[0][i]);
-}
+    .clean_char_symb = '<',
+    .space_symb = ' ',
+    .exit_symb_ok = '^',
+    .exit_symb_discard  ='~',
+    .x_size = 6,
+    .y_size = 12,
+    .alphabet=my_alphabet,
+    .resp_size=15,
+    .old_response=old_resp};
 
 	button *btn_obj;
 	uint8_t status=0;
 
-		lcd_clrscr();
-		LCDPrintS("Test editor");
-		lcd_goto(2, 0);
-		turn_on_cursor();
-		init_editor(config);
+	lcd_clrscr();
+	LCDPrintS("Test editor");
+	lcd_goto(2, 0);
+	turn_on_cursor();
+	init_editor(config);
 
 	do{
 

@@ -11,10 +11,7 @@
 
 #define TIME_AFTER_PRESS 700 //in ms
 #define disp_line_length 15 //symbols (count from 0)
-
-#define max_alph_x 10 //Max amount of variants for one button
-#define max_alph_y 12 //Max buttons amount
-#define max_resp_size 50 //Max symbols amount in response
+#define max_resp_size 50
 
 typedef	struct
 	{
@@ -23,19 +20,11 @@ typedef	struct
         uint8_t exit_symb_ok;
         uint8_t exit_symb_discard;
         uint8_t resp_size;
-        uint8_t response[max_resp_size];
-        uint8_t alphabet[max_alph_y][max_alph_x];
+        uint8_t *old_response;
+        uint8_t x_size;
+        uint8_t y_size;
+        uint8_t *alphabet;
 	}EditorConf;
-typedef	struct
-	{
-        uint8_t clean_char_symb;
-        uint8_t space_symb;
-        uint8_t exit_symb_ok;
-        uint8_t exit_symb_discard;
-        uint8_t resp_size;
-        uint8_t *response;
-        uint8_t **alphabet;
-	}EditorConf1;
 
 void init_editor(EditorConf config);
 //void editor_init(uint8_t const *alphabet);
