@@ -1,7 +1,6 @@
 #include "test_menu.h"
 
 void test_menu(void){
-USART2SendStr("In test\n");
 
 uint8_t my_alphabet[]={
               ///0   1   2   3   4   L
@@ -42,11 +41,9 @@ EditorConf config = {
 		status = typing(btn_obj);
 
 	}while (status == 0);
-	uint8_t a[5];
+
 	if(status != 0){
-		USART2SendStr("Status ");
-		itoa(status,10,a);
-		USART2SendStr(a);
+		USART2SendStr(get_text());
 
 	}
 }

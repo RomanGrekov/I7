@@ -9,7 +9,7 @@
 #include "../menu/menu.h"
 //#include "../slow_timer/slow_timer.h"
 
-#define TIME_AFTER_PRESS 700 //in ms
+#define TIME_AFTER_PRESS 800 //in ms
 #define disp_line_length 16 //symbols (count from 0)
 #define max_resp_size 50
 
@@ -29,5 +29,6 @@ typedef	struct
 	}EditorConf;
 
 void init_editor(EditorConf config);
+uint8_t *get_text(void);
 
 #endif

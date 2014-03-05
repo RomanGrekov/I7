@@ -88,67 +88,6 @@ uint8_t typing(button *button_obj){
 		display_symbol(btn, duration, press_counter);
 	}
 	return exit_status;
-/*
-	if(btn_old){ //If some button was pressed
-		//If time after button pressed has passed or if button doesn't have variants or if exit
-		if(time_after_press == TIME_AFTER_PRESS || !has_variants(btn_old) || is_exit(btn_old, duration, press_counter)){
-			time_after_press=0;
-			final_char = get_symbol(btn_old, duration, press_counter);
-			btn_old = 0;
-			if(final_char == EdConf.exit_symb_ok){
-				turn_off_cursor();
-				response_push('\0');
-				changeMenu(MENU_THIS);
-				btn_old=0;
-				press_counter=0;
-				c_position=0;
-				time_after_press=0;
-				ACTION_FLAG=1;
-				return 1;
-			}
-			if(final_char == EdConf.exit_symb_discard){
-				turn_off_cursor();
-				response_push('\0');
-				changeMenu(MENU_THIS);
-				btn_old=0;
-				press_counter=0;
-				c_position=0;
-				time_after_press=0;
-				ACTION_FLAG=1;
-				return 2;
-			}
-			if(final_char == EdConf.space_symb){
-				if(c_position >= disp_line_length){
-					shift_display(LEFT);
-				}
-				cursor_shift(RIGHT);
-				c_position++;
-				response_push(' ');
-				ACTION_FLAG=1;
-			}
-			if(final_char == EdConf.clean_char_symb){
-				if(c_position > disp_line_length)shift_display(RIGHT);
-				if(c_position > 0){
-					cursor_shift(LEFT);
-					lcd_putc(' ');
-					cursor_shift(LEFT);
-					c_position--;
-					response_rm_char();
-				}
-				ACTION_FLAG=1;
-			}
-			if(!ACTION_FLAG){
-				if(c_position >= disp_line_length){
-					shift_display(LEFT);
-				}
-					response_push(final_char);
-					lcd_putc(final_char);
-					c_position++;
-			}
-		}
-		time_after_press++;
-	}
-	*/
 }
 
 void delete_timer(void){
@@ -363,6 +302,7 @@ void response_push(uint8_t symbol){
 	if(resp_ptr < max_resp_size){
 		response[resp_ptr] = symbol;
 		resp_ptr++;
+		response[resp_ptr] = '\0';
 	}
 }
 
@@ -378,3 +318,8 @@ uint8_t is_max_response(void){
 	if(resp_ptr >= EdConf.resp_size)return 1;
 	return 0;
 }
+
+uint8_t *get_text(void){
+	return response;
+}
+
