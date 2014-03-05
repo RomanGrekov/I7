@@ -1,6 +1,8 @@
 #include "test_menu.h"
 
 void test_menu(void){
+USART2SendStr("In test\n");
+
 uint8_t my_alphabet[]={
               ///0   1   2   3   4   L
                 '0', 0 , 0 , 0 , 0 ,' ',
@@ -13,12 +15,11 @@ uint8_t my_alphabet[]={
                 '7','p','q','r','s', 0,
                 '8','t','u','v', 0 , 0,
                 '9','w','x','y','z', 0,
-                '<', 0 , 0 , 0 , 0 ,'#',
+                '<', 0 , 0 , 0 , 0 ,'~',
                 '*','+', 0 , 0 , 0 ,'^'};
 
-uint8_t old_resp[15]={"hello"};
-
 EditorConf config = {
+	.top_line="Test me!!!",
     .clean_char_symb = '<',
     .space_symb = ' ',
     .exit_symb_ok = '^',
@@ -26,16 +27,13 @@ EditorConf config = {
     .x_size = 6,
     .y_size = 12,
     .alphabet=my_alphabet,
-    .resp_size=15,
-    .old_response=old_resp};
+    .resp_size=20,
+    .do_exit_on_max_resp=0,
+    .old_response=""};
 
 	button *btn_obj;
 	uint8_t status=0;
 
-	lcd_clrscr();
-	LCDPrintS("Test editor");
-	lcd_goto(2, 0);
-	turn_on_cursor();
 	init_editor(config);
 
 	do{
@@ -44,8 +42,11 @@ EditorConf config = {
 		status = typing(btn_obj);
 
 	}while (status == 0);
-	if(status == 1){
-		//USART2SendStr(resp);
+	uint8_t a[5];
+	if(status != 0){
+		USART2SendStr("Status ");
+		itoa(status,10,a);
+		USART2SendStr(a);
 
 	}
 }

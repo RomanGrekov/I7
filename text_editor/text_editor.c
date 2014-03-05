@@ -12,6 +12,15 @@ void clean_flags(void);
 uint8_t is_max_response(void);
 void response_push(uint8_t symbol);
 void response_rm_char(void);
+void lcd_init_resp(uint8_t *old_response);
+void lcd_init_first(void);
+uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt);
+uint8_t has_variants(uint8_t btn);
+uint8_t get_line(uint8_t btn);
+uint8_t get_vars_amount(uint8_t btn);
+uint8_t typing(button *button_obj);
+uint8_t alphabet_pull(uint8_t line, uint8_t element);
+void response_init(uint8_t *response, uint8_t size);
 /*
 const uint8_t alphabet_full[12][char_per_btn]={
 	   ///0   1   2	  3   4   L
@@ -29,8 +38,16 @@ const uint8_t alphabet_full[12][char_per_btn]={
 		{'*','+', 0 , 0 , 0 ,'^'},
 };
 */
-uint8_t c_position, press_counter=0;
 
+enum {
+	ExitContinue=0,
+	ExitMaxResp,
+	ExitOk,
+	ExitDiscard
+};
+uint8_t exit_status=ExitContinue;
+
+uint8_t press_counter=0;
 uint8_t resp_ptr;
 uint8_t btn_old=0;
 uint8_t duration_old=0;
@@ -70,7 +87,7 @@ uint8_t typing(button *button_obj){
 		}
 		display_symbol(btn, duration, press_counter);
 	}
-	if(is_max_response())return 1;
+	return exit_status;
 /*
 	if(btn_old){ //If some button was pressed
 		//If time after button pressed has passed or if button doesn't have variants or if exit
@@ -132,7 +149,6 @@ uint8_t typing(button *button_obj){
 		time_after_press++;
 	}
 	*/
-	return 0;
 }
 
 void delete_timer(void){
@@ -170,9 +186,18 @@ void acept_btn(uint8_t btn, uint8_t duration, uint8_t press_cnt){
 		return;
 	}
 
-	response_push(symbol);
-	cursor_shift(RIGHT);
-	clean_flags();
+	if(is_max_response()){
+		if(EdConf.do_exit_on_max_resp){
+			response_push(symbol);
+            turn_off_cursor();
+            exit_status=ExitMaxResp;
+		}
+	}
+	else{
+        response_push(symbol);
+        cursor_shift(RIGHT);
+        clean_flags();
+	}
 }
 
 void clean_flags(void){
@@ -183,14 +208,30 @@ void clean_flags(void){
 
 void make_service(uint8_t symbol){
 	if(symbol == EdConf.clean_char_symb){
-		if(resp_ptr > disp_line_length)shift_display(RIGHT);
         if(resp_ptr > 0){
         	cursor_shift(LEFT);
         	lcd_putc(' ');
         	cursor_shift(LEFT);
-        	if(btn_old)return;
+        	if(btn_old && !is_service_symbol(symbol))return; //if btn not pushed in response yet
         	response_rm_char();
         }
+        if(resp_ptr >= disp_line_length){
+            lcd_init_first();
+            for(uint8_t i=(resp_ptr-disp_line_length); i<resp_ptr; i++){
+                lcd_putc(response[i]);
+            }
+        }
+        exit_status=ExitContinue;
+	}
+	if(symbol == EdConf.exit_symb_ok){
+        turn_off_cursor();
+        response_push('\0');
+        exit_status=ExitOk;
+	}
+	if(symbol == EdConf.exit_symb_discard){
+        turn_off_cursor();
+        response_init(EdConf.old_response, EdConf.resp_size);
+        exit_status=ExitDiscard;
 	}
 }
 
@@ -203,7 +244,7 @@ uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 
 	el_num = pressed_cnt;
 	if(duration == '1'){ //If it was long button press than take last element
-		el_num = get_vars_amount(btn)-1;
+		el_num = (EdConf.x_size-1);
 	}
 
 	symbol = alphabet_pull(line_num,el_num);
@@ -212,6 +253,13 @@ uint8_t get_symbol(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
 }
 
 void lcd_show_btn(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
+    if(resp_ptr >= disp_line_length){
+    	lcd_init_first();
+    	for(uint8_t i=(resp_ptr-disp_line_length+1); i<resp_ptr; i++){
+    		lcd_putc(response[i]);
+    	}
+            //shift_display(LEFT);
+    }
 	lcd_putc(get_symbol(btn, duration, pressed_cnt));
 	cursor_shift(LEFT);
 }
@@ -265,14 +313,20 @@ uint8_t get_vars_amount(uint8_t btn){
 	return cnt;
 }
 
-uint8_t is_exit(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
-	if(get_symbol(btn, duration, pressed_cnt) == EdConf.exit_symb_ok) return 1;
-	return 0;
-}
-
 void init_editor(EditorConf config){
+    press_counter=0;
+    resp_ptr=0;
+    btn_old=0;
+    duration_old=0;
+    timer_id=0;
+    exit_status=ExitContinue;
 	EdConf = config;
+
+	lcd_init_first();
+	turn_on_cursor();
+
 	response_init(EdConf.old_response, EdConf.resp_size);
+	lcd_init_resp(EdConf.old_response);
 }
 
 uint8_t alphabet_pull(uint8_t line, uint8_t element){
@@ -282,15 +336,27 @@ uint8_t alphabet_pull(uint8_t line, uint8_t element){
 void response_init(uint8_t *old_response, uint8_t size){
 	uint8_t symb;
 	resp_ptr=0;
+	for(uint8_t i=0; i<max_resp_size; i++)response[i]=0;
 	//Show already exist response
 	for(uint8_t i=0;i<size;i++){
 		symb = old_response[i];
 		if(symb != '\0'){
 			response_push(symb);
-			lcd_putc(symb);
 		}
 		else break;
 	}
+}
+
+void lcd_init_resp(uint8_t *old_response){
+	while(*old_response){
+        lcd_putc(*old_response++);
+	}
+}
+
+void lcd_init_first(void){
+    lcd_clrscr();
+    LCDPrintS(EdConf.top_line);
+    lcd_goto(2, 0);
 }
 
 void response_push(uint8_t symbol){
