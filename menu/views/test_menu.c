@@ -44,6 +44,5 @@ EditorConf config = {
 
 	if(status != 0){
 		USART2SendStr(get_text());
-
 	}
 }

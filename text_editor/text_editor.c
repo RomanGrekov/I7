@@ -56,6 +56,8 @@ uint8_t response[max_resp_size];
 
 EditorConf EdConf;
 
+uint8_t test_data[5];
+
 uint8_t typing(button *button_obj){
 	uint8_t btn, duration;
 
@@ -111,6 +113,7 @@ void timer_ready(void){
 
 void display_symbol(uint8_t btn, uint8_t duration, uint8_t press_counter){
 	uint8_t symbol;
+	if(is_max_response())return;
 	symbol = get_symbol(btn, duration, press_counter);
 	if(! is_service_symbol(symbol))lcd_show_btn(btn, duration, press_counter); //if not service btn
 }
@@ -131,6 +134,9 @@ void acept_btn(uint8_t btn, uint8_t duration, uint8_t press_cnt){
             turn_off_cursor();
             exit_status=ExitMaxResp;
 		}
+        response_rm_char();
+        response_push(symbol);
+        clean_flags();
 	}
 	else{
         response_push(symbol);
@@ -147,6 +153,10 @@ void clean_flags(void){
 
 void make_service(uint8_t symbol){
 	if(symbol == EdConf.clean_char_symb){
+	itoa(resp_ptr, 10, test_data);//////////////////////////////////////////////////////
+	USART2SendStr("Clear(resp_ptr) ");
+	USART2SendStr(test_data);
+	USART2_PutChar('\n');
         if(resp_ptr > 0){
         	cursor_shift(LEFT);
         	lcd_putc(' ');
@@ -304,14 +314,28 @@ void response_push(uint8_t symbol){
 		resp_ptr++;
 		response[resp_ptr] = '\0';
 	}
+	itoa(resp_ptr, 10, test_data);//////////////////////////////////////////////////////
+	USART2SendStr("Push(resp_ptr) ");
+	USART2SendStr(test_data);
+	USART2SendStr(" Symbol ");
+	USART2_PutChar(response[resp_ptr-1]);
+	USART2_PutChar('\n');
 }
 
 void response_rm_char(void){
+	uint8_t old_one;
+	old_one = response[resp_ptr-1];////////////////////////////////////////////////////
 	if(resp_ptr > 0){
 		response[resp_ptr] = '\0';
 		resp_ptr--;
 		response[resp_ptr] = '\0';
 	}
+	itoa(resp_ptr, 10, test_data);//////////////////////////////////////////////////////
+	USART2SendStr("Rm_char(resp_ptr) ");
+	USART2SendStr(test_data);
+	USART2SendStr(" Symbol ");
+	USART2_PutChar(old_one);
+	USART2_PutChar('\n');
 }
 
 uint8_t is_max_response(void){
