@@ -1,57 +1,51 @@
 #include "enter_usr_pwd.h"
 
 uint8_t enter_usr_pwd(void){
-	#define clean_char_symb ' '
-	#define space_symb ' '
-	#define exit_symb_discard ' '
-	#define exit_symb_ok ' '
-	#define x_size 2
-	#define y_size 11
-	const uint8_t alphabet_[y_size][x_size]={
-		   ///0   L
-			{'0', 0 },
-			{'1', 0 },
-			{'2', 0 },
-			{'3', 0 },
-			{'4', 0 },
-			{'5', 0 },
-			{'6', 0 },
-			{'7', 0 },
-			{'8', 0 },
-			{'9', 0 },
-	};
+uint8_t my_alphabet[]={
+              ///0    L
+                '0',
+                '1',
+                '2',
+                '3',
+                '4',
+                '5',
+                '6',
+                '7',
+                '8',
+                '9'};
+
+EditorConf config = {
+	.top_line="Enter password",
+    .clean_char_symb = 0,
+    .space_symb = 0,
+    .exit_symb_ok = 0,
+    .exit_symb_discard = 0,
+    .x_size = 1,
+    .y_size = 10,
+    .alphabet=my_alphabet,
+    .resp_size=4,
+    .do_exit_on_max_resp=1,
+    .old_response="",
+	.mask=0};
 
 	button *btn_obj;
 	uint8_t status=0;
-	char pwd[5]={0,0,0,0};
-	uint8_t pwd_correct = 1;
-	uint8_t btn_cnt=0;
-	uint8_t btn;
+	uint8_t *got_pwd;
 
-		lcd_clrscr();
-		LCDPrintS("Enter user passw");
-		lcd_goto(2, 0);
-		turn_on_cursor();
+	init_editor(config);
 
-		response_init(pwd, 5);
-		//alphabet_init(alphabet_, y_size, x_size);
-		//management_btns_init(clean_char_symb, space_symb, exit_symb_ok, exit_symb_discard);
 	do{
-
 		btn_obj = get_btn();
 		status = typing(btn_obj);
-		btn = btn_obj->button;
-		if(btn)btn_cnt++;
-		if(btn_cnt == 4)status = 1;
-
 	}while (status == 0);
+
 	if(status == 1){
+		got_pwd = get_text();
 		for(uint8_t i=0; i<4; i++){
-			if(pwd[i] != SysConf.usr_pwd[i]){
-				pwd_correct = 0;
-				return pwd_correct;
+			if(got_pwd[i] != SysConf.usr_pwd[i]){
+				return 0;
 			}
 		}
-		return pwd_correct;
+		return 1;
 	}
 }

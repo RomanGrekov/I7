@@ -14,8 +14,8 @@ void set_state_menu(uint8_t btn, uint8_t duaration){
 			SysConf.state=HOME;
 			break;
 		case '#':
-			//if(enter_usr_pwd() == 1)SysConf.state=AWAY;
-			//else return;
+			if(enter_usr_pwd() == 1)SysConf.state=AWAY;
+			else return;
 			break;
 	}
 

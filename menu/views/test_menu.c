@@ -28,7 +28,8 @@ EditorConf config = {
     .alphabet=my_alphabet,
     .resp_size=20,
     .do_exit_on_max_resp=0,
-    .old_response=""};
+    .old_response="",
+	.mask=0};
 
 	button *btn_obj;
 	uint8_t status=0;

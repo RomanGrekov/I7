@@ -21,23 +21,6 @@ uint8_t get_vars_amount(uint8_t btn);
 uint8_t typing(button *button_obj);
 uint8_t alphabet_pull(uint8_t line, uint8_t element);
 void response_init(uint8_t *response, uint8_t size);
-/*
-const uint8_t alphabet_full[12][char_per_btn]={
-	   ///0   1   2	  3   4   L
-		{'0', 0 , 0 , 0 , 0 ,' '},
-		{'1','_', 0 , 0 , 0 , 0 },
-		{'2','a','b','c', 0 , 0 },
-		{'3','d','e','f', 0 , 0 },
-		{'4','g','h','i', 0 , 0 },
-		{'5','j','k','l', 0 , 0 },
-		{'6','m','n','o', 0 , 0 },
-		{'7','p','q','r','s', 0 },
-		{'8','t','u','v', 0 , 0 },
-		{'9','w','x','y','z', 0 },
-		{'<', 0 , 0 , 0 , 0 ,'#'},
-		{'*','+', 0 , 0 , 0 ,'^'},
-};
-*/
 
 enum {
 	ExitContinue=0,
@@ -55,8 +38,6 @@ uint8_t timer_id=0;
 uint8_t response[max_resp_size];
 
 EditorConf EdConf;
-
-uint8_t test_data[5];
 
 uint8_t typing(button *button_obj){
 	uint8_t btn, duration;
@@ -82,7 +63,11 @@ uint8_t typing(button *button_obj){
 				uint8_t symbol = get_symbol(btn_old, duration_old, press_counter);
 				if(! is_service_symbol(symbol)) //If text symbol give it some time
 				{
-					timer_id = Slow_Timer_Add(tm_Once, TIME_AFTER_PRESS, timer_ready);
+					if(get_vars_amount(btn) < 2){//If button doesn't have variants
+						acept_btn(btn, duration, press_counter);
+						//cursor_shift(LEFT);
+					}
+					else timer_id = Slow_Timer_Add(tm_Once, TIME_AFTER_PRESS, timer_ready);
 				}
 				else acept_btn(btn, duration, press_counter); //if service btn, process it rapidly
 			}
@@ -153,10 +138,6 @@ void clean_flags(void){
 
 void make_service(uint8_t symbol){
 	if(symbol == EdConf.clean_char_symb){
-	itoa(resp_ptr, 10, test_data);//////////////////////////////////////////////////////
-	USART2SendStr("Clear(resp_ptr) ");
-	USART2SendStr(test_data);
-	USART2_PutChar('\n');
         if(resp_ptr > 0){
         	cursor_shift(LEFT);
         	lcd_putc(' ');
@@ -209,7 +190,8 @@ void lcd_show_btn(uint8_t btn, uint8_t duration, uint8_t pressed_cnt){
     	}
             //shift_display(LEFT);
     }
-	lcd_putc(get_symbol(btn, duration, pressed_cnt));
+	if(EdConf.mask) lcd_putc(EdConf.mask); //If mask set than show mask instesd of symbol
+	else lcd_putc(get_symbol(btn, duration, pressed_cnt));
 	cursor_shift(LEFT);
 }
 
@@ -314,12 +296,6 @@ void response_push(uint8_t symbol){
 		resp_ptr++;
 		response[resp_ptr] = '\0';
 	}
-	itoa(resp_ptr, 10, test_data);//////////////////////////////////////////////////////
-	USART2SendStr("Push(resp_ptr) ");
-	USART2SendStr(test_data);
-	USART2SendStr(" Symbol ");
-	USART2_PutChar(response[resp_ptr-1]);
-	USART2_PutChar('\n');
 }
 
 void response_rm_char(void){
@@ -330,12 +306,6 @@ void response_rm_char(void){
 		resp_ptr--;
 		response[resp_ptr] = '\0';
 	}
-	itoa(resp_ptr, 10, test_data);//////////////////////////////////////////////////////
-	USART2SendStr("Rm_char(resp_ptr) ");
-	USART2SendStr(test_data);
-	USART2SendStr(" Symbol ");
-	USART2_PutChar(old_one);
-	USART2_PutChar('\n');
 }
 
 uint8_t is_max_response(void){
